@@ -1,0 +1,58 @@
+#!/bin/sh
+# faultline provenance hook
+#
+# Every commit in this repo carries three trailers, in this order:
+#   Built-With:  who or what wrote the change
+#   Meta-Models: the Meta model ids the change used or wires in, or "none"
+#   Built-On:    local date and time with offset
+# A missing Built-With or Meta-Models is filled from git config (faultline.builtWith,
+# faultline.metaModels); a missing Built-On is always filled with the current time.
+# A trailer present with a blank value, or missing with no config default, refuses the commit.
+# No other line of the message is touched.
+# Install with: uv run python scripts/install_hooks.py
+
+msg="$1"
+
+trailers=$(git interpret-trailers --parse "$msg") || exit 1
+
+# Values of every trailer whose key matches $1, case-insensitively, one per line.
+values_of() {
+    printf '%s\n' "$trailers" | grep -i "^$1:" | sed 's/^[^:]*:[[:space:]]*//'
+}
+
+has_key() {
+    printf '%s\n' "$trailers" | grep -i -q "^$1:"
+}
+
+fill_from_config() {
+    key="$1"
+    config_key="$2"
+    if has_key "$key"; then
+        if values_of "$key" | grep -q '^[[:space:]]*$'; then
+            echo "faultline: the \"$key:\" trailer is empty. Write a value after it." >&2
+            exit 1
+        fi
+        return 0
+    fi
+    value=$(git config --get "$config_key")
+    if [ -z "$value" ]; then
+        echo "faultline: this commit has no \"$key:\" trailer. Add one to the message, or set it once with: git config $config_key \"<value>\"" >&2
+        exit 1
+    fi
+    git interpret-trailers --in-place --if-exists doNothing --trailer "$key: $value" "$msg" || exit 1
+}
+
+fill_from_config "Built-With" "faultline.builtWith"
+fill_from_config "Meta-Models" "faultline.metaModels"
+
+if has_key "Built-On"; then
+    if values_of "Built-On" | grep -q '^[[:space:]]*$'; then
+        echo "faultline: the \"Built-On:\" trailer is empty. Write a value after it." >&2
+        exit 1
+    fi
+else
+    stamp=$(date '+%Y-%m-%dT%H:%M:%S%z')
+    git interpret-trailers --in-place --if-exists doNothing --trailer "Built-On: $stamp" "$msg" || exit 1
+fi
+
+exit 0
