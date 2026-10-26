@@ -8,7 +8,7 @@ The hackathon window opened at kickoff on 26 Oct 2026, 12:00 ET (11:00 Chicago).
 It closes at the deadline on 4 Nov 2026, 9:00 PM ET (8:00 PM Chicago).
 Every commit after the first two carries three trailers: `Built-With`, `Meta-Models` and `Built-On`.
 The trailers are enforced on each commit by `.githooks/commit-msg` and checked over the whole history by `scripts/check_provenance.py`.
-The first two commits, `61c525b` (the workspace scaffold) and `c1a6155` (the publish boundary), predate the hook and carry no trailers, but both are dated after kickoff.
+The first two commits, `3c19d45` (the workspace scaffold) and `11ea3dc` (the publish boundary), predate the hook and carry no trailers, but both are dated after kickoff.
 The trailers record the models the build session declared.
 `BUILD_LOG.md` is the dated log of every commit, generated from git.
 
