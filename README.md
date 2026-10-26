@@ -6,7 +6,6 @@ It watches the video, decides whether each rule was followed, and names who brok
 faultline is a rules-compliance judge that works across domains.
 The rules arrive as a rules pack: a folder of markdown rule files plus a `pack.json`.
 Any domain whose rules can be written down and seen on video can bring its own pack.
-It covers rules compliance only; it gives no clinical advice.
 
 ## Forklifts
 
@@ -18,7 +17,6 @@ Given incident footage, it says for each rule whether it was followed and which 
 ## PitBot
 
 faultline enforces sim-racing league rules for PitBot (pitbot.gg), a league management platform.
-This is league rules enforcement and incident adjudication (esports governance).
 It reads rules packs for oval, road and open-wheel leagues, with league values filled in by each league.
 Given a steward-report clip, it says for each rule whether it was followed and which car broke it.
 

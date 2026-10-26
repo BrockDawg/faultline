@@ -32,7 +32,7 @@ Their `pack.json` metadata was edited; no rule text was changed.
 
 ### Sim racing
 
-`oval`, `road-gt` and `open-wheel` come from PitBot's Rule Library, for league rules enforcement and incident adjudication (esports governance).
+`oval`, `road-gt` and `open-wheel` come from PitBot's Rule Library.
 Each holds its discipline's sections plus the universal ones, with `[placeholders]` where a league sets its own values.
 Their domain is `sim-racing`.
 
@@ -42,5 +42,3 @@ The four `forklift-*` packs cover operating and travel, loads and stacking, pede
 They are based on OSHA 29 CFR 1910.178 (powered industrial trucks), a US federal regulation in the public domain.
 Each rule carries an `On video:` line saying what a breach looks like on incident video, and a `Source:` line naming its clause.
 Their domain is `warehouse-forklift`, and rule ids are unique across the four packs.
-
-faultline judges rules compliance only; it gives no clinical advice.
