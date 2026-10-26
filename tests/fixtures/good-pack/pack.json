@@ -1,0 +1,7 @@
+{
+  "name": "good-pack",
+  "version": "1.0.0",
+  "domain": "test-domain",
+  "source": "Test fixture rules",
+  "notes": "unknown keys are ignored"
+}

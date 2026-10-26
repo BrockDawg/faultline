@@ -123,7 +123,7 @@ def test_the_start_is_read_from_provenance_start(repo, git) -> None:
 
 def test_a_placeholder_start_file_stops_with_a_plain_message(repo, git) -> None:
     commit(git, repo, f"feat: one\n\n{FULL}")
-    placeholder = (REPO_ROOT / "PROVENANCE_START").read_text(encoding="utf-8")
+    placeholder = "REPLACE-WITH-THE-FIRST-HOOKED-COMMIT-SHA\n"
     (repo / "PROVENANCE_START").write_text(placeholder, encoding="utf-8")
     done = run_check(repo)
     assert done.returncode == 2

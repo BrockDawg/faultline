@@ -35,6 +35,8 @@ The trailers record the models the build session declared.
 
 - This repo.
 - The provenance hook (`.githooks/commit-msg`), its installer, and the history check (`scripts/check_provenance.py`).
+- The loader in this repo (`src/faultline/pack.py`), rewritten from a written contract during the hackathon.
+- Pack metadata edited to drop dates and internal file names; no rule text changed.
 
 ## Models used
 
