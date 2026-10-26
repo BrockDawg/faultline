@@ -14,6 +14,10 @@ The trailers record the models the build session declared.
 
 ## What existed before the hackathon
 
+- The task router.
+  Pre-existing tooling I'd built, which already routed to Meta models. During the hackathon we extended it to:
+  - turn off Muse Glimmer's thinking mode on local calls, so it returns an answer instead of spending its whole budget thinking;
+  - update its training labels.
 - PitBot (pitbot.gg), Brock's sim-racing league management platform, with its paying leagues.
 - Race telemetry and results data from PitBot leagues.
 - Steward-report video footage and the human steward decisions from PitBot leagues.
@@ -27,9 +31,6 @@ The trailers record the models the build session declared.
   - a capability probe for vision models, including a contact detector built on SAM;
   - a metering proxy that holds the API key and enforces spend caps;
   - a corpus scraper for steward footage and comments.
-- The task router.
-  Pre-existing tooling I'd built, which already routed to Meta models. During the hackathon we extended it to:
-  - (filled in as work lands)
 
 ## Built during the hackathon
 

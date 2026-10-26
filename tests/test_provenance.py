@@ -94,11 +94,11 @@ def test_pre_existing_section_names_every_pre_existing_part() -> None:
     assert missing == []
 
 
-def test_router_sentence_appears_verbatim_with_its_placeholder_line() -> None:
-    lines = [line.strip() for line in _pre_existing_section().splitlines()]
-    assert ROUTER_SENTENCE in lines
-    after = lines[lines.index(ROUTER_SENTENCE) + 1]
-    assert after == "- (filled in as work lands)"
+def test_router_comes_first_with_its_sentence_and_a_list_of_changes() -> None:
+    lines = [line.strip() for line in _pre_existing_section().splitlines() if line.strip()]
+    assert lines[0] == "- The task router."
+    assert lines[1] == ROUTER_SENTENCE
+    assert lines[2].startswith("- ")
 
 
 def test_readme_links_provenance_and_build_log() -> None:
