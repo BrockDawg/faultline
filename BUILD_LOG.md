@@ -12,3 +12,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `c2b2935` | 2026-10-26T12:48:10-0500 | feat: a dated build log generated from git, and READMEs that describe only the project | claude-opus-5-5 via Claude Code | none |
 | `cb42bbb` | 2026-10-26T12:48:11-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
 | `474b5a6` | 2026-10-26T13:10:28-0500 | docs: provenance names the rewritten commit IDs | claude-opus-5-5 via Claude Code | none |
+| `7abc2be` | 2026-10-26T13:10:28-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
+| `c3b617a` | 2026-10-26T13:29:57-0500 | docs: the task router leads the pre-existing list, with what changed during the hackathon | claude-opus-5-5 via Claude Code | none |
