@@ -10,3 +10,9 @@ client_secret*.json
 .mcp.json
 *.mcp.json
 .mcp.local.json
+
+# --- Kept local ---
+.planning/
+STATE.md
+CLAUDE.md
+AGENTS.md
