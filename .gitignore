@@ -1,0 +1,12 @@
+# Secret-hygiene ignores.
+# Reduces accidental staging of secret-NAMED files. It does NOT catch an in-file paste
+# or anything already tracked — that needs the secret scan + pre-commit hook.
+.env*
+*.pem
+*.key
+*credentials*
+client_secret*.json
+*token*.json
+.mcp.json
+*.mcp.json
+.mcp.local.json
