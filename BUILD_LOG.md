@@ -43,3 +43,7 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `af15fd8` | 2026-10-27T15:08:37-0500 | docs: the running count says every item is dated at or after kickoff | claude-fable-5-1 via Claude Code | none |
 | `706c13b` | 2026-10-27T15:08:38-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
 | `1734c19` | 2026-10-27T15:12:17-0500 | docs: the running count names the Meta meter, and says what the meter does not cover | claude-fable-5-1 via Claude Code | none |
+| `4865fd6` | 2026-10-27T15:12:17-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
+| `7a58993` | 2026-10-27T16:04:23-0500 | docs: a scene gallery, one scene per forklift site rule and four other domains | claude-opus-5-5 via Claude Code | none |
+| `d6edd0f` | 2026-10-27T16:15:19-0500 | docs: the no-hi-vis scene's worker wears a plain shirt, not a blue vest | claude-opus-5-5 via Claude Code | none |
+| `83eeff3` | 2026-10-27T17:00:33-0500 | docs: four more experiment logs, smoke tests E to H, and the count now reads fifteen | claude-fable-5-1 via Claude Code | none |
