@@ -35,8 +35,8 @@ ROWS = [
     "Rules packs",
     "Rules",
     "Tests",
-    "Paid model calls",
-    "Dollars metered",
+    "Paid calls to Meta models",
+    "Dollars metered on Meta models",
 ]
 
 
@@ -66,7 +66,8 @@ def test_the_block_has_its_heading_rows_in_order_and_its_two_lines() -> None:
     assert lines[0] == "#### The running count"
     rows = [line.strip("|").split(" | ")[0].strip() for line in lines if line.startswith("| ")]
     assert rows == ["What", *ROWS]
-    assert lines[-2].startswith("Counted by `scripts/tally.py` from this repo")
+    assert lines[-3].startswith("Counted by `scripts/tally.py` from this repo")
+    assert lines[-2].startswith("The meter covers the Meta Model API and Baseten")
     assert lines[-1].endswith("PROVENANCE.md says what the working tooling is.")
 
 
@@ -84,8 +85,8 @@ def test_render_formats_dollars_and_the_run_time() -> None:
         ("public_commits", "public_experiment_logs", "public_design_notes", "rules_packs"), 2
     ) | {"rules": 3, "tests": 4}
     block = tally.render_block(data, public)
-    assert "| Dollars metered | $1,234.50 |" in block
-    assert "last run Tuesday 27 Oct 2026, 19:30 UTC." in block
+    assert "| Dollars metered on Meta models | $1,234.50 |" in block
+    assert "last run Tuesday 27 Oct 2026, 19:30 UTC;" in block
 
 
 def test_check_passes_on_this_repo(git_env) -> None:

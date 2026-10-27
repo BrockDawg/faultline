@@ -56,7 +56,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 36 |
+| Commits in this repo | 38 |
 | Experiment logs published here | 11 |
 | Experiment records in the working repo | 11 |
 | Experiment scripts in the working repo | 106 |
@@ -67,10 +67,11 @@ The car behind runs into the car ahead on the exit of a corner
 | Rules packs | 8 |
 | Rules | 110 |
 | Tests | 114 |
-| Paid model calls | 807 |
-| Dollars metered | $22.82 |
+| Paid calls to Meta models | 807 |
+| Dollars metered on Meta models | $22.82 |
 
 Counted by `scripts/tally.py` from this repo and from the working repo's own count, last run Tuesday 27 Oct 2026, 20:03 UTC; every item is dated at or after the kickoff on 26 Oct 2026.
+The meter covers the Meta Model API and Baseten; Modal GPU time is billed by the hour and the coding tools run on a subscription, so neither is in it.
 The working repo holds the scripts, data and notes behind every experiment, and this repo keeps the logs, the packs and the loader, so it stays small and readable; PROVENANCE.md says what the working tooling is.
 <!-- tally:end -->
 

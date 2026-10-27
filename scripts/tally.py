@@ -148,8 +148,8 @@ def render_block(tally: dict[str, Any], public: dict[str, int]) -> str:
         ("Rules packs", public["rules_packs"]),
         ("Rules", public["rules"]),
         ("Tests", public["tests"]),
-        ("Paid model calls", tally["paid_calls"]),
-        ("Dollars metered", f"${float(tally['paid_dollars']):,.2f}"),
+        ("Paid calls to Meta models", tally["paid_calls"]),
+        ("Dollars metered on Meta models", f"${float(tally['paid_dollars']):,.2f}"),
     )
     lines = ["#### The running count", "", "| What | Count |", "|---|--:|"]
     lines += [f"| {what} | {count} |" for what, count in rows]
@@ -157,6 +157,7 @@ def render_block(tally: dict[str, Any], public: dict[str, int]) -> str:
         "",
         "Counted by `scripts/tally.py` from this repo and from the working repo's own count, "
         f"last run {_when(str(tally['as_of']))}; every item is dated at or after the kickoff on 26 Oct 2026.",
+        "The meter covers the Meta Model API and Baseten; Modal GPU time is billed by the hour and the coding tools run on a subscription, so neither is in it.",
         "The working repo holds the scripts, data and notes behind every experiment, "
         "and this repo keeps the logs, the packs and the loader, so it stays small and readable; "
         "PROVENANCE.md says what the working tooling is.",
