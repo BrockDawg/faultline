@@ -18,3 +18,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `4bc1ee0` | 2026-10-27T00:46:28-0500 | docs: provenance names the task router's Modal tier 1 and the remeasured labels | claude-fable-5-1 via Claude Code | none |
 | `f9e761a` | 2026-10-27T00:46:29-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
 | `b58407e` | 2026-10-27T01:40:51-0500 | docs: the experiment logs, so the work behind the design can be read | claude-fable-5-1 via Claude Code | none |
+| `e63f93c` | 2026-10-27T01:40:51-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
+| `cd115d6` | 2026-10-27T08:08:07-0500 | docs: the README says what faultline is, what is built, what was measured and which Meta models were used | claude-fable-5-1 via Claude Code | none |
