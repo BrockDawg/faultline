@@ -37,3 +37,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `4287148` | 2026-10-27T14:24:04-0500 | docs: the licence appendix names the copyright holder and year | claude-fable-5-1 via Claude Code | none |
 | `af16b17` | 2026-10-27T14:24:05-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
 | `09081af` | 2026-10-27T14:35:27-0500 | docs: a running count of the hackathon work, public and private, rendered from tally.json | claude-opus-5-5 via Claude Code | none |
+| `9c0eb63` | 2026-10-27T14:35:28-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
+| `8d09ff6` | 2026-10-27T15:05:15-0500 | docs: the running count names the working repo, not a private one, and drops its commit count | claude-fable-5-1 via Claude Code | none |
