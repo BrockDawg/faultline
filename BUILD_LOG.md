@@ -33,3 +33,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `f412a3f` | 2026-10-27T14:13:56-0500 | docs: the README reads as a page, with a results table, grouped findings and a repo map table | claude-opus-5-5 via Claude Code | none |
 | `8c51aaf` | 2026-10-27T14:14:02-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
 | `52dedaa` | 2026-10-27T14:15:36-0500 | docs: the README's built line reads 'in this repo today', and the smoke-test rows carry their costs | claude-fable-5-1 via Claude Code | none |
+| `07d0dc4` | 2026-10-27T14:15:37-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
+| `4287148` | 2026-10-27T14:24:04-0500 | docs: the licence appendix names the copyright holder and year | claude-fable-5-1 via Claude Code | none |
