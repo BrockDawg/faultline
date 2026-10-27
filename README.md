@@ -5,6 +5,10 @@ Give it a rules pack and footage, and it says for each rule whether it was follo
 Every output is a ruling: the rule, the offender and the evidence, never tips or statistics.
 It covers two domains today: warehouse forklifts, under OSHA 29 CFR 1910.178 and each site's own rules, and sim-racing leagues on PitBot (pitbot.gg), Brock's league management platform.
 
+![A forklift's forks reach a worker at the edge of a walkway](assets/scenes/warehouse.png)
+
+![The car behind runs into the car ahead on the exit of a corner](assets/scenes/race.png)
+
 ## How it works
 
 ### Rules packs
@@ -116,6 +120,8 @@ The routed bench scored 92.7% (51 of 55), level with sending everything to tier 
 
 ## Meta models used so far
 
+Built with Muse Spark Open.
+
 | Model | Id | Served by | Measured for |
 |---|---|---|---|
 | Muse Spark 1.3 | `muse-spark-1.3` | Meta Model API | rulings from frames, reports and telemetry; router tier 2 until 26 Oct |
@@ -180,6 +186,13 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 - `PROVENANCE_START`: the first hooked commit, where the history check starts.
 - `BUILD_LOG.md`: the dated log of every commit.
 - `pyproject.toml`, `uv.lock`: the project and its locked dev tools.
+- `assets/`: the images, with their notice in `assets/NOTICE.md`.
+- `LICENSE`, `NOTICE`: the Apache License 2.0 and the copyright notice.
+
+## Licence
+
+The code, rules packs and documents are licensed under the [Apache License 2.0](LICENSE).
+The images in `assets/` are not: they are Copyright 2026 Brock Strehle, all rights reserved ([assets/NOTICE.md](assets/NOTICE.md)).
 
 ## Provenance
 

@@ -3,6 +3,8 @@ name = "faultline"
 version = "0.1.0"
 description = "A rules judge: give it a list of rules, it watches incident video and says which rule was broken and by whom."
 readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.12"
 dependencies = []
 

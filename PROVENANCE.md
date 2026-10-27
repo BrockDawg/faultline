@@ -41,10 +41,15 @@ The trailers record the models the build session declared.
 - Pack metadata edited to drop dates and internal file names; no rule text changed.
 - The `forklift-site-rules` pack, four rules a site sets for itself: high-visibility clothing in a truck zone, a spotter when reversing, a set distance from people on foot, and no contact with racking or stock.
 - Five measured experiments on the Meta models, logged under `experiments/`, 26 and 27 Oct.
+- The two scenes in `assets/scenes/`, 27 Oct.
+  Each piece in them (forklift, worker, rack bay, pallet, race car, track corner) was generated on Higgsfield with Nano Banana 2, then vectorized with Ideogram Vector.
+  The pieces were cleaned and composed into the scenes by private scripts written the same day.
+- The licence files `LICENSE` and `NOTICE`, and `assets/NOTICE.md`, 27 Oct.
 
 ## Models used
 
 - Building: `claude-opus-5-5` and `claude-fable-5-1` via Claude Code, on Brock's subscription.
+- Images: Nano Banana 2 (`nano_banana_flash`) and Ideogram Vector (`ideogram_vector`), both on Higgsfield.
 - Measured in the experiments (`experiments/`), before any design: Muse Spark 1.3 (`muse-spark-1.3`), Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten), Muse Wonder 1.0 (`muse-wonder-1.0`), Muse Glimmer (`muse-glimmer:30b`, open weights on Ollama, on this machine and on a Modal L40S), SAM 3.1 (`sam-3.1`) and Muse Voice Transcribe 1.0 (`muse-voice-transcribe-1.0`).
   Llama 3.2 1B (`llama3.2:1b`) was measured as a router tier and dropped.
   The local judge in those experiments is Qwen 2.5 7B (`qwen2.5:7b`), which is not a Meta model and never answers a prompt.
