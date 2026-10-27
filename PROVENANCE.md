@@ -17,7 +17,8 @@ The trailers record the models the build session declared.
 - The task router.
   Pre-existing tooling I'd built, which already routed to Meta models. During the hackathon we extended it to:
   - turn off Muse Glimmer's thinking mode on local calls, so it returns an answer instead of spending its whole budget thinking;
-  - update its training labels.
+  - serve Muse Glimmer from a Modal L40S as tier 1, through the metering proxy, with local Ollama as the fallback;
+  - remeasure its 220 routing labels against Glimmer with a local judge.
 - PitBot (pitbot.gg), Brock's sim-racing league management platform, with its paying leagues.
 - Race telemetry and results data from PitBot leagues.
 - Steward-report video footage and the human steward decisions from PitBot leagues.
@@ -41,5 +42,5 @@ The trailers record the models the build session declared.
 
 ## Models used
 
-- Building: `claude-opus-5-5` via Claude Code, on Brock's subscription.
+- Building: `claude-opus-5-5` and `claude-fable-5-1` via Claude Code, on Brock's subscription.
 - At runtime: Meta models, listed here as each is first used (none yet).
