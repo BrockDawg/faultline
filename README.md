@@ -28,6 +28,7 @@ The car behind runs into the car ahead on the exit of a corner
 **Contents:**
 [Built during the hackathon, and what existed before](#built-during-the-hackathon-and-what-existed-before) ·
 [How it works](#how-it-works) ·
+[Scenes](#scenes) ·
 [What was measured](#what-was-measured) ·
 [Meta models used so far](#meta-models-used-so-far) ·
 [How to run](#how-to-run) ·
@@ -48,7 +49,7 @@ The car behind runs into the car ahead on the exit of a corner
 - The `forklift-site-rules` pack, four rules a site sets for itself.
 - Eleven measured experiments, logged under `experiments/`: eight on the Meta models and three smoke tests run on scripts alone.
 - The forklift scan route design note (`docs/forklift-scan-route.md`).
-- The two scenes in `assets/scenes/`.
+- The nine scenes in `assets/scenes/`.
 - The licence files `LICENSE` and `NOTICE`, and `assets/NOTICE.md`.
 
 <!-- tally:start -->
@@ -143,6 +144,72 @@ In design: the steward model pipeline that reads footage and writes the rulings.
 It is being designed from the measurements below, and no code in this repo calls a model yet.
 
 ---
+
+## Scenes
+
+### The forklift site rules
+
+One scene for each rule in the `forklift-site-rules` pack.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+<img src="assets/scenes/warehouse.png" alt="<code>pedestrian_separation</code>: a forklift's forks reach a worker at the edge of a walkway" width="100%">
+<br>
+<code>pedestrian_separation</code>: a forklift's forks reach a worker at the edge of a walkway
+</td>
+<td width="50%" valign="top">
+<img src="assets/scenes/no-hi-vis-in-truck-zone.png" alt="<code>hi_vis_in_truck_zone</code>: a worker without a vest walks where a forklift works" width="100%">
+<br>
+<code>hi_vis_in_truck_zone</code>: a worker without a vest walks where a forklift works
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<img src="assets/scenes/reversing-without-spotter.png" alt="<code>spotter_when_reversing</code>: a forklift backs towards a worker nobody is watching for" width="100%">
+<br>
+<code>spotter_when_reversing</code>: a forklift backs towards a worker nobody is watching for
+</td>
+<td width="50%" valign="top">
+<img src="assets/scenes/racking-contact.png" alt="<code>structure_contact</code>: a forklift backs its counterweight into a rack upright" width="100%">
+<br>
+<code>structure_contact</code>: a forklift backs its counterweight into a rack upright
+</td>
+</tr>
+</table>
+
+### Other domains
+
+A rules pack is a folder of markdown rules, so the same judge reads any written rule set.
+These are four more places where written rules meet camera footage.
+faultline ships no packs for them.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+<img src="assets/scenes/under-suspended-load.png" alt="Construction, OSHA 29 CFR 1926.1425: a worker stands under a crane's load" width="100%">
+<br>
+Construction, OSHA 29 CFR 1926.1425: a worker stands under a crane's load
+</td>
+<td width="50%" valign="top">
+<img src="assets/scenes/guard-open.png" alt="Factory, OSHA 29 CFR 1910.147: an operator reaches into a press with its guard open and no lockout" width="100%">
+<br>
+Factory, OSHA 29 CFR 1910.147: an operator reaches into a press with its guard open and no lockout
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<img src="assets/scenes/red-light.png" alt="Roads, a state traffic code: a car runs a red light into a cyclist crossing on green" width="100%">
+<br>
+Roads, a state traffic code: a car runs a red light into a cyclist crossing on green
+</td>
+<td width="50%" valign="top">
+<img src="assets/scenes/wing-tip-clearance.png" alt="Airport ramps, the airport's ramp rules: a baggage tug drives inside the wing-tip clearance zone" width="100%">
+<br>
+Airport ramps, the airport's ramp rules: a baggage tug drives inside the wing-tip clearance zone
+</td>
+</tr>
+</table>
 
 ## What was measured
 

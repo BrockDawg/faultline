@@ -42,9 +42,9 @@ The trailers record the models the build session declared.
 - The `forklift-site-rules` pack, four rules a site sets for itself: high-visibility clothing in a truck zone, a spotter when reversing, a set distance from people on foot, and no contact with racking or stock.
 - Eleven measured experiments, logged under `experiments/`, 26 and 27 Oct: eight on the Meta models and three smoke tests run on scripts alone.
 - The forklift scan route design note (`docs/forklift-scan-route.md`), 27 Oct.
-- The two scenes in `assets/scenes/`, 27 Oct.
-  Each piece in them (forklift, worker, rack bay, pallet, race car, track corner) was generated on Higgsfield with Nano Banana 2, then vectorized with Ideogram Vector.
-  The pieces were cleaned and composed into the scenes by private scripts written the same day.
+- The nine scenes in `assets/scenes/`, 27 Oct.
+  Each piece in them was generated on Higgsfield with Nano Banana 2, then vectorized with Ideogram Vector: forklift, worker, rack bay, pallet, race car, CCTV pole, dock door, crane hook with load, scaffold, worker in a harness, barrier set, press with a guard, lockout station, operator, traffic light, saloon car, cyclist, aircraft, baggage tug and marshaller.
+  The pieces were cleaned and composed into the scenes by private scripts written the same day, which also draw the floors, the track and the junction.
 - The licence files `LICENSE` and `NOTICE`, and `assets/NOTICE.md`, 27 Oct.
 
 ## Models used
