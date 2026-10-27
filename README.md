@@ -51,6 +51,30 @@ The car behind runs into the car ahead on the exit of a corner
 - The two scenes in `assets/scenes/`.
 - The licence files `LICENSE` and `NOTICE`, and `assets/NOTICE.md`.
 
+<!-- tally:start -->
+#### The running count
+
+| What | Count |
+|---|--:|
+| Commits in this repo | 32 |
+| Commits in the private tooling | 51 |
+| Experiment logs published here | 11 |
+| Experiment records kept private | 11 |
+| Experiment scripts kept private | 106 |
+| Experiment data files kept private | 413 |
+| Design notes published here | 1 |
+| Design notes kept private | 1 |
+| Build plans kept private | 3 |
+| Rules packs | 8 |
+| Rules | 110 |
+| Tests | 114 |
+| Paid model calls | 807 |
+| Dollars metered | $22.82 |
+
+Counted by `scripts/tally.py` from this repo and from the private tooling's own count, last run Tuesday 27 Oct 2026, 19:34 UTC.
+The private items stay out of this repo to keep it small; PROVENANCE.md says what the private tooling is.
+<!-- tally:end -->
+
 ### Existed before
 
 - The rules-pack format (a folder of markdown rule files plus `pack.json`) and an earlier private loader for it.
@@ -294,6 +318,7 @@ It copies `.githooks/commit-msg` into the clone's hooks folder and sets default 
 The hook fills a missing `Built-With` or `Meta-Models` trailer from those defaults, stamps a missing `Built-On` with the local time, and refuses a commit with a blank trailer or no value to fill one.
 Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 `uv run python scripts/check_provenance.py` checks the trailers over the whole history, and `uv run python scripts/build_log.py --write` regenerates the build log.
+`uv run python scripts/tally.py --write` refreshes the running count from `tally.json`.
 
 ---
 
@@ -305,12 +330,13 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 | [`packs/`](packs/README.md) | The eight rules packs, and the format in [`packs/README.md`](packs/README.md) |
 | [`experiments/`](experiments/README.md) | One log per measured experiment, with an index |
 | [`docs/`](docs/forklift-scan-route.md) | Design notes; [`docs/forklift-scan-route.md`](docs/forklift-scan-route.md) designs the forklift route for long footage with no report |
-| [`tests/`](tests) | Tests for the loader, the shipped packs, the hook, the history check, the build log and the provenance text; `tests/fixtures/` holds two small packs |
-| [`scripts/`](scripts) | The hook installer, the history check and the build-log generator |
+| [`tests/`](tests) | Tests for the loader, the shipped packs, the hook, the history check, the build log, the running count and the provenance text; `tests/fixtures/` holds two small packs |
+| [`scripts/`](scripts) | The hook installer, the history check, the build-log generator and the running-count renderer |
 | [`.githooks/commit-msg`](.githooks/commit-msg) | The provenance hook |
 | [`PROVENANCE.md`](PROVENANCE.md) | What was built during the hackathon, what existed before it, and the models used |
 | [`PROVENANCE_START`](PROVENANCE_START) | The first hooked commit, where the history check starts |
 | [`BUILD_LOG.md`](BUILD_LOG.md) | The dated log of every commit |
+| [`tally.json`](tally.json) | The private tooling's count of the work kept out of this repo, read by `scripts/tally.py` into the running count |
 | [`pyproject.toml`](pyproject.toml), [`uv.lock`](uv.lock) | The project and its locked dev tools |
 | [`assets/`](assets/NOTICE.md) | The images, with their notice in [`assets/NOTICE.md`](assets/NOTICE.md) |
 | [`LICENSE`](LICENSE), [`NOTICE`](NOTICE) | The Apache License 2.0 and the copyright notice |
