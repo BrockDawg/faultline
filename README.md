@@ -32,6 +32,12 @@ After cloning, run `uv run python scripts/install_hooks.py` once.
 It installs the commit hook that stamps each commit with its provenance trailers.
 Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 
+## Experiments
+
+The experiments behind the design are logged in [experiments/](experiments/README.md), one log each with the question, the run, the cost and the finding.
+The capability probe and the steward limits were run before any design, to measure what the Meta models can do.
+The router logs measure the task router that the project's model calls go through.
+
 ## Provenance
 
 [PROVENANCE.md](PROVENANCE.md) says what was built during the hackathon, what existed before it, and which models were used.
