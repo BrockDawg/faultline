@@ -16,3 +16,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `c3b617a` | 2026-10-26T13:29:57-0500 | docs: the task router leads the pre-existing list, with what changed during the hackathon | claude-opus-5-5 via Claude Code | none |
 | `216ce86` | 2026-10-26T13:29:58-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
 | `4bc1ee0` | 2026-10-27T00:46:28-0500 | docs: provenance names the task router's Modal tier 1 and the remeasured labels | claude-fable-5-1 via Claude Code | none |
+| `f9e761a` | 2026-10-27T00:46:29-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
+| `b58407e` | 2026-10-27T01:40:51-0500 | docs: the experiment logs, so the work behind the design can be read | claude-fable-5-1 via Claude Code | none |
