@@ -31,3 +31,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `b2dbeca` | 2026-10-27T14:06:14-0500 | docs: the README's measurements heading drops "before designing" | claude-opus-5-5 via Claude Code | none |
 | `bd3c90a` | 2026-10-27T14:06:19-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
 | `f412a3f` | 2026-10-27T14:13:56-0500 | docs: the README reads as a page, with a results table, grouped findings and a repo map table | claude-opus-5-5 via Claude Code | none |
+| `8c51aaf` | 2026-10-27T14:14:02-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
+| `52dedaa` | 2026-10-27T14:15:36-0500 | docs: the README's built line reads 'in this repo today', and the smoke-test rows carry their costs | claude-fable-5-1 via Claude Code | none |
