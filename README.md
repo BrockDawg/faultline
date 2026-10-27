@@ -56,7 +56,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 34 |
+| Commits in this repo | 36 |
 | Experiment logs published here | 11 |
 | Experiment records in the working repo | 11 |
 | Experiment scripts in the working repo | 106 |
@@ -70,7 +70,7 @@ The car behind runs into the car ahead on the exit of a corner
 | Paid model calls | 807 |
 | Dollars metered | $22.82 |
 
-Counted by `scripts/tally.py` from this repo and from the working repo's own count, last run Tuesday 27 Oct 2026, 20:03 UTC.
+Counted by `scripts/tally.py` from this repo and from the working repo's own count, last run Tuesday 27 Oct 2026, 20:03 UTC; every item is dated at or after the kickoff on 26 Oct 2026.
 The working repo holds the scripts, data and notes behind every experiment, and this repo keeps the logs, the packs and the loader, so it stays small and readable; PROVENANCE.md says what the working tooling is.
 <!-- tally:end -->
 

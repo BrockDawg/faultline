@@ -156,7 +156,7 @@ def render_block(tally: dict[str, Any], public: dict[str, int]) -> str:
     lines += [
         "",
         "Counted by `scripts/tally.py` from this repo and from the working repo's own count, "
-        f"last run {_when(str(tally['as_of']))}.",
+        f"last run {_when(str(tally['as_of']))}; every item is dated at or after the kickoff on 26 Oct 2026.",
         "The working repo holds the scripts, data and notes behind every experiment, "
         "and this repo keeps the logs, the packs and the loader, so it stays small and readable; "
         "PROVENANCE.md says what the working tooling is.",
