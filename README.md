@@ -89,6 +89,38 @@ Can Muse Glimmer on a Modal L40S answer tier 1 at a usable speed, and which of t
 Glimmer answered all 220 prompts from Modal in 14 minutes, where the local GPU takes about 50 s a call.
 The routed bench scored 92.7% (51 of 55), level with sending everything to tier 3, at a list price of $0.82 against $2.37.
 
+**[Identity from two cameras](experiments/2026-10-27-identity-two-cameras/LOG.md), 27 Oct.**
+Does a second camera settle who is who, when Glimmer on Modal reads both streams of one incident?
+Not shown: Glimmer on Modal read the position and lap boxes well enough to locate a crash, but its one cross-camera match has no answer key and it named no culprit.
+The Modal app's 8,192-token context held each camera to 5 frames, and the run used about $0.65 of GPU time.
+
+**[Steward panel](experiments/2026-10-27-steward-panel/LOG.md), 27 Oct.**
+Does a prosecutor, defence and judge panel rule better than one steward call?
+A Spark panel got 3 of 5 verdicts and 3 of 5 roles right against the single call's 2 of 5 and 1 of 5, at 2.4 times the cost; a Spark Open panel got 1 of 5.
+No setup could rule right on the two clips where no frame shows the contact.
+
+**[Smoke test A: closed-set identity](experiments/2026-10-27-smoke-a-closed-set-identity/LOG.md), 27 Oct.**
+Can a closed set of cars near the camera car, from telemetry, pin the other car and correct a misread number?
+The set held the key partner in 10 of 10 scorable cases, with a median of one car at the contact second, and snapped 4 of 4 logged misreads to the right number.
+It ran on scripts alone, with no model and no paid call.
+
+**[Smoke test B: clock strip](experiments/2026-10-27-smoke-b-clock-strip/LOG.md), 27 Oct.**
+Can template matching read the broadcast clock strip with no model, and can the clock fix the video offset?
+TIME and LAP read digit-exact on 17 of 18 strips at 3.13 ms median a crop, and a constancy filter dropped the one wrong read.
+The offset came out at 977.0 on one stream; on the other the solver refused, because its two witnesses disagreed by 139 s.
+
+**[Smoke test C: contact rule](experiments/2026-10-27-smoke-c-contact-rule/LOG.md), 27 Oct.**
+Does a contact rule on SAM masks, behind a shot-cut gate, assert contact only where there was one?
+The gate removed the one false contact on the broadcast clips but misses soft cuts in similar scenery, and the paid track asserted contact at 27.733 s, inside the 27.6-27.9 s truth.
+4 of 5 no-contact windows passed; the failure is a chase view where a car cornering looks like a spin.
+
+**[Smoke test D: forklift locator](experiments/2026-10-27-smoke-d-forklift-locator/LOG.md), 27 Oct.**
+Can a script walk a long warehouse clip with no report and return a short list of active windows, the same way every run?
+On a 421 s shift joined from 28 synthetic clips it found 28 of 28 active spans, raised nothing in the idle gaps, and two runs were byte-identical.
+It finds activity, not breaches: compliant clips raise windows too.
+
+**Design notes:** [the forklift scan route](docs/forklift-scan-route.md) sets out, from these measurements, how scripts find candidate moments in long warehouse footage with no report and a model writes only the ruling.
+
 ### What the measurements settled
 
 - **The moment is found; identity is the hard part.**
@@ -117,6 +149,18 @@ The routed bench scored 92.7% (51 of 55), level with sending everything to tier 
 - **The router's judge checks topic, not correctness.**
   The local 7B judge passed Glimmer on 206 of 220 prompts, so label moves rest on a stricter re-judge (129 of 206 passed) and a second read of each move.
   The router with a tier-3 floor scores 76.4% with 0.0% under-route on the 55 held-out prompts, and only 5 of 55 reached tier 1: it saves money mostly through tier 2.
+- **A closed set of nearby cars pins the other car.**
+  The cars within 8 m of the camera car, from telemetry, held the key partner 10 of 10, and snapping a read to that set corrected 4 of 4 logged misreads.
+- **The clock strip needs no model.**
+  Template matching reads it 17 of 18 at about 3 ms a crop, where local Glimmer took 36 to 600 s a read.
+- **The panel is an appeal tier.**
+  A Spark prosecutor, defence and judge got 3 of 5 verdicts right against the single call's 2 of 5, at 2.4 times the cost, so it runs only where the single call and the human steward disagree.
+- **The shot-cut gate earns its place, and misses soft cuts.**
+  It removed the one false contact on the broadcast clips, but a cut between two shots of similar scenery scores like a steady shot.
+- **A script finds the activity in forklift footage.**
+  On a 421 s shift joined from 28 clips, a script locator found 28 of 28 active spans with nothing in the idle gaps, and two runs were byte-identical.
+- **A second camera has proved nothing yet.**
+  Glimmer on Modal located the crash on both streams, but its one cross-camera match has no answer key.
 
 ## Meta models used so far
 
@@ -137,7 +181,7 @@ A classifier trained on the labelled prompts picks the tier, and Glimmer's label
 The judge is Qwen 2.5 7B (`qwen2.5:7b`), run locally; it is not a Meta model and never answers a prompt.
 
 Every paid call went through a metering proxy that holds the API key and enforces a spend cap, apart from two direct calls to Baseten of well under a cent.
-The probe ledger, shared by the capability probe, the steward limits and Discovery 3, stood at $13.82 of its $20 cap after Discovery 3.
+The probe ledger, shared by the capability probe, the steward limits, Discovery 3 and the steward panel, stood at $13.82 of its $20 cap after Discovery 3 and $16.67 after the steward panel.
 The router ledger stood at $3.3158 after the Glimmer bench, under a $10 cap in code, the only cap on Baseten spend.
 Glimmer on Modal used $2.68 of GPU time, all covered by Modal's $30 starter credits.
 
@@ -179,6 +223,7 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 - `src/faultline/pack.py`: the rules-pack loader.
 - `packs/`: the eight rules packs, and the format in `packs/README.md`.
 - `experiments/`: one log per measured experiment, with an index.
+- `docs/`: design notes; `docs/forklift-scan-route.md` designs the forklift route for long footage with no report.
 - `tests/`: tests for the loader, the shipped packs, the hook, the history check, the build log and the provenance text; `tests/fixtures/` holds two small packs.
 - `scripts/`: the hook installer, the history check and the build-log generator.
 - `.githooks/commit-msg`: the provenance hook.
