@@ -5,7 +5,7 @@ Run from the repo root:  uv run python scripts/tally.py [--write | --check]
 No flag prints the block. --write writes it into README.md between the tally markers.
 --check exits 1 when the block in README.md differs from a fresh render, and 0 when it matches.
 
-The private counts come from tally.json, which the private tooling writes.
+The working-repo counts come from tally.json, which the working repo's own counter writes.
 The public counts are read live from this repo: every commit up to the one before the commit
 that wrote the block (the build log's rule, so later commits never make it stale), the
 experiment logs, the design notes, the rules packs and their rules, and the tests.
@@ -34,7 +34,6 @@ PRIVATE_KEYS = (
     "kickoff",
     "paid_calls",
     "paid_dollars",
-    "private_commits",
     "private_design_notes",
     "private_experiment_files",
     "private_experiment_records",
@@ -139,14 +138,13 @@ def _when(value: str) -> str:
 def render_block(tally: dict[str, Any], public: dict[str, int]) -> str:
     rows = (
         ("Commits in this repo", public["public_commits"]),
-        ("Commits in the private tooling", tally["private_commits"]),
         ("Experiment logs published here", public["public_experiment_logs"]),
-        ("Experiment records kept private", tally["private_experiment_records"]),
-        ("Experiment scripts kept private", tally["private_experiment_scripts"]),
-        ("Experiment data files kept private", tally["private_experiment_files"]),
+        ("Experiment records in the working repo", tally["private_experiment_records"]),
+        ("Experiment scripts in the working repo", tally["private_experiment_scripts"]),
+        ("Experiment data files in the working repo", tally["private_experiment_files"]),
         ("Design notes published here", public["public_design_notes"]),
-        ("Design notes kept private", tally["private_design_notes"]),
-        ("Build plans kept private", tally["build_plans"]),
+        ("Design notes in the working repo", tally["private_design_notes"]),
+        ("Build plans in the working repo", tally["build_plans"]),
         ("Rules packs", public["rules_packs"]),
         ("Rules", public["rules"]),
         ("Tests", public["tests"]),
@@ -157,10 +155,11 @@ def render_block(tally: dict[str, Any], public: dict[str, int]) -> str:
     lines += [f"| {what} | {count} |" for what, count in rows]
     lines += [
         "",
-        "Counted by `scripts/tally.py` from this repo and from the private tooling's own count, "
+        "Counted by `scripts/tally.py` from this repo and from the working repo's own count, "
         f"last run {_when(str(tally['as_of']))}.",
-        "The private items stay out of this repo to keep it small; "
-        "PROVENANCE.md says what the private tooling is.",
+        "The working repo holds the scripts, data and notes behind every experiment, "
+        "and this repo keeps the logs, the packs and the loader, so it stays small and readable; "
+        "PROVENANCE.md says what the working tooling is.",
     ]
     return "\n".join(lines) + "\n"
 

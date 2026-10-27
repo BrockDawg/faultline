@@ -18,7 +18,6 @@ COUNT_KEYS = {
     "build_plans",
     "paid_calls",
     "paid_dollars",
-    "private_commits",
     "private_design_notes",
     "private_experiment_files",
     "private_experiment_records",
@@ -26,14 +25,13 @@ COUNT_KEYS = {
 }
 ROWS = [
     "Commits in this repo",
-    "Commits in the private tooling",
     "Experiment logs published here",
-    "Experiment records kept private",
-    "Experiment scripts kept private",
-    "Experiment data files kept private",
+    "Experiment records in the working repo",
+    "Experiment scripts in the working repo",
+    "Experiment data files in the working repo",
     "Design notes published here",
-    "Design notes kept private",
-    "Build plans kept private",
+    "Design notes in the working repo",
+    "Build plans in the working repo",
     "Rules packs",
     "Rules",
     "Tests",
@@ -69,7 +67,7 @@ def test_the_block_has_its_heading_rows_in_order_and_its_two_lines() -> None:
     rows = [line.strip("|").split(" | ")[0].strip() for line in lines if line.startswith("| ")]
     assert rows == ["What", *ROWS]
     assert lines[-2].startswith("Counted by `scripts/tally.py` from this repo")
-    assert lines[-1].endswith("PROVENANCE.md says what the private tooling is.")
+    assert lines[-1].endswith("PROVENANCE.md says what the working tooling is.")
 
 
 def test_the_block_sits_at_the_end_of_built_during_the_hackathon() -> None:

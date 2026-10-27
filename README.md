@@ -56,23 +56,22 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 32 |
-| Commits in the private tooling | 51 |
+| Commits in this repo | 34 |
 | Experiment logs published here | 11 |
-| Experiment records kept private | 11 |
-| Experiment scripts kept private | 106 |
-| Experiment data files kept private | 413 |
+| Experiment records in the working repo | 11 |
+| Experiment scripts in the working repo | 106 |
+| Experiment data files in the working repo | 413 |
 | Design notes published here | 1 |
-| Design notes kept private | 1 |
-| Build plans kept private | 3 |
+| Design notes in the working repo | 1 |
+| Build plans in the working repo | 3 |
 | Rules packs | 8 |
 | Rules | 110 |
 | Tests | 114 |
 | Paid model calls | 807 |
 | Dollars metered | $22.82 |
 
-Counted by `scripts/tally.py` from this repo and from the private tooling's own count, last run Tuesday 27 Oct 2026, 19:34 UTC.
-The private items stay out of this repo to keep it small; PROVENANCE.md says what the private tooling is.
+Counted by `scripts/tally.py` from this repo and from the working repo's own count, last run Tuesday 27 Oct 2026, 20:03 UTC.
+The working repo holds the scripts, data and notes behind every experiment, and this repo keeps the logs, the packs and the loader, so it stays small and readable; PROVENANCE.md says what the working tooling is.
 <!-- tally:end -->
 
 ### Existed before
