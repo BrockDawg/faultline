@@ -1,7 +1,7 @@
 # Experiments
 
 Each experiment here has one log: the question, how it ran, what it cost, what was found and what was decided.
-Every paid call ran through the metering proxy, under a spend cap, except two sub-cent diagnostic calls noted in the Spark Open log.
+Every paid call ran through the metering proxy, under a spend cap, except two sub-cent test calls noted in the Spark Open log.
 The tooling named in the logs is private and is described in [PROVENANCE.md](../PROVENANCE.md).
 
 | Date | Experiment | Question | Headline figure |

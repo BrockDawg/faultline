@@ -163,7 +163,7 @@ When: 19:03:17 to 19:07:53.
 
 | Step | When | Router ledger |
 |---|---|---|
-| Diagnosis calls (steps 1 and 2) | 18:08 to 18:10 | $0.09 |
+| Checking calls (steps 1 and 2) | 18:08 to 18:10 | $0.09 |
 | First bench attempt, stopped (step 3) | 18:24 to 18:27 | $0.30 |
 | Run A | 18:34 to 19:02 | $2.65 |
 | Run B | 19:03 to 19:07 | $0.26 |

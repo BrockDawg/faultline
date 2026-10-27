@@ -39,8 +39,12 @@ The trailers record the models the build session declared.
 - The provenance hook (`.githooks/commit-msg`), its installer, and the history check (`scripts/check_provenance.py`).
 - The loader in this repo (`src/faultline/pack.py`), rewritten from a written contract during the hackathon.
 - Pack metadata edited to drop dates and internal file names; no rule text changed.
+- Five measured experiments on the Meta models, logged under `experiments/`, 26 and 27 Oct.
 
 ## Models used
 
 - Building: `claude-opus-5-5` and `claude-fable-5-1` via Claude Code, on Brock's subscription.
-- At runtime: Meta models, listed here as each is first used (none yet).
+- Measured in the experiments (`experiments/`), before any design: Muse Spark 1.3 (`muse-spark-1.3`), Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten), Muse Wonder 1.0 (`muse-wonder-1.0`), Muse Glimmer (`muse-glimmer:30b`, open weights on Ollama, on this machine and on a Modal L40S), SAM 3.1 (`sam-3.1`) and Muse Voice Transcribe 1.0 (`muse-voice-transcribe-1.0`).
+  Llama 3.2 1B (`llama3.2:1b`) was measured as a router tier and dropped.
+  The local judge in those experiments is Qwen 2.5 7B (`qwen2.5:7b`), which is not a Meta model and never answers a prompt.
+- At runtime in this repo: Meta models, listed here as each is first used (none yet).
