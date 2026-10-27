@@ -20,3 +20,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `b58407e` | 2026-10-27T01:40:51-0500 | docs: the experiment logs, so the work behind the design can be read | claude-fable-5-1 via Claude Code | none |
 | `e63f93c` | 2026-10-27T01:40:51-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
 | `cd115d6` | 2026-10-27T08:08:07-0500 | docs: the README says what faultline is, what is built, what was measured and which Meta models were used | claude-fable-5-1 via Claude Code | none |
+| `0111faf` | 2026-10-27T08:08:07-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
+| `397e5e4` | 2026-10-27T13:06:00-0500 | packs: a forklift site-rules pack with four rules a site sets for itself | claude-opus-5-5 via Claude Code | none |
