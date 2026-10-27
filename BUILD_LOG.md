@@ -23,4 +23,9 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `0111faf` | 2026-10-27T08:08:07-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
 | `397e5e4` | 2026-10-27T13:06:00-0500 | packs: a forklift site-rules pack with four rules a site sets for itself | claude-opus-5-5 via Claude Code | none |
 | `91be26b` | 2026-10-27T13:06:01-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
+| `a7d0675` | 2026-10-27T13:53:45-0500 | docs: an Apache 2.0 licence for the code, and two scenes whose images stay all rights reserved | claude-opus-5-5 via Claude Code | none |
 | `37182cb` | 2026-10-27T13:55:08-0500 | docs: six more experiment logs, public copies of the 27 Oct measurements | claude-opus-5-5 via Claude Code | none |
+| `0094e24` | 2026-10-27T13:55:17-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
+| `f7b3cb8` | 2026-10-27T13:59:03-0500 | merge: master into the licence and scenes task, keeping both provenance lists | claude-opus-5-5 via Claude Code | none |
+| `7e71d79` | 2026-10-27T14:05:23-0500 | docs: the public copies read as one record, the site pack is present tense, the private pieces say so | claude-opus-5-5 via Claude Code | none |
+| `b2dbeca` | 2026-10-27T14:06:14-0500 | docs: the README's measurements heading drops "before designing" | claude-opus-5-5 via Claude Code | none |
