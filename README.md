@@ -3,7 +3,7 @@
 faultline is a rules-compliance judge for video.
 Give it a rules pack and footage, and it says for each rule whether it was followed and who broke it.
 Every output is a ruling: the rule, the offender and the evidence, never tips or statistics.
-It covers two domains today: warehouse forklifts, under OSHA 29 CFR 1910.178, and sim-racing leagues on PitBot (pitbot.gg), Brock's league management platform.
+It covers two domains today: warehouse forklifts, under OSHA 29 CFR 1910.178 and each site's own rules, and sim-racing leagues on PitBot (pitbot.gg), Brock's league management platform.
 
 ## How it works
 
@@ -42,16 +42,18 @@ Packs flagged `unique_ids_across_domain` may not share a rule id with another fl
 | `forklift-loads-stacking` | `warehouse-forklift` | 7 | OSHA 29 CFR 1910.178 |
 | `forklift-pedestrians-site` | `warehouse-forklift` | 10 | OSHA 29 CFR 1910.178 |
 | `forklift-truck-checks-fuelling` | `warehouse-forklift` | 15 | OSHA 29 CFR 1910.178 |
+| `forklift-site-rules` | `warehouse-forklift` | 4 | Site rules |
 | `oval` | `sim-racing` | 20 | PitBot Rule Library |
 | `road-gt` | `sim-racing` | 21 | PitBot Rule Library |
 | `open-wheel` | `sim-racing` | 19 | PitBot Rule Library |
 
-The sim-racing packs carry `[placeholders]` where each league sets its own values.
-Every forklift rule cites a 1910.178 clause and has an `On video:` line, and the tests check both.
+The site pack holds rules a site sets for itself, and each of its rules says so in its `Source:` line.
+The sim-racing packs and the site pack carry `[placeholders]` where each league or site sets its own values.
+Every forklift rule has an `On video:` line, every OSHA rule cites a 1910.178 clause, and the tests check both.
 
 ### Built, and still in design
 
-Built: the pack format, the loader, the seven packs, their tests and the provenance tooling.
+Built: the pack format, the loader, the eight packs, their tests and the provenance tooling.
 In design: the steward model pipeline that reads footage and writes the rulings.
 It is being designed from the measurements below, and no code in this repo calls a model yet.
 
@@ -169,7 +171,7 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 ## Repo map
 
 - `src/faultline/pack.py`: the rules-pack loader.
-- `packs/`: the seven rules packs, and the format in `packs/README.md`.
+- `packs/`: the eight rules packs, and the format in `packs/README.md`.
 - `experiments/`: one log per measured experiment, with an index.
 - `tests/`: tests for the loader, the shipped packs, the hook, the history check, the build log and the provenance text; `tests/fixtures/` holds two small packs.
 - `scripts/`: the hook installer, the history check and the build-log generator.

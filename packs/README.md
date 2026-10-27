@@ -27,7 +27,7 @@ The rule text, in plain markdown.
 
 ## The packs in this folder
 
-These seven packs existed before the hackathon and come into this repo as data.
+Seven of the eight packs existed before the hackathon and come into this repo as data.
 Their `pack.json` metadata was edited; no rule text was changed.
 
 ### Sim racing
@@ -38,7 +38,14 @@ Their domain is `sim-racing`.
 
 ### Warehouse forklifts
 
-The four `forklift-*` packs cover operating and travel, loads and stacking, pedestrians and site, and truck checks and fuelling.
+Four of the `forklift-*` packs cover operating and travel, loads and stacking, pedestrians and site, and truck checks and fuelling.
 They are based on OSHA 29 CFR 1910.178 (powered industrial trucks), a US federal regulation in the public domain.
 Each rule carries an `On video:` line saying what a breach looks like on incident video, and a `Source:` line naming its clause.
-Their domain is `warehouse-forklift`, and rule ids are unique across the four packs.
+Their domain is `warehouse-forklift`, and rule ids are unique across the five forklift packs.
+
+### Site rules
+
+`forklift-site-rules` was written during the hackathon.
+It holds rules a site sets for itself, and each rule says so in its `Source:` line (`Site rule`).
+Each rule carries an `On video:` line, with `[placeholders]` where a site sets its own values.
+Its domain is `warehouse-forklift`, so its rule ids are unique across all five forklift packs.

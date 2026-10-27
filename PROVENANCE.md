@@ -23,7 +23,7 @@ The trailers record the models the build session declared.
 - Race telemetry and results data from PitBot leagues.
 - Steward-report video footage and the human steward decisions from PitBot leagues.
 - PitBot's Rule Library, the source of the `oval`, `road-gt` and `open-wheel` packs.
-- The four `forklift-*` packs, based on OSHA 29 CFR 1910.178.
+- The four OSHA `forklift-*` packs, based on OSHA 29 CFR 1910.178.
 - The rules-pack format (a folder of markdown rule files plus `pack.json`) and an earlier private loader for it.
 - Brock's development workflows (Claude Code with his own skills and orchestration).
 - Private tooling Brock built, not in this repo:
@@ -39,6 +39,7 @@ The trailers record the models the build session declared.
 - The provenance hook (`.githooks/commit-msg`), its installer, and the history check (`scripts/check_provenance.py`).
 - The loader in this repo (`src/faultline/pack.py`), rewritten from a written contract during the hackathon.
 - Pack metadata edited to drop dates and internal file names; no rule text changed.
+- The `forklift-site-rules` pack, four rules a site sets for itself: high-visibility clothing in a truck zone, a spotter when reversing, a set distance from people on foot, and no contact with racking or stock.
 - Five measured experiments on the Meta models, logged under `experiments/`, 26 and 27 Oct.
 
 ## Models used

@@ -20,9 +20,17 @@ EXPECTED_PACKS = {
     "forklift-loads-stacking",
     "forklift-pedestrians-site",
     "forklift-truck-checks-fuelling",
+    "forklift-site-rules",
 }
 
 FORKLIFT_DOMAIN = "warehouse-forklift"
+SITE_PACK = "forklift-site-rules"
+SITE_RULE_IDS = (
+    "hi_vis_in_truck_zone",
+    "spotter_when_reversing",
+    "pedestrian_separation",
+    "structure_contact",
+)
 YEAR = re.compile(r"\b20\d{2}\b")
 
 
@@ -40,7 +48,7 @@ def _json_strings(value: object) -> list[str]:
     return [str(value)]
 
 
-def test_the_pack_folders_are_exactly_the_seven_declared_packs() -> None:
+def test_the_pack_folders_are_exactly_the_eight_declared_packs() -> None:
     assert {p.name for p in _pack_folders()} == EXPECTED_PACKS
 
 
@@ -50,7 +58,8 @@ def test_every_pack_folder_loads(name: str) -> None:
     assert pack.rules
 
 
-def test_load_packs_loads_all_seven() -> None:
+def test_load_packs_loads_all_eight() -> None:
+    assert len(EXPECTED_PACKS) == 8
     assert len(load_packs(PACKS_ROOT)) == len(EXPECTED_PACKS)
 
 
@@ -58,9 +67,10 @@ def test_domains_are_exactly_sim_racing_and_warehouse_forklift() -> None:
     assert {pack.domain for pack in load_packs(PACKS_ROOT)} == {"sim-racing", FORKLIFT_DOMAIN}
 
 
-def test_forklift_rule_ids_are_unique_across_the_four_packs() -> None:
+def test_forklift_rule_ids_are_unique_across_the_five_packs() -> None:
     packs = load_packs(PACKS_ROOT, domain=FORKLIFT_DOMAIN)
-    assert len(packs) == 4
+    assert len(packs) == 5
+    assert SITE_PACK in {pack.name for pack in packs}
     ids = [rule.id for pack in packs for rule in pack.rules]
     assert len(ids) == len(set(ids))
 
@@ -70,11 +80,18 @@ def test_forklift_packs_opt_in_to_unique_ids_across_domain() -> None:
         assert pack.unique_ids_across_domain is True, pack.name
 
 
-def test_every_forklift_rule_cites_a_1910_178_clause() -> None:
+def test_every_forklift_rule_cites_its_pack_source() -> None:
     for pack in load_packs(PACKS_ROOT, domain=FORKLIFT_DOMAIN):
+        assert pack.source is not None, pack.name
+        is_osha = pack.source.startswith("OSHA")
+        is_site = pack.source.startswith("Site rules")
+        assert is_osha or is_site, f"{pack.name} has an unknown source {pack.source!r}"
         for rule in pack.rules:
             assert rule.source_clause is not None, f"{pack.name}/{rule.id}"
-            assert rule.source_clause.startswith("1910.178("), f"{pack.name}/{rule.id}"
+            if is_osha:
+                assert rule.source_clause.startswith("1910.178("), f"{pack.name}/{rule.id}"
+            else:
+                assert rule.source_clause == "Site rule", f"{pack.name}/{rule.id}"
 
 
 def test_every_forklift_rule_has_an_on_video_line() -> None:
@@ -82,6 +99,14 @@ def test_every_forklift_rule_has_an_on_video_line() -> None:
         for rule in pack.rules:
             lines = rule.text.split("\n")
             assert any(line.startswith("On video:") for line in lines), f"{pack.name}/{rule.id}"
+
+
+def test_the_site_pack_holds_exactly_the_four_site_rules() -> None:
+    pack = load_pack(PACKS_ROOT / SITE_PACK)
+    assert pack.domain == FORKLIFT_DOMAIN
+    assert pack.source == "Site rules, set by each site"
+    assert pack.unique_ids_across_domain is True
+    assert tuple(rule.id for rule in pack.rules) == SITE_RULE_IDS
 
 
 @pytest.mark.parametrize("name", sorted(EXPECTED_PACKS))
