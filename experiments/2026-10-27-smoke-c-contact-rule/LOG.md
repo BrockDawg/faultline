@@ -24,7 +24,7 @@ Pieces 7 and 8 of the deterministic-reads design, a private note not in this rep
 
 The gate earns its place once: on ph10 1684 it removes the assertion born on the 1688.533 cut and the one in the next shot. Four of the four scorable windows pass gated; one fails raw.
 
-## Findings, including the ones that go against the brief
+## Findings, including the ones against the design
 
 1. **The doc's pass mark "no false assertion on the W1-04 windows" is the wrong test.** ph46 holds a real contact (01 into 334, key stop at 1142), so the rule should assert there, and does on the rescue clip. The right scoring is per window against the key, as above.
 2. **A pixel difference cannot find cuts on a panning broadcast.** Steady shots sat at 6 to 8 against 12 to 17 on cuts. The histogram separates the hard cuts (0.106, 0.135, 0.484 against a median of 0.01 to 0.02).
@@ -44,7 +44,6 @@ No cut falls in the window, so the gate had nothing to remove here.
 
 Deviation: SAM's box call found only the purple car (plus a 29 x 12 px sliver), so the second car's box was drawn by hand from `first.jpg` (575,337,705,462) into `pick_ph9.json`. The track script reads a list as a hand-drawn box.
 Which car is #959 and which is #555 was not read: the rule is symmetric in the two cars.
-To run the script, `meta_sam_parser` has to be on the path (`uv run --with meta_sam_parser --with numpy --with pillow`).
 It is not a project dependency.
 
 ## Two more clips (Brock's go; $0.038: ph13 $0.0205, ph9 10-12.5 s $0.0175)
@@ -92,7 +91,7 @@ The corpus has no second clip with a 0.1 s truth sheet. What it holds, by use:
 | ph10 1571-1572 s (report 1) | 44 passes 111 at te 177-178, offset 1394 plus or minus 1; no +4 | weak: already tracked (`r_ph10_1570.0-1573.9`) |
 | ph46 1141-1142 s | contact te 164-165, offset 977 plus or minus 2; +4 pair | weak: already tracked (`r_ph46_1140.0-1142.0`) |
 | ph15 | contact 4134-4135 and 4341.0-4343.5 | no: cockpit view, the camera car is never a mask |
-| the two cockpit streams of experiment 6 | none: no telemetry, a different sim | no |
+| the two cockpit streams of [the two-camera experiment](../2026-10-27-identity-two-cameras/LOG.md) | none: no telemetry, a different sim | no |
 | public steward-stream reviews (83 reviews, 597 spoken labels) | verdicts and spoken times, no telemetry | no: nothing sharper than the reviewer's words |
 
 **ph13 10.5-13.5 s** (picked from `first.jpg`: box 1 is the camera car #44 with its number visible, box 0 a sliver of the other car at the left edge, taken as #26): $0.0205, 90 frames.
@@ -111,7 +110,7 @@ The corpus has no second clip with a 0.1 s truth sheet. What it holds, by use:
   No language model was used anywhere in this task: the shot-cut gate and the rule are code.
 - **Calls:** a box call (`input_image`, prompt "race car", $0.0025) on the first frame of a clip, then a video call (`input_video`, box prompts `<0f>1<|box;x1=..;y1=..;x2=..;y2=..;w=W;h=H|>,2<|box;...|>`, metadata `include_confidence=true`, `propagation_direction=forward`, `store=false`). A video call bills $0.0002 a frame with a 50-frame minimum.
 - **Clip encoding:** ffmpeg 8.1.1 (full build) through `d3lib.encode_clip`, 30 fps, width 1280, crf 20; ph9 has its race-control chat box and driver-name panel blanked (`PH9_CHAT`, `PH9_NAME`).
-- **Parser and tools:** `meta_sam_parser` 0.1.0 (pass `--with meta_sam_parser`), numpy 2.4.6, Python 3.14.3, run with `uv run --offline --with numpy --with pillow --with meta_sam_parser python track_ph9.py`.
+- **Parser and tools:** `meta_sam_parser` 0.1.0 (pass `--with meta_sam_parser`), numpy 2.4.6, Python 3.14.3.
 - **Rule constants:** adjacency 1 px for 3 frames, consequence window 0.5 s, yaw 150 deg/s for 3 frames, velocity jump 3x the median of the last 5 frames and over 120 px/s, reopen to 12 px, mask collapse 40%, area floor 250 px, cut margin 3 frames, cut threshold 0.10 histogram distance (32 bins, overlays blanked).
 - **Call log:** `calls.jsonl` has one line per paid call: time, step, model, proxy, clip, window, prompt, picks, usage, estimated cost, seconds and the ledger total and sequence before and after. The first six lines (ph9, ph13, ph9neg) and ph15a's box call are marked `reconstructed` because they ran before the logger worked; their usage is not captured. The later live lines match the ledger to the cent (ph9n2-n5 tracks: $0.015 each, ledger deltas 0.015).
 - **Spend:** $0.156 in estimates across 20 calls (12 box calls, 8 track calls; 7 of the 20 are marked `reconstructed`), all within the $0.06 per-call cap and the metered budget. The ph9n5 track moved the ledger total from 16.794 to 16.809, and the four ph9n2-n5 tracks are ledger seq 691 to 695.

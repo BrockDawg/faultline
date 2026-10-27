@@ -181,7 +181,7 @@ A classifier trained on the labelled prompts picks the tier, and Glimmer's label
 The judge is Qwen 2.5 7B (`qwen2.5:7b`), run locally; it is not a Meta model and never answers a prompt.
 
 Every paid call went through a metering proxy that holds the API key and enforces a spend cap, apart from two direct calls to Baseten of well under a cent.
-The probe ledger, shared by the capability probe, the steward limits, Discovery 3 and the steward panel, stood at $13.82 of its $20 cap after Discovery 3 and $16.67 after the steward panel.
+The probe ledger, shared by the capability probe, the steward limits, Discovery 3, the steward panel and smoke test C, stood at $13.82 of its $20 cap after Discovery 3 and $16.67 after the steward panel and $16.81 after smoke test C.
 The router ledger stood at $3.3158 after the Glimmer bench, under a $10 cap in code, the only cap on Baseten spend.
 Glimmer on Modal used $2.68 of GPU time, all covered by Modal's $30 starter credits.
 

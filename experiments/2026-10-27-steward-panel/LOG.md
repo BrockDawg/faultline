@@ -1,4 +1,4 @@
-# Experiment 7: the steward panel (27 Oct 2026)
+# The steward panel (27 Oct 2026)
 
 ## Question
 

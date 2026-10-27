@@ -1,4 +1,4 @@
-# Experiment 6: identity from two cameras
+# Identity from two cameras
 
 Date: 27 Oct 2026.
 Question: does a second camera settle who is who, when Glimmer on Modal reads both streams of one incident?
@@ -16,6 +16,7 @@ The running-order panel is masked before any frame leaves the machine, because i
 
 The POS box and the LAP box of stream b were cropped every 20 s and read by Glimmer on Modal.
 283 reads, 0 failed calls, 11.3 minutes, 36 of 287 rows did not parse.
+The raw rows were not kept, so 283 against 287 cannot be reconciled here.
 A spot check against a real frame (b at 2183.5 s: POS 2 of 16, lap 40, stage lap 8) was right.
 22 windows showed b losing two or more places in 20 s.
 Stream a was read at the same 22 windows.

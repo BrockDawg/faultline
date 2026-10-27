@@ -11,7 +11,6 @@ Scripts only: OpenCV and NumPy, no model, no network, $0.
 - `strip_read.py` reads a crop: flag by median colour, LAP and TIME by finding the ink clusters and tiling each with templates (normalised cross-correlation, dynamic programme over left edge and glyph).
 - `offset_solver.py` holds the constancy filter and the offset solver (TIME witness, LAP witness, refusal when they disagree by more than 2 s).
 - `score_smoke.py` scores the reads against the eye reads; `run_smoke.py` runs everything and writes `results/results.json`.
-- Run: `uv run --with opencv-python-headless --with numpy python run_smoke.py <crops_dir> results`.
 
 ## Result
 
@@ -40,7 +39,7 @@ The strict pass mark (18 of 18) is not met: one TIME and one LAP are wrong or em
 - ph46 is held out: none of its 10 crops fed a template, so its 8 strips are a transfer test from one track to another.
 - The 9 has two real templates (from the two `L9` lap crops) plus three derived by turning each 6 half a turn (this changed no read).
 - ph10's own TIME never shows a 9, so no TIME 9 was ever cut from the same strip; that is the one gap.
-- The brief said three crops; four to ten were needed because ten glyph classes had to be covered, and the 9 needed the lap font.
+- Three crops were expected; four to ten were needed because ten glyph classes had to be covered, and the 9 needed the lap font.
 - Half-pixel phase copies of every template made it worse (15 of 18), so they are not in.
 
 ## Findings

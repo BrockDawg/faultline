@@ -4,9 +4,8 @@ This note designs the forklift route of the steward in scan mode.
 The input is long footage from one fixed warehouse camera, with no incident report.
 The output is a list of rulings for a review dashboard, each with its rule, its offender and its evidence window.
 Scripts find the candidate moments and measure what happened; a model is used only where pixels need perception (people and trucks) or judgement (the ruling text).
-It reuses five ideas from the steward's racing route: an entry roster of who took part, a closed set of the few candidates near an incident, a shot-cut gate, a leak lint on everything that leaves the machine, and a read ledger that records every model read once.
+It reuses five ideas from the steward's racing route (the deterministic-reads design, a private note not in this repo): an entry roster of who took part, a closed set of the few candidates near an incident, a shot-cut gate, a leak lint on everything that leaves the machine, and a read ledger that records every model read once.
 Three racing designs are its starting points and are extended here: a floor homography with zone polygons, a hi-vis colour rule, and a painted-number read snapped to a roster.
-It is a design note, not a build plan.
 
 ## Why this route exists
 
@@ -15,7 +14,7 @@ The steward scans long footage, finds what nobody reported, and a site that show
 Every scan produces a list of identified incidents, and each one is a ruling: rule, offender, evidence window.
 A dashboard shows the list; the insurer confirms or denies each incident; management can dispute any of them; the insurer has the final say.
 Each human decision is a label that feeds an agreement measurement.
-Output is always rulings, never tips or statistics, though a tally of rulings is fine.
+Every output is a ruling.
 Hi-vis vest and spotter checks are a required capability even though they are site rules, not OSHA clauses.
 A truck is identified by the fleet number painted on it, matched to the site's fleet roster (one entry id per truck), never by faces.
 People are never identified: a person is only "a person" with a position.
@@ -34,9 +33,10 @@ People are never identified: a person is only "a person" with a position.
 - **Reproducible by construction:** scripts are deterministic; every model read is recorded once in the read ledger, keyed by the SHA-256 of model id, version, parameters and input bytes, and replayed from there on every rerun.
 - **Paid calls only on Brock's go**, through the metering proxy.
 
-## What is on disk to test against
+## The synthetic clips tested against
 
 The synthetic clips are AI-made (Kling 3.0 Turbo, one Seedance clip), 5 s each, 1280 × 720 at 24 fps, and each carries an AI-generated audio track.
+They are kept out of this repo.
 The folder name is the label.
 Measured on 27 Oct, 16 of them are single, fixed-camera clips, and they are the test set for this route.
 
@@ -64,7 +64,7 @@ Earlier measurements that shape this design:
 
 ## 1. Rule by rule: what pixels can judge
 
-There are 46 forklift rules in the four packs, plus two site rules that do not exist in any pack yet.
+There are 46 forklift rules in the four OSHA packs and 4 in `forklift-site-rules`.
 "Scan" means a script can raise a candidate on its own; "window" means the rule is judged only inside a window that another rule's signal raised; "out" means no camera can judge it in scan mode, and the table names the evidence source that can.
 Measurable from pixels deterministically: **yes** (a script can measure it on a calibrated fixed camera), **partly** (a script raises the candidate and judgement settles it), **no**.
 The model column names the perception model needed; the ruling call itself is always a model and is not repeated there.
@@ -139,24 +139,23 @@ They stay in the pack so a window raised by another rule can cite one when a cle
 | `battery_top_clear` | no | battery-room procedures |
 | `electrolyte_mixing` | no | battery-room procedures and equipment register |
 
-### Site rules that need a pack (required capability)
+### The site rules pack
 
-Vests and spotters are not in the four packs, so the scan has nothing to cite yet.
-A fifth pack, for example `forklift-site-rules`, would hold them with the site as the source.
+Vests, spotters, pedestrian separation and structure contact are not in the four OSHA packs, so the `forklift-site-rules` pack holds them with the site as the source.
 
-| Proposed rule id | Measurable | Signals | Model for perception | Route |
+| Rule id | Measurable | Signals | Model for perception | Route |
 |---|---|---|---|---|
 | `hi_vis_in_truck_zone` | yes | person inside a truck-operating zone, torso colour test (piece 7), three states: vested, unvested, unknown | person detector | scan |
 | `spotter_when_reversing` | partly | truck reversing (travel against its fork end) where the site requires a spotter (blind zone, dock, or a load that blocks view), a vested person near the rear path | person and truck detectors, forks mask | scan |
+| `pedestrian_separation` | partly | person footpoint to truck footprint distance in floor metres (piece 8) | person and truck detectors | scan |
+| `structure_contact` | yes | truck or load mask meets a drawn structure zone with a consequence within 0.5 s (piece 13) | truck mask from SAM | scan |
 
-Two more site rules are worth Brock's decision, because the collision clips need something to cite: `pedestrian_separation` (a site distance between a moving truck and a person; the experiments' W2 used 3 m) and `structure_contact` (any contact between a truck and racking, uprights, guards or stacked stock; the experiments' W3).
 The OSHA packs reach these only indirectly, through `travel_speed` ("cannot stop before ... object") and `long_or_high_loads` ("hits racking").
-A trap to handle before adding the pack: `tests/test_packs.py` checks that every rule in the `warehouse-forklift` domain cites a `1910.178(` clause, so a site pack in that domain fails the test until the test allows a site source for packs that declare one.
-Both are now done in this repo: the four rules are the `forklift-site-rules` pack, and the test allows a pack whose source is the site.
+The pack test accepts a site source, so these rules carry `Source: Site rule`.
 
 ### Summary of scope
 
-- **Scan (a script raises candidates):** 26 rules, plus the two site rules.
+- **Scan (a script raises candidates):** 26 rules, plus the four site rules.
 - **Window only (judged when another rule's window shows it):** `watch_travel_path`, `limbs_inside_truck`, `forks_fully_under`, `no_forward_tilt_when_raised`, and the horn half of `slow_and_horn_at_cross_aisles`.
 - **Out of scope for video:** `yield_to_emergency_vehicles` and all 15 rules of `forklift-truck-checks-fuelling` in scan mode, plus the weight half of `rated_capacity` and the chocks half of `trailer_secured`; their evidence is checklists, telematics, maintenance and charger records.
 
@@ -342,7 +341,7 @@ Every piece costs $0 to run apart from the SAM 3.1 frames in piece 3 and the rul
 
 ### 8. Proximity and geometry signals
 
-- **Rules served:** `no_driving_at_trapped_person`, `no_one_under_forks`, `no_riders`, `dock_edge_distance`, `rail_track_crossing`, `fire_access_clear`, and the proposed `pedestrian_separation`.
+- **Rules served:** `no_driving_at_trapped_person`, `no_one_under_forks`, `no_riders`, `dock_edge_distance`, `rail_track_crossing`, `fire_access_clear`, and `pedestrian_separation`.
 - **How it works:**
   In floor metres: the minimum distance from each person's footpoint to the truck's projected footprint (the mask's floor contact edge, not its box), the closing speed, and the time to contact.
   A person counts as "against a fixed object" when inside the margin zone along a racking face or wall while the truck closes on them.
@@ -390,9 +389,9 @@ Every piece costs $0 to run apart from the SAM 3.1 frames in piece 3 and the rul
   The leak lint refuses any outgoing string or file name that holds a source filename, a folder label, a label word (compliant, no_vest, no_spotter, collision, near_miss, speeding) or a URL.
   No face crop is ever stored.
 - **Why it is reproducible:** a hash, a deny list and a fixed blur.
-- **How to measure it:** on the W1-15 request texts on disk, the lint flags 20 of 20 filename prompts and 0 of 20 opaque ones, and every person in every pack frame is blurred.
+- **How to measure it:** on the W1-15 request texts, the lint flags 20 of 20 filename prompts and 0 of 20 opaque ones, and every person in every pack frame is blurred.
 - **Cost:** $0; 3-4 hours.
-- **Smoke:** run the lint's patterns over the saved W1-15 request texts, with and without the filename, and count hits per pass.
+- **Smoke:** run the lint's patterns over the W1-15 request texts, with and without the filename, and count hits per pass.
 
 ### 12. Ruling contract and post-checks
 
@@ -410,7 +409,7 @@ Every piece costs $0 to run apart from the SAM 3.1 frames in piece 3 and the rul
 
 ### 13. Structure contact by mask gap and consequence
 
-- **Rules served:** the proposed `structure_contact`, `overhead_clearance`, `long_or_high_loads`, `travel_speed`.
+- **Rules served:** `structure_contact`, `overhead_clearance`, `long_or_high_loads`, `travel_speed`.
 - **How it works:** this extends the racing route's contact rule ([smoke test C](../experiments/2026-10-27-smoke-c-contact-rule/LOG.md)) to structures.
   Racking faces, uprights, guards and columns are drawn once per camera as zones, because SAM's nouns for them failed (F2); the truck and load masks come from the ledger.
   Contact is stated when the mask meets the structure zone (a gap of 1 px or less) inside one segment and a consequence follows within 0.5 s: pixels inside the structure zone change (the upright shifts), a falling blob appears, or the truck stops abruptly.
@@ -506,7 +505,6 @@ Every human decision is a label against the system's ruling.
 - Each with its count, split per rule id, per truck entry id and per camera.
 - **Measured against model:** where the measured verdict and the model's verdict differed, how often the final outcome sided with each.
 
-These are tallies of rulings, not advice.
 For the demo, one SQLite file holds both tables, the list page plays each window from its frames, and a role switch stands in for real accounts.
 
 ## 5. Risks and traps
@@ -573,7 +571,7 @@ The site pack for vests and spotters is decided and built, and the pack test all
 ### The smoke test that proves the scan locator today
 
 Measured on 27 Oct at $0, with ffmpeg 8.1.1, numpy and scipy only.
-The smoke scripts live with the experiment record for [smoke test D](../experiments/2026-10-27-smoke-d-forklift-locator/LOG.md).
+The smoke scripts are private and not in this repo; the run is logged as [smoke test D](../experiments/2026-10-27-smoke-d-forklift-locator/LOG.md).
 
 - **Build:** 28 single-view clips (the 16 fixed-camera clips plus the 12 moving-camera ones, so that the gate is tested too), shuffled with a fixed seed, each preceded by 10 s of its own first frame frozen with temporal noise (`noise=alls=6:allf=t`) to stand in for an idle camera, scaled to 640 × 360, with audio and metadata stripped, joined into one 421.2 s file with an opaque name.
   The label manifest was written to a separate file that the locator never reads.
