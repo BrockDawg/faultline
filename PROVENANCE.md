@@ -32,6 +32,7 @@ The trailers record the models the build session declared.
   - a capability probe for vision models, including a contact detector built on SAM;
   - a metering proxy that holds the API key and enforces spend caps;
   - a corpus scraper for steward footage and comments.
+- The synthetic forklift clips the smoke tests ran against, 47 short AI-made videos generated on Higgsfield with Kling 3.0 Turbo, a few of them with Seedance; they stay out of this repo.
 
 ## Built during the hackathon
 
@@ -40,7 +41,7 @@ The trailers record the models the build session declared.
 - The loader in this repo (`src/faultline/pack.py`), rewritten from a written contract during the hackathon.
 - Pack metadata edited to drop dates and internal file names; no rule text changed.
 - The `forklift-site-rules` pack, four rules a site sets for itself: high-visibility clothing in a truck zone, a spotter when reversing, a set distance from people on foot, and no contact with racking or stock.
-- Eleven measured experiments, logged under `experiments/`, 26 and 27 Oct: eight on the Meta models and three smoke tests run on scripts alone.
+- Fifteen measured experiments, logged under `experiments/`, 26 and 27 Oct: seven model experiments and eight smoke tests of the scripted pieces, four of them on scripts alone, three with SAM masks or tracks, and one with a pinned Meta person detector and six Spark Open calls.
 - The forklift scan route design note (`docs/forklift-scan-route.md`), 27 Oct.
 - The nine scenes in `assets/scenes/`, 27 Oct.
   Each piece in them was generated on Higgsfield with Nano Banana 2, then vectorized with Ideogram Vector: forklift, worker, rack bay, pallet, race car, CCTV pole, dock door, crane hook with load, scaffold, worker in a harness, barrier set, press with a guard, lockout station, operator, traffic light, saloon car, cyclist, aircraft, baggage tug and marshaller.

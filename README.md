@@ -47,7 +47,7 @@ The car behind runs into the car ahead on the exit of a corner
 - The loader in this repo (`src/faultline/pack.py`), rewritten from a written contract during the hackathon.
 - Pack metadata edited to drop dates and internal file names; no rule text changed.
 - The `forklift-site-rules` pack, four rules a site sets for itself.
-- Eleven measured experiments, logged under `experiments/`: eight on the Meta models and three smoke tests run on scripts alone.
+- Fifteen measured experiments, logged under `experiments/`: seven model experiments and eight smoke tests of the scripted pieces, four of them on scripts alone, three with SAM masks or tracks, and one with a pinned Meta person detector and six Spark Open calls.
 - The forklift scan route design note (`docs/forklift-scan-route.md`).
 - The nine scenes in `assets/scenes/`.
 - The licence files `LICENSE` and `NOTICE`, and `assets/NOTICE.md`.
@@ -57,21 +57,21 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 38 |
-| Experiment logs published here | 11 |
-| Experiment records in the working repo | 11 |
-| Experiment scripts in the working repo | 106 |
-| Experiment data files in the working repo | 413 |
+| Commits in this repo | 42 |
+| Experiment logs published here | 15 |
+| Experiment records in the working repo | 16 |
+| Experiment scripts in the working repo | 124 |
+| Experiment data files in the working repo | 521 |
 | Design notes published here | 1 |
 | Design notes in the working repo | 1 |
 | Build plans in the working repo | 3 |
 | Rules packs | 8 |
 | Rules | 110 |
 | Tests | 114 |
-| Paid calls to Meta models | 807 |
-| Dollars metered on Meta models | $22.82 |
+| Paid calls to Meta models | 839 |
+| Dollars metered on Meta models | $23.15 |
 
-Counted by `scripts/tally.py` from this repo and from the working repo's own count, last run Tuesday 27 Oct 2026, 20:03 UTC; every item is dated at or after the kickoff on 26 Oct 2026.
+Counted by `scripts/tally.py` from this repo and from the working repo's own count, last run Tuesday 27 Oct 2026, 21:48 UTC; every item is dated at or after the kickoff on 26 Oct 2026.
 The meter covers the Meta Model API and Baseten; Modal GPU time is billed by the hour and the coding tools run on a subscription, so neither is in it.
 The working repo holds the scripts, data and notes behind every experiment, and this repo keeps the logs, the packs and the loader, so it stays small and readable; PROVENANCE.md says what the working tooling is.
 <!-- tally:end -->
@@ -229,6 +229,10 @@ Each experiment has one log with the question, the run, the cost, the findings a
 | [Smoke test B: clock strip](experiments/2026-10-27-smoke-b-clock-strip/LOG.md) | Can template matching read the clock? | TIME and LAP digit-exact on 17 of 18 strips at 3.13 ms median a crop; offset 977.0 on one stream, refused on the other | $0 |
 | [Smoke test C: contact rule](experiments/2026-10-27-smoke-c-contact-rule/LOG.md) | Is contact asserted only on contact? | Contact asserted at 27.733 s, inside the 27.6-27.9 s truth; 4 of 5 no-contact windows passed | $0.156 of SAM |
 | [Smoke test D: forklift locator](experiments/2026-10-27-smoke-d-forklift-locator/LOG.md) | Can a script find forklift activity? | 28 of 28 active spans on a 421 s shift, nothing in the idle gaps, two byte-identical runs | $0 |
+| [Smoke test E: hi-vis colour rule](experiments/2026-10-27-smoke-e-hi-vis/LOG.md) | Can colour alone read a vest? | Fixed camera: 0 of 9 vested read unvested, 4 of 4 unvested found; moving camera: one washed-out vest read unvested, a fail | $0 |
+| [Smoke test F: reversing and spotter](experiments/2026-10-27-smoke-f-reversing-spotter/LOG.md) | Can a script read reversing and a spotter? | 2 of 3 clips met the mark; the "reversing with a spotter" clip shows forward travel | $0.04 of SAM |
+| [Smoke test G: structure contact](experiments/2026-10-27-smoke-g-structure-contact/LOG.md) | Does a mask gap to a structure find contact? | Fails both readings of the mark: an image-plane gap is not contact, 3 of 5 compliant clips read "touched" | $0.146 of SAM |
+| [Smoke test H: detector and one ruling](experiments/2026-10-27-smoke-h-detector-ruling/LOG.md) | Does a pinned detector count people, and does one ruling call rule right? | Detector 15 of 16; ruling mark not met: 2 of 3 compliant windows falsely breached, 2 of 3 breach windows hit the token ceiling | $0.1413 of Spark Open |
 
 **[Capability probe](experiments/2026-10-26-capability-probe/LOG.md), 26 Oct.**
 What can Meta's models do on each candidate steward feature?
@@ -283,6 +287,29 @@ Can a script walk a long warehouse clip with no report and return a short list o
 On a 421 s shift joined from 28 synthetic clips it found 28 of 28 active spans, raised nothing in the idle gaps, and two runs were byte-identical.
 It finds activity, not breaches: compliant clips raise windows too.
 
+**[Smoke test E: hi-vis colour rule](experiments/2026-10-27-smoke-e-hi-vis/LOG.md), 27 Oct.**
+Can a script read a person's vest from colour alone, in three states, without ever calling a vested person unvested?
+On the 16 fixed-camera clips, with a background mask and thresholds fixed before the run, 0 of 9 vested people read unvested and 4 of 4 unvested people were found.
+On 19 moving-camera clips, read from the box alone, one pale vest washed out by distance and blur read unvested, which fails the mark, and no single threshold change fixes it.
+Two drivers would have read unvested behind the cab frame, so the driver must be excluded before the colour test.
+
+**[Smoke test F: reversing and spotter](experiments/2026-10-27-smoke-f-reversing-spotter/LOG.md), 27 Oct.**
+Can a script read reversing travel from truck and fork-end boxes, and a spotter in the rear cone, on one fixed camera?
+2 of 3 clips met the mark, on hand boxes and on SAM boxes alike, and two runs were byte-identical.
+The clip labelled "reversing with a spotter" shows the truck travelling toward its mast, which is forward, so the label does not match the footage.
+It cost $0.04 of SAM.
+
+**[Smoke test G: structure contact](experiments/2026-10-27-smoke-g-structure-contact/LOG.md), 27 Oct.**
+Does a SAM mask gap to a drawn structure zone, plus a visible consequence, assert contact only on the collision clips?
+It fails under both readings of the mark: a mast or a far truck in front of a rack reads a 0 px gap in the image, so 3 of 5 compliant clips read "touched, no visible consequence", and with a consequence required the upright bump is missed.
+Contact has to be measured on the floor plane, not as mask overlap in the image; it cost $0.146 of SAM.
+
+**[Smoke test H: detector and one ruling](experiments/2026-10-27-smoke-h-detector-ruling/LOG.md), 27 Oct.**
+Does a pinned DETR person detector count people right, and does one Spark Open call per window rule under the right rule?
+The detector counted 15 of 16 clips right with the driver rule, and two runs were byte-identical.
+The ruling did not meet its mark: 2 of 3 compliant windows got a false separation breach from an eyeballed distance, and 2 of 3 breach windows ran out at the 6,000-token ceiling with no ruling.
+The six calls cost $0.1413 of Spark Open.
+
 **Design notes:** [the forklift scan route](docs/forklift-scan-route.md) sets out, from these measurements, how scripts find candidate moments in long warehouse footage with no report and a model writes only the ruling.
 
 ### What the measurements settled
@@ -314,6 +341,12 @@ It finds activity, not breaches: compliant clips raise windows too.
   It removed the one false contact on the broadcast clips, but a cut between two shots of similar scenery scores like a steady shot.
 - **A script finds the activity in forklift footage.**
   On a 421 s shift joined from 28 clips, a script locator found 28 of 28 active spans with nothing in the idle gaps, and two runs were byte-identical.
+- **A gap in the image is not contact.**
+  A mast or a far truck in front of a rack reads a 0 px mask gap, so 3 of 5 compliant forklift clips read "touched"; structure contact has to be measured on the floor plane.
+- **The hi-vis colour rule met its mark on a fixed camera (hand boxes, one frame a clip), not on a moving one.**
+  On 16 fixed-camera clips no vested person read unvested and 4 of 4 unvested people were found; on a moving camera one washed-out vest read unvested.
+- **A synthetic clip's label can be wrong.**
+  The clip labelled "reversing with a spotter" shows the truck travelling forward, by hand boxes, SAM boxes and block-matched motion alike.
 
 #### Models, output and cost
 
@@ -326,6 +359,8 @@ It finds activity, not breaches: compliant clips raise windows too.
 - **Minimal reasoning effort is the triage setting**: same or better rulings, 0.27 of the output, valid JSON every time.
 - **Stated confidence carries no signal yet.**
   Spark got 5 of 10 rulings right and said 0.9 on a wrong call.
+- **A distance rule without a measured distance gives confident false breaches.**
+  Spark Open judged "about 1 m" with no scale in the frames and ruled 2 of 3 compliant forklift windows a separation breach, so the measured floor distance goes into the ruling or the rule stays out of it.
 - **A filename can leak the answer.**
   Spark Open scored 19 of 20 on forklift clips with the filename, which names the label, in the prompt, and 11 of 20 with an opaque case reference.
 - **The router's judge checks topic, not correctness.**
