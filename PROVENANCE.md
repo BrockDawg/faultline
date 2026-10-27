@@ -40,7 +40,8 @@ The trailers record the models the build session declared.
 - The loader in this repo (`src/faultline/pack.py`), rewritten from a written contract during the hackathon.
 - Pack metadata edited to drop dates and internal file names; no rule text changed.
 - The `forklift-site-rules` pack, four rules a site sets for itself: high-visibility clothing in a truck zone, a spotter when reversing, a set distance from people on foot, and no contact with racking or stock.
-- Five measured experiments on the Meta models, logged under `experiments/`, 26 and 27 Oct.
+- Eleven measured experiments, logged under `experiments/`, 26 and 27 Oct: eight on the Meta models and three smoke tests run on scripts alone.
+- The forklift scan route design note (`docs/forklift-scan-route.md`), 27 Oct.
 
 ## Models used
 
