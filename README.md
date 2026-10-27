@@ -61,7 +61,7 @@ Built: the pack format, the loader, the eight packs, their tests and the provena
 In design: the steward model pipeline that reads footage and writes the rulings.
 It is being designed from the measurements below, and no code in this repo calls a model yet.
 
-## What was measured before designing
+## What was measured
 
 Before designing the steward, we measured what Meta's models can and cannot do on real league footage, with real driver reports and human steward decisions as the answer key.
 Each experiment has one log with the question, the run, the cost, the findings and the decision; the index is [experiments/README.md](experiments/README.md).
