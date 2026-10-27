@@ -41,3 +41,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `8d09ff6` | 2026-10-27T15:05:15-0500 | docs: the running count names the working repo, not a private one, and drops its commit count | claude-fable-5-1 via Claude Code | none |
 | `84293e0` | 2026-10-27T15:05:15-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
 | `af15fd8` | 2026-10-27T15:08:37-0500 | docs: the running count says every item is dated at or after kickoff | claude-fable-5-1 via Claude Code | none |
+| `706c13b` | 2026-10-27T15:08:38-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
+| `1734c19` | 2026-10-27T15:12:17-0500 | docs: the running count names the Meta meter, and says what the meter does not cover | claude-fable-5-1 via Claude Code | none |
