@@ -57,7 +57,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 46 |
+| Commits in this repo | 47 |
 | Experiment logs published here | 16 |
 | Experiment records in the working repo | 16 |
 | Experiment scripts in the working repo | 124 |
@@ -67,7 +67,7 @@ The car behind runs into the car ahead on the exit of a corner
 | Build plans in the working repo | 3 |
 | Rules packs | 8 |
 | Rules | 110 |
-| Tests | 232 |
+| Tests | 362 |
 | Paid calls to Meta models | 839 |
 | Dollars metered on Meta models | $23.15 |
 

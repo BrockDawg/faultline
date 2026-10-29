@@ -50,3 +50,4 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `8eaf9eb` | 2026-10-27T17:00:33-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
 | `b178f8a` | 2026-10-28T16:02:56-0500 | docs: the design brief, graded three times and decided by Brock on 28 Oct | Claude Code (Claude Fable 5.1) | none |
 | `3f997bb` | 2026-10-29T16:23:33-0500 | racing: pre-registration for the combined racing judge | claude-opus-5-5 via Claude Code | none |
+| `5508efe` | 2026-10-29T16:40:46-0500 | racing: the core every data source shares | claude-opus-5-5 via Claude Code | none |

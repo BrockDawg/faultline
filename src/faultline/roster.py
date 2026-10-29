@@ -174,8 +174,8 @@ def closed_set(
                     best_near[other] = (gap, te, fnum, signed)
 
     out: list[Candidate] = []
-    for fnum, gap in best_focus.items():
-        closest = None if gap is None else round(gap, 1)
+    for fnum, best in best_focus.items():
+        closest = None if best is None else round(best, 1)
         out.append(Candidate(fnum, closest, "focus", WHY_FOCUS))
     for other, (gap, _te, _fnum, signed) in best_near.items():
         if signed > 0:
