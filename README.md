@@ -57,12 +57,12 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 42 |
-| Experiment logs published here | 15 |
+| Commits in this repo | 45 |
+| Experiment logs published here | 16 |
 | Experiment records in the working repo | 16 |
 | Experiment scripts in the working repo | 124 |
 | Experiment data files in the working repo | 521 |
-| Design notes published here | 1 |
+| Design notes published here | 2 |
 | Design notes in the working repo | 1 |
 | Build plans in the working repo | 3 |
 | Rules packs | 8 |
