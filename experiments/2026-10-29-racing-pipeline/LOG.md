@@ -135,7 +135,7 @@ The pre-registration above is not edited; the rule for mark 4 is applied as word
 
 ### The confirmed truth
 
-Brock handed the truth calls to Glitch's picks after a frame check of the broadcast on 29 Oct.
+The truth calls come from a frame check of the broadcast on 29 Oct, and Brock accepted them.
 Every row below is recorded as confirmed by Brock on that basis.
 Car numbers are sim numbers in the session.
 
