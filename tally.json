@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-10-27T21:48:40+00:00",
-  "build_plans": 3,
+  "as_of": "2026-10-29T23:43:45+00:00",
+  "build_plans": 5,
   "kickoff": "2026-10-26T16:00:00+00:00",
-  "paid_calls": 839,
-  "paid_dollars": 23.15,
-  "private_design_notes": 1,
-  "private_experiment_files": 521,
-  "private_experiment_records": 16,
-  "private_experiment_scripts": 124
+  "paid_calls": 4552,
+  "paid_dollars": 78.61,
+  "private_design_notes": 8,
+  "private_experiment_files": 669,
+  "private_experiment_records": 36,
+  "private_experiment_scripts": 215
 }

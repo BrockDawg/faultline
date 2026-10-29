@@ -3,7 +3,7 @@
 [![Licence: Apache-2.0](https://img.shields.io/badge/licence-Apache--2.0-blue)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)](pyproject.toml)
 [![8 rules packs](https://img.shields.io/badge/rules%20packs-8-blue)](packs/README.md)
-[![11 experiments](https://img.shields.io/badge/experiments-11-blue)](experiments/README.md)
+[![36 experiments](https://img.shields.io/badge/experiments-36-blue)](experiments/README.md)
 
 faultline is a rules-compliance judge for video.
 Give it a rules pack and footage, and it says for each rule whether it was followed and who broke it.
@@ -47,7 +47,8 @@ The car behind runs into the car ahead on the exit of a corner
 - The loader in this repo (`src/faultline/pack.py`), rewritten from a written contract during the hackathon.
 - Pack metadata edited to drop dates and internal file names; no rule text changed.
 - The `forklift-site-rules` pack, four rules a site sets for itself.
-- Fifteen measured experiments, logged under `experiments/`: seven model experiments and eight smoke tests of the scripted pieces, four of them on scripts alone, three with SAM masks or tracks, and one with a pinned Meta person detector and six Spark Open calls.
+- Thirty-six measured experiments, logged under `experiments/`: twenty-one model experiments; eleven smoke tests of the scripted pieces, six of them with no paid call, three with SAM masks or tracks and two with Spark Open rulings; three scripted experiments with no model call; and one check of the tournament's code-only grader.
+  Thirteen of the thirty-six made no metered model call: nine cost nothing at all, and four used only GPU time on Modal.
 - The forklift scan route design note (`docs/forklift-scan-route.md`).
 - The nine scenes in `assets/scenes/`.
 - The licence files `LICENSE` and `NOTICE`, and `assets/NOTICE.md`.
@@ -58,20 +59,20 @@ The car behind runs into the car ahead on the exit of a corner
 | What | Count |
 |---|--:|
 | Commits in this repo | 47 |
-| Experiment logs published here | 16 |
-| Experiment records in the working repo | 16 |
-| Experiment scripts in the working repo | 124 |
-| Experiment data files in the working repo | 521 |
-| Design notes published here | 2 |
-| Design notes in the working repo | 1 |
-| Build plans in the working repo | 3 |
+| Experiment logs published here | 37 |
+| Experiment records in the working repo | 36 |
+| Experiment scripts in the working repo | 215 |
+| Experiment data files in the working repo | 669 |
+| Design notes published here | 1 |
+| Design notes in the working repo | 8 |
+| Build plans in the working repo | 5 |
 | Rules packs | 8 |
 | Rules | 110 |
 | Tests | 362 |
-| Paid calls to Meta models | 839 |
-| Dollars metered on Meta models | $23.15 |
+| Paid calls to Meta models | 4552 |
+| Dollars metered on Meta models | $78.61 |
 
-Counted by `scripts/tally.py` from this repo and from the working repo's own count, last run Tuesday 27 Oct 2026, 21:48 UTC; every item is dated at or after the kickoff on 26 Oct 2026.
+Counted by `scripts/tally.py` from this repo and from the working repo's own count, last run Thursday 29 Oct 2026, 23:43 UTC; every item is dated at or after the kickoff on 26 Oct 2026.
 The meter covers the Meta Model API and Baseten; Modal GPU time is billed by the hour and the coding tools run on a subscription, so neither is in it.
 The working repo holds the scripts, data and notes behind every experiment, and this repo keeps the logs, the packs and the loader, so it stays small and readable; PROVENANCE.md says what the working tooling is.
 <!-- tally:end -->
@@ -214,6 +215,7 @@ Airport ramps, the airport's ramp rules: a baggage tug drives inside the wing-ti
 ## What was measured
 
 Before designing the steward, we measured what Meta's models can and cannot do on real league footage, with real driver reports and human steward decisions as the answer key.
+The forklift side was measured on synthetic warehouse clips against a hand key, and on a rendered aisle that records its own truth.
 Each experiment has one log with the question, the run, the cost, the findings and the decision; the index is [experiments/README.md](experiments/README.md).
 
 | Experiment | Question | Headline | Cost |
@@ -223,7 +225,7 @@ Each experiment has one log with the question, the run, the cost, the findings a
 | [Router tier 2: Spark Open](experiments/2026-10-26-router-spark-open/LOG.md) | Can Spark Open replace Spark 1.3? | 49 of 55 (89.1%) against Spark 1.3's 50 of 55 (90.9%) | About the same per call |
 | [Discovery 3](experiments/2026-10-26-discovery-3/LOG.md) | Which follow-up tests change the design? | 26 of 28 tests ran; finds the moment, fails on who is who | $5.59 |
 | [Router tier 1: Glimmer on Modal](experiments/2026-10-27-router-glimmer-modal/LOG.md) | Is Glimmer on Modal fast enough? | 220 prompts in 14 minutes; routed bench 92.7% (51 of 55), level with all tier 3 | $0.82 list price against $2.37 |
-| [Identity from two cameras](experiments/2026-10-27-identity-two-cameras/LOG.md) | Does a second camera settle identity? | Not shown: crash located, no culprit named | About $0.65 of GPU time |
+| [Identity from two cameras](experiments/2026-10-27-identity-two-cameras/LOG.md) | Does a second camera settle identity? | Not shown: one unconfirmed cross-camera match, no culprit named | About $0.65 of GPU time |
 | [Steward panel](experiments/2026-10-27-steward-panel/LOG.md) | Does a panel beat one call? | Spark panel 3 of 5 verdicts against the single call's 2 of 5; Spark Open panel 1 of 5 | 2.4 times the single call |
 | [Smoke test A: closed-set identity](experiments/2026-10-27-smoke-a-closed-set-identity/LOG.md) | Does a closed set pin identity? | Key partner held 10 of 10; 4 of 4 logged misreads snapped right | No model, no paid call |
 | [Smoke test B: clock strip](experiments/2026-10-27-smoke-b-clock-strip/LOG.md) | Can template matching read the clock? | TIME and LAP digit-exact on 17 of 18 strips at 3.13 ms median a crop; offset 977.0 on one stream, refused on the other | $0 |
@@ -233,6 +235,27 @@ Each experiment has one log with the question, the run, the cost, the findings a
 | [Smoke test F: reversing and spotter](experiments/2026-10-27-smoke-f-reversing-spotter/LOG.md) | Can a script read reversing and a spotter? | 2 of 3 clips met the mark; the "reversing with a spotter" clip shows forward travel | $0.04 of SAM |
 | [Smoke test G: structure contact](experiments/2026-10-27-smoke-g-structure-contact/LOG.md) | Does a mask gap to a structure find contact? | Fails both readings of the mark: an image-plane gap is not contact, 3 of 5 compliant clips read "touched" | $0.146 of SAM |
 | [Smoke test H: detector and one ruling](experiments/2026-10-27-smoke-h-detector-ruling/LOG.md) | Does a pinned detector count people, and does one ruling call rule right? | Detector 15 of 16; ruling mark not met: 2 of 3 compliant windows falsely breached, 2 of 3 breach windows hit the token ceiling | $0.1413 of Spark Open |
+| [Self-compiling rules](experiments/2026-10-27-self-compiling-rules/LOG.md) | Can Spark Open compile a rulebook into a pack? | Short rulebooks copied exactly (86 of 86, 55 of 55); the long prose one condensed to 184 of 297 verbatim, 2 invented | $2.69 |
+| [Agreement at scale](experiments/2026-10-27-agreement-at-scale/LOG.md) | How often does the pipeline agree with the steward? | 16 of 58 cleaned cases (27.6%) against a 60% mark | About $5.20 of Spark Open |
+| [Glimmer at 32K, two cameras again](experiments/2026-10-27-glimmer-32k-two-cameras/LOG.md) | Does a second camera settle identity at 32K? | Fails: 1 and 2 of 3 key pairs confirmed, and a crash invented | $2.60 of GPU time, shared with Glimmer as forklift ruler |
+| [Floor plane from depth, GPU ledger](experiments/2026-10-27-depth-plane-detr-ledger/LOG.md) | Can a GPU ledger replay, and can depth give the floor? | Ledger byte-identical on 47 of 47 clips; depth plane on 10 of 16 cameras, truck length in band 1 of 10 | $0.67 of GPU time |
+| [Glimmer as forklift ruler and labeller](experiments/2026-10-27-glimmer-forklift-ruler/LOG.md) | Can Glimmer read vests and write the ruling? | Vest 21 of 21 with 0 false yes in both runs; as ruler 0 of 3 compliant windows clean | $2.60 of GPU time, shared with Glimmer at 32K |
+| [Panel against single call, 50 cases](experiments/2026-10-27-panel-50/LOG.md) | Does the panel beat one call on 50 cases? | Panel 20 of 50, single call 18, a gap of 2 against a mark of 5 | $6.22 |
+| [OCR on number crops](experiments/2026-10-27-ocr-closed-set/LOG.md) | Can OCR name the other car? | Fails twice: DETR crops 2 of 6 (1 real); SAM crops 2 of 6, plus 2 wrong from overlay digits | $0.105 of SAM |
+| [Self-compiling by section](experiments/2026-10-27-self-compiling-by-section/LOG.md) | Does compiling by section stop the condensing? | 198 of 297 verbatim against a mark of 283, 2 invented | $0.33 of Spark Open |
+| [Smoke test I: floor plane and speed](experiments/2026-10-27-smoke-i-floor-plane-speed/LOG.md) | Does a floor homography rank speed, and does a floor strip stop false contact? | Speeding clip first at 3.53 m/s; the strip read contact on no clip, collisions included | $0 |
+| [Smoke test J: floor distance and ruling](experiments/2026-10-27-smoke-j-floor-distance-ruling/LOG.md) | Does a measured distance fix the ruling? | Near miss smallest at 0.19 m; all 3 compliant windows still breached, with no truck speed on the sheet | $0.1279 of Spark Open |
+| [Smoke test K: tracker](experiments/2026-10-27-smoke-k-tracker/LOG.md) | Does the tracker drop the operator and keep pedestrians? | 0 of 13 pedestrians dropped, no id swaps, byte-identical; only 2 of 5 drivers dropped | $0 |
+| [Round 4: racing ceiling](experiments/2026-10-28-round-4-racing-ceiling/LOG.md) | Which half fails on racing? | The frame input: Spark Open 27.6% and Claude Opus 39.7%, both under the 44.8% constant answer | $1.479 of SAM |
+| [Round 4: forklift metre](experiments/2026-10-28-round-4-forklift-metre/LOG.md) | Can forklift values be quoted in metres? | No: walkers read two to four times slow; SAM 3.1 gave 0 of 25 identical masks; the script keeps the verdict | $2.570 |
+| [Round 4: Blender twin](experiments/2026-10-28-round-4-blender-twin/LOG.md) | Where does forklift error come from? | 11 of 19 marks hold; the method's +3.9% comes from the counterweight's 0.12 m clearance | $0.3685 of SAM and $0.3011 of Modal CPU |
+| [Round 4: footpoint clearance fix](experiments/2026-10-28-round-4-footpoint-clearance/LOG.md) | Does a footpoint at clearance height fix it? | All four marks pass: speed error +0.02%, contact at frame 82 against 84, the near pass silent | $0 |
+| [Round 4: demo backbone](experiments/2026-10-28-round-4-demo-backbone/LOG.md) | Does the demo replay offline, and does Spark Open abstain? | Same replay hash on two platforms; abstention refused 11 of 17 unrulable windows and 4 of 10 controls | $3.1346 |
+| [Round 4: Meta-model use](experiments/2026-10-28-round-4-meta-model-use/LOG.md) | Where does a Meta model do a job no script does? | Spark Open video samples 1 frame a second; SAM from text alone found the truck on 13 of 14 scorable clips and 12 of 13 people | $6.79 |
+| [Round 4: abstention](experiments/2026-10-28-round-4-abstention/LOG.md) | Does any signal stop wrong passes? | No: 3 of 5 narrow wrong passes are unanimous on all 10 calls; a temperature-0 repeat flips 29.5% of verdicts | $12.67 |
+| [Grader v2](experiments/2026-10-28-grader-v2/LOG.md) | Can a code-only grader rank candidates the same way every time? | Byte-identical on two grades; 7 of 16 candidates pass the gate; the top three find 3 of 14 breaches | $1.50 of grader spend |
+| [League catalogue](experiments/2026-10-28-league-catalogue/LOG.md) | Can scripts align a league's streams to its replay feed? | All 11 race sessions aligned at about ±2 s; 10 of 19 on-track decisions match feed events | $0 |
+| [Racing telemetry judge](experiments/2026-10-29-racing-telemetry-judge/LOG.md) | Can league rules be ruled from the feed alone? | Incident limit 7 of 7; contact referral covered 2 of 9 decisions and named 0 of 3 offenders | $0 |
 
 **[Capability probe](experiments/2026-10-26-capability-probe/LOG.md), 26 Oct.**
 What can Meta's models do on each candidate steward feature?
@@ -261,6 +284,7 @@ The routed bench scored 92.7% (51 of 55), level with sending everything to tier 
 Does a second camera settle who is who, when Glimmer on Modal reads both streams of one incident?
 Not shown: Glimmer on Modal read the position and lap boxes well enough to locate a crash, but its one cross-camera match has no answer key and it named no culprit.
 The Modal app's 8,192-token context held each camera to 5 frames, and the run used about $0.65 of GPU time.
+A later look at the stills found no crash in that window, so the crash it located was a guess ([Glimmer at 32K](experiments/2026-10-27-glimmer-32k-two-cameras/LOG.md)).
 
 **[Steward panel](experiments/2026-10-27-steward-panel/LOG.md), 27 Oct.**
 Does a prosecutor, defence and judge panel rule better than one steward call?
@@ -310,6 +334,113 @@ The detector counted 15 of 16 clips right with the driver rule, and two runs wer
 The ruling did not meet its mark: 2 of 3 compliant windows got a false separation breach from an eyeballed distance, and 2 of 3 breach windows ran out at the 6,000-token ceiling with no ruling.
 The six calls cost $0.1413 of Spark Open.
 
+**[Self-compiling rules](experiments/2026-10-27-self-compiling-rules/LOG.md), 27 Oct.**
+Can Spark Open turn a flat rulebook into a rules pack the loader accepts, without a person splitting the rules first?
+Copying was exact on the two short rulebooks, 86 of 86 and 55 of 55 units with none invented.
+The long prose rulebook was condensed to 184 of 297 sentences verbatim with 2 invented, and its packs still loaded.
+A grader of the same model family rated 8 and 10 of its 10 rules `same`, and the code floor turned 9 of 10 on each sheet to `wrong`; the run cost $2.69.
+
+**[Agreement at scale](experiments/2026-10-27-agreement-at-scale/LOG.md), 27 Oct.**
+How often does the pipeline's ruling match the human steward's on corpus cases, and which stage is to blame when it does not?
+On 58 cleaned cases it agreed on 16 (27.6%, interval 17.8% to 40.2%) against a 60% mark; the 20-case pilot got 5 of 20, cropped or not.
+Contact (13) and locating (11) led the 40 graded misses, and the model ruled penalty on only 8 of its 44 rulings.
+It cost about $5.20 of Spark Open by the ledger.
+
+**[Glimmer at 32K, two cameras again](experiments/2026-10-27-glimmer-32k-two-cameras/LOG.md), 27 Oct.**
+With the 8,192-token context removed, does a second camera settle who is who?
+It fails its mark: the 16-frame call confirmed 1 and then 2 of the 3 key pairs, where 3 were needed in both runs, and both runs invented a crash.
+The 64-image call dropped frames, the whole-stream test had no timed incident to score, and the app was rolled back to 8,192 tokens.
+
+**[Floor plane from depth, GPU ledger](experiments/2026-10-27-depth-plane-detr-ledger/LOG.md), 27 Oct.**
+Can a GPU detector give a replayable per-frame ledger, and can Depth Anything give the floor plane and scale from one frame?
+The RT-DETR ledger was byte-identical on 47 of 47 clips across two fresh containers and counted people right on 15 of 16, but held a truck box in every frame on only 4 of 15.
+The depth plane was accepted on 10 of 16 cameras and put the truck's length in band on 1 of 10, so the four hand floor points stay; it cost $0.67 of GPU time.
+
+**[Glimmer as forklift ruler and labeller](experiments/2026-10-27-glimmer-forklift-ruler/LOG.md), 27 Oct.**
+Does Glimmer read hi-vis vests the way the hand key does, and can it write the forklift ruling?
+It read vests 21 of 21 with no false yes, in both runs of 756 calls.
+As ruler it left 0 of 3 compliant windows clean and missed the structure contact Spark Open found, so Spark Open stays the ruling tier.
+
+**[Panel against single call, 50 cases](experiments/2026-10-27-panel-50/LOG.md), 27 Oct.**
+Does a prosecutor, defence and judge panel rule more often like the human steward than one call, on 50 cases?
+The panel got 20 of 50 and the single call 18, a gap of 2 against a mark of 5, so the panel is dropped as a general tier.
+Both sit at or under an always-"penalty" guess of 20, and the run cost $6.22.
+
+**[OCR on number crops](experiments/2026-10-27-ocr-closed-set/LOG.md), 27 Oct.**
+Does OCR on car crops, snapped to the closed set, name the key partner without naming a wrong car?
+It failed twice: on DETR crops it named the partner in 2 of 6 cases, only 1 from a real read, and on SAM crops in 2 of 6, with 2 wrong answers from overlay digits.
+The snap needs a guard against overlay text before it takes any OCR read; the SAM retest cost $0.105.
+
+**[Self-compiling by section](experiments/2026-10-27-self-compiling-by-section/LOG.md), 27 Oct.**
+Does compiling a long prose rulebook one section at a time stop the model condensing it?
+No: the joined pack kept 198 of 297 sentences verbatim against a mark of 283, with 2 invented, and every sentence missing here was missing in the whole-rulebook run too.
+The 125-sentence section copied exactly, so section length does not decide it; the ten calls cost $0.33 of Spark Open.
+
+**[Smoke test I: floor plane and speed](experiments/2026-10-27-smoke-i-floor-plane-speed/LOG.md), 27 Oct.**
+Does a hand-marked floor homography rank the speeding truck first, and does a floor strip at a structure's base stop false "touched" reads?
+The speeding clip ranked first at 3.53 m/s, the compliant clips read 0.31 to 1.21 m/s, and all five marks held.
+The strip read contact on no clip, the two collisions included, because the rear footpoint stays about a truck length from the rack; it ran on scripts alone.
+
+**[Smoke test J: floor distance and ruling](experiments/2026-10-27-smoke-j-floor-distance-ruling/LOG.md), 27 Oct.**
+Does a measured floor distance fix smoke H's ruling?
+The near miss read the smallest distance, 0.19 m, and the model reported the measured distances correctly.
+All 3 compliant windows still got a separation breach, because each has a person under 3 m and the fact sheet carries no truck speed; the six calls cost $0.1279 of Spark Open.
+
+**[Smoke test K: tracker](experiments/2026-10-27-smoke-k-tracker/LOG.md), 27 Oct.**
+Can a deterministic tracker keep one id per person and drop the truck's operator without dropping a pedestrian?
+It kept 13 of 13 pedestrians with no id swaps on the labelled people, and two runs were byte-identical.
+It dropped only 2 of 5 labelled drivers: DETR boxed no person in the cab for two of the others, and a poor box missed the third.
+
+**[Round 4: racing ceiling](experiments/2026-10-28-round-4-racing-ceiling/LOG.md), 28 Oct.**
+Which half fails on racing: the camera, the model or the key?
+The frame input fails for every model tried: Spark Open agreed on 27.6% of the 58 and Claude Opus on 39.7%, both under the 44.8% a constant "penalty" scores, with kappa intervals that hold zero.
+Opus said it could not identify the cars in 46 of 58, and the oracle test never ran, because the redacted steward texts still leaked the verdict; it cost $1.479 of SAM.
+
+**[Round 4: forklift metre](experiments/2026-10-28-round-4-forklift-metre/LOG.md), 28 Oct.**
+Can the forklift side quote its measurements in metres, and who should write the verdict?
+Every walker read two to four times too slow, so 0 values may be quoted in metres, and speed works as a ranking only.
+SAM 3.1 gave 0 of 25 identical masks on identical bytes, and no arm, script or model, cleared 0 false breaches, so the script keeps the verdict; it cost $2.570.
+
+**[Round 4: Blender twin](experiments/2026-10-28-round-4-blender-twin/LOG.md), 28 Oct.**
+With per-frame truth from a rendered aisle, how much forklift error comes from the method, the hand marks and perception?
+11 of 19 marks hold.
+The method's +3.9% speed error comes from the counterweight's 0.12 m clearance, which also puts the inferred fork tip about 0.4 m forward and breaks the contact rule on perfect inputs; it cost $0.3685 of SAM and $0.3011 of Modal CPU.
+
+**[Round 4: footpoint clearance fix](experiments/2026-10-28-round-4-footpoint-clearance/LOG.md), 28 Oct.**
+Does projecting the truck's footpoint at the counterweight's clearance height remove the bias and fix the contact rule?
+All four marks pass, on truth boxes and on SAM boxes: the speed error falls from +3.9% to +0.02%, contact fires at frame 82 against a truth of 84, and the near pass stays silent.
+It re-scored the twin's recorded boxes, with no paid call.
+
+**[Round 4: demo backbone](experiments/2026-10-28-round-4-demo-backbone/LOG.md), 28 Oct.**
+Can the demo replay offline to one hash, can its ledger be published, and does Spark Open say "unable to rule" when it should?
+The replay gave the same hash on Windows and on an offline Modal container, in 12.6 s there, and the 7.99 MB ledger is publishable under stated conditions.
+Offered "unable to rule", Spark Open refused 11 of 17 windows that cannot support a ruling and 4 of 10 controls, so a script gate decides sufficiency; it cost $3.1346.
+
+**[Round 4: Meta-model use](experiments/2026-10-28-round-4-meta-model-use/LOG.md), 28 Oct.**
+Where can Spark Open video, Spark Open rule compiling and SAM 3.1 text prompts do a job no script does?
+Spark Open video samples 1 frame a second and is not the locator in either domain, and compiling the 110 rules held a closed grammar with 0 invented fields but routed only 24 of 50 forklift rules as the key does.
+SAM 3.1 from text alone found the truck on 13 of 14 scorable clips and 12 of 13 pedestrians; it cost $6.79.
+
+**[Round 4: abstention](experiments/2026-10-28-round-4-abstention/LOG.md), 28 Oct.**
+Does any signal keep wrong passes at or under 1 at a usable coverage?
+No: 3 of the 5 narrow wrong passes are no action on all 10 calls, so the wrong passes are confident, not noisy.
+A temperature-0 repeat changed 29.5% of verdicts and two runs of one prompt disagreed on 17 of 44, so every prompt test needs three repeats an arm; it cost $12.67.
+
+**[Grader v2](experiments/2026-10-28-grader-v2/LOG.md), 28 and 29 Oct.**
+Can a code-only grader rank the tournament's forklift candidates the same way every time, with false breaches ranked first?
+Two grades were byte-identical, and nine mutations of its rules each turned a test red.
+Of 16 wave-1 candidates, 7 pass the gate, and the top three, with 0 false breaches, find 3 of 14 breaches; the grader spent $1.50.
+
+**[League catalogue](experiments/2026-10-28-league-catalogue/LOG.md), 28 Oct.**
+Can scripts alone align seven broadcast streams of a PitBot league to its replay feed, list the feed's events and join the steward decisions to them?
+All 11 race sessions aligned at about ±2 s, across about 14.7 hours of video, and two runs of every script hashed the same.
+10 of 19 on-track decisions match feed events, 5 with a contact and its stream seconds, and 8 of 9 incident-total checks are exact, so the league is a racing key no model drafted.
+
+**[Racing telemetry judge](experiments/2026-10-29-racing-telemetry-judge/LOG.md), 29 Oct.**
+Can two league rules be ruled from the companion feed alone, with no video?
+The incident limit passed: all 7 incident-total decisions have a car over the limit on exactly the stated total.
+Contact referral failed, covering 2 of 9 on-track decisions and naming 0 of 3 offenders, so it stays a timeline of contacts, never a ruling.
+
 **Design notes:** [the forklift scan route](docs/forklift-scan-route.md) sets out, from these measurements, how scripts find candidate moments in long warehouse footage with no report and a model writes only the ruling.
 
 ### What the measurements settled
@@ -326,7 +457,12 @@ The six calls cost $0.1413 of Spark Open.
 - **A closed set of nearby cars pins the other car.**
   The cars within 8 m of the camera car, from telemetry, held the key partner 10 of 10, and snapping a read to that set corrected 4 of 4 logged misreads.
 - **A second camera has proved nothing yet.**
-  Glimmer on Modal located the crash on both streams, but its one cross-camera match has no answer key.
+  At 16 frames a camera Glimmer confirmed 1 and then 2 of the 3 key pairs, and both runs invented a crash the frames do not show.
+- **Racing frames fail for every model tried.**
+  Spark Open agreed with the human steward on 27.6% of 58 cleaned cases and Claude Opus on 39.7%, both under the 44.8% a constant "penalty" scores.
+  The cars are visible but not identifiable on these review streams, and Opus said so on 46 of 58.
+- **OCR does not read the other car's number yet.**
+  On SAM crops it named the partner in 2 of 6 cases and a wrong car in 2, from overlay digits that snapped to the closed set.
 
 #### Timing, contact and evidence
 
@@ -347,6 +483,21 @@ The six calls cost $0.1413 of Spark Open.
   On 16 fixed-camera clips no vested person read unvested and 4 of 4 unvested people were found; on a moving camera one washed-out vest read unvested.
 - **A synthetic clip's label can be wrong.**
   The clip labelled "reversing with a spotter" shows the truck travelling forward, by hand boxes, SAM boxes and block-matched motion alike.
+- **The truck's footpoint sits at the counterweight's clearance height, not on the floor.**
+  Projected at 0.12 m, the speed error fell from +3.9% to +0.02% and contact fired at frame 82 against a truth of 84, with the near pass silent.
+- **Forklift numbers on the synthetic clips are a ranking, not metres.**
+  Walkers read two to four times too slow on every camera, so no value is quoted in metres, while the speed order holds.
+- **SAM 3.1 is not deterministic on identical bytes.**
+  0 of 25 repeated masks matched exactly, so every replay runs from the recorded masks.
+- **SAM 3.1 finds the truck and the people from text alone.**
+  It held the truck on 13 of 14 scorable clips and found 12 of 13 pedestrians with no drawn box, but "pallet racking upright" returned nothing, so structures stay hand-drawn.
+  A fast truck was lost after 2 s, and the 14-of-16 mark failed as written.
+- **Spark Open video sees one frame a second.**
+  It is not the locator in either domain: a script opens the window and owns the second.
+- **A league's broadcasts align to its replay feed by script.**
+  All 11 race sessions aligned at about ±2 s, which makes the sim's incident counts and the stewards' own decisions a racing key no model drafted.
+- **The incident limit rules from telemetry alone; contact referral does not.**
+  The feed put a car on exactly the stated total for all 7 incident-total decisions, while its contact referral covered 2 of 9 on-track decisions.
 
 #### Models, output and cost
 
@@ -361,6 +512,12 @@ The six calls cost $0.1413 of Spark Open.
   Spark got 5 of 10 rulings right and said 0.9 on a wrong call.
 - **A distance rule without a measured distance gives confident false breaches.**
   Spark Open judged "about 1 m" with no scale in the frames and ruled 2 of 3 compliant forklift windows a separation breach, so the measured floor distance goes into the ruling or the rule stays out of it.
+- **A measured distance is not enough for the separation rule.**
+  With floor distances on the sheet, Spark Open and Glimmer still ruled all 3 compliant windows a breach, because the sheet carries no truck speed.
+- **The script holds the forklift verdict.**
+  No arm, the script, Spark Open or Spark 1.3, cleared 0 false breaches on the 10 compliant clips, and the models invented quantities, so the model writes evidence text only.
+- **Glimmer labels vests but does not rule.**
+  It read vests 21 of 21 with no false yes, and as ruler left 0 of 3 compliant windows clean, so Spark Open stays the forklift ruling tier.
 - **A filename can leak the answer.**
   Spark Open scored 19 of 20 on forklift clips with the filename, which names the label, in the prompt, and 11 of 20 with an opaque case reference.
 - **The router's judge checks topic, not correctness.**
@@ -368,6 +525,18 @@ The six calls cost $0.1413 of Spark Open.
   The router with a tier-3 floor scores 76.4% with 0.0% under-route on the 55 held-out prompts, and only 5 of 55 reached tier 1: it saves money mostly through tier 2.
 - **The panel is an appeal tier.**
   A Spark prosecutor, defence and judge got 3 of 5 verdicts right against the single call's 2 of 5, at 2.4 times the cost, so it runs only where the single call and the human steward disagree.
+  On 50 cases it got 20 against the single call's 18, a gap of 2 where 5 were needed, so it is dropped as a general tier.
+- **A compiled pack is checked unit by unit, never accepted because it loads.**
+  Short rulebooks copied exactly, but a long prose rulebook kept only 184 of 297 sentences verbatim in one call and 198 when compiled by section, and its packs still loaded.
+- **A closed grammar keeps compiled rules faithful to the field list, but it does not decide judgeability.**
+  Spark Open invented 0 fields over 110 rules and matched the key's route on 24 of 50 forklift rules, so each pack keeps a hand route key.
+- **Spark Open repeats disagree, so a prompt test needs three repeats an arm.**
+  A temperature-0 repeat changed 29.5% of verdicts, and two runs of one prompt disagreed on 17 of 44.
+- **Abstention cannot come from the model.**
+  The wrong passes are confident: 3 of 5 were the same on all 10 calls.
+  Offered "unable to rule", Spark Open refused 4 of 10 windows a human ruled on and still ruled on 6 of 17 it could not support.
+- **The demo replays from its record with no network.**
+  Windows and an offline container gave the same hash, with 0 cache misses and no byte sent to a model host.
 
 ---
 
@@ -378,12 +547,13 @@ Built with Muse Spark Open.
 | Model | Id | Served by | Measured for |
 |---|---|---|---|
 | Muse Spark 1.3 | `muse-spark-1.3` | Meta Model API | Rulings from frames, reports and telemetry; router tier 2 until 26 Oct |
-| Muse Spark Open | `meta-models/muse-spark-open-1026` | Baseten | Router tier 2; evidence planning and tool use; native video |
-| Muse Wonder 1.0 | `muse-wonder-1.0` | Meta Model API | Router tier 3; deeper rulings |
-| Muse Glimmer | `muse-glimmer:30b` | Ollama, locally and on a Modal L40S | Router tier 1, from Modal with the local copy as fallback; reading the clock strip |
-| SAM 3.1 | `sam-3.1` | Meta Model API | Masks, tracking and contact frames |
+| Muse Spark Open | `meta-models/muse-spark-open-1026` | Baseten | Router tier 2; evidence planning and tool use; native video; compiling rulebooks into packs; forklift rulings from a fact sheet |
+| Muse Wonder 1.0 | `muse-wonder-1.0` | Meta Model API | Router tier 3; deeper rulings; grading compiled packs |
+| Muse Glimmer | `muse-glimmer:30b` | Ollama, locally and on a Modal L40S | Router tier 1, from Modal with the local copy as fallback; reading the clock strip and hi-vis vests |
+| SAM 3.1 | `sam-3.1` | Meta Model API | Masks, tracking and contact frames, from a box prompt or from text alone |
 | Muse Voice Transcribe 1.0 | `muse-voice-transcribe-1.0` | Meta Model API | Transcribing race audio |
 | Llama 3.2 1B | `llama3.2:1b` | Locally | Router tier 1, replaced by Glimmer on 26 Oct |
+| DETR ResNet-50 | `facebook/detr-resnet-50` | Locally, pinned, and on Modal CPU | Person counts and tracks; car crops for OCR |
 
 The task router sends each call to one of three tiers: Glimmer, then Spark Open, then Wonder.
 A classifier trained on the labelled prompts picks the tier, and Glimmer's labels were remeasured by asking it every prompt and judging the answer.
@@ -391,7 +561,9 @@ The judge is Qwen 2.5 7B (`qwen2.5:7b`), run locally; it is not a Meta model and
 
 Every paid call went through a metering proxy that holds the API key and enforces a spend cap, apart from two direct calls to Baseten of well under a cent.
 The probe ledger, shared by the capability probe, the steward limits, Discovery 3, the steward panel and smoke test C, stood at $13.82 of its $20 cap after Discovery 3 and $16.67 after the steward panel and $16.81 after smoke test C.
-The router ledger stood at $3.3158 after the Glimmer bench, under a $10 cap in code, the only cap on Baseten spend.
+It passed the cap at $20.09 during the 50-case panel test, and Brock let the panel arm run.
+The router ledger stood at $3.3158 after the Glimmer bench, under a $10 cap in code.
+From round 4 on, each experiment also held its own spend cap in code, checked before every paid call.
 Glimmer on Modal used $2.68 of GPU time, all covered by Modal's $30 starter credits.
 
 ---

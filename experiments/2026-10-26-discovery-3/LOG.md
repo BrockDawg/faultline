@@ -18,20 +18,20 @@ Frames and clips are not in the repo.
 
 | Test | What | Result | Cost |
 |---|---|---|---|
-| W0-01 | ph15 stream offset from telemetry | 3808.5 ± 1.5 s; contact at video 4341-4344; camera car is the replay's #70 | $0 |
+| W0-01 | report 15 stream offset from telemetry | 3808.5 ± 1.5 s; contact at video 4341-4344; camera car is the replay's #70 | $0 |
 | W0-02 | Catalogue of every contact in the replays | 58 events, 40 paired, 21 on video; the key's 12 cases all found | $0 |
 | W0-04 | Glimmer reads the broadcast clock strip | 7 of 7 finished reads digit-exact; 36-600 s a read on the shared GPU | $0 |
 | W0-05 | Penalties from incident counts alone | 5 of 8 reports reproduced; the per-lap counts undercount | $0 |
 | W0-06 | Contact detector from 1 Hz positions | Failed: best recall 55% at 49 false alarms per 10 min | $0 |
 | W1-01 | Spark timing baseline, five clips | Timing within 1 s on 4 of 5; verdict 2 of 5, roles 1 of 5 | $0.345 |
-| W1-02 | Dense 0.5 s frame pack | 2 of 5; the key's ph46 window starts 3 s after the visible contact | $0.156 |
+| W1-02 | Dense 0.5 s frame pack | 2 of 5; the key's report 46 window starts 3 s after the visible contact | $0.156 |
 | W1-03 | Spark Open on native video | Verdict 5 of 5; offender by number 2 of 5; timing within 1 s 1 of 5 | $0.055 |
 | W1-04 | SAM yaw step on broadcasts | 0 of 3; every firing was a camera cut or the mask | $0.219 |
-| W1-05 | Read car #01 off the ph46 broadcast | 0 of 7; the car is never wider than 119 px | $0.027 |
+| W1-05 | Read car #01 off the report 46 broadcast | 0 of 7; the car is never wider than 119 px | $0.027 |
 | W1-06 | No-action case, report vs no report | Not scorable; the report alone moved racing incident 0.6 to penalty 0.8 | $0.153 |
 | W1-07 | Spark on telemetry facts only | Verdict 7 of 12, with offender 6 of 12 | $0.095 |
 | W1-08 | Spark Open and Glimmer on facts only | Spark Open 3 of 11; Glimmer 0 (thinking used every token) | $0.112 |
-| W1-09 | Facts plus frames | 2 of 4 right; ph13 acquitted because +0 was read as no contact | $0.365 |
+| W1-09 | Facts plus frames | 2 of 4 right; report 13 acquitted because +0 was read as no contact | $0.365 |
 | W1-10 | Reasoning effort minimal vs high | Minimal 2 of 5, high 1 of 4; high broke the JSON on 2 of 5 | $0.446 |
 | W1-11 | Two calls must agree | 1 of 3; a third of calls at 8,000 tokens returned nothing | $0.319 |
 | W1-12 | Wonder at low effort | 1 of 3; rules on whichever car is in shot | $0.457 |
@@ -39,7 +39,7 @@ Frames and clips are not in the repo.
 | W1-14 | Precedent matching | 7 of 12, below always-penalty's 10 of 12 | $0.128 |
 | W1-15 | Forklift on Spark Open | 19 of 20 with the filename in the prompt, 11 of 20 without | $0.445 |
 | W1-17 | Three incidents in one 141-frame call | 0 of 3; the model miscounts frames, times drift about 30 s | $0.075 |
-| W1-18 | ph15 from the offender's cockpit | Penalty and timing right (0.0 s); identity taken from the on-screen label | $0.036 |
+| W1-18 | report 15 from the offender's cockpit | Penalty and timing right (0.0 s); identity taken from the on-screen label | $0.036 |
 | W2-01 | Agent plans its own evidence (Spark) | Verdict 6 of 6, roles 4 of 6; asked for telemetry first every time | $1.268 |
 | W2-02 | Planning only, three models | Spark Open 12 of 12, Spark 11 of 12, Glimmer 0 of 3 | $0.101 |
 | W2-03 | End to end, six keyed clips | 4 of 6 verdict and offender; contact found within 3 s on 4 of 4; under $0.10 a case | $0.314 |
@@ -50,7 +50,7 @@ Frames and clips are not in the repo.
 1. The pipeline finds the moment; it fails on who is who.
    Timing landed within 1 s on most clips (W1-01, W2-03, W1-18), and the misses were identity: misread digits, on-screen labels trusted over the car, or a touch the camera never showed.
 2. Telemetry gives the second, not the blame.
-   Spark and Spark Open read counters literally: both +4 became shared fault (W1-08), a forced-off car with +0 was acquitted (W1-09), and a gap trace was read as blame (W2-01 ph13).
+   Spark and Spark Open read counters literally: both +4 became shared fault (W1-08), a forced-off car with +0 was acquitted (W1-09), and a gap trace was read as blame (W2-01 report 13).
    The blame rule has to be in the prompt, including "a car forced off registers no incident points".
 3. The agent shape works.
    Spark asked for telemetry first whenever it had the tool (W2-01), and Spark Open drove the same tools on Baseten (W2-04) and wrote the best plans at about $0.005 each (W2-02).
@@ -67,10 +67,10 @@ Frames and clips are not in the repo.
 
 ## Corrections to earlier records
 
-- ph15: W0-01 measured the contact at video 4341-4344 s, so batches 1 and 2 (4336-4342) were right and the earlier discovery notes' 4405-4425 was wrong.
+- Report 15: W0-01 measured the contact at video 4341-4344 s, so batches 1 and 2 (4336-4342) were right and the earlier discovery notes' 4405-4425 was wrong.
   The camera car is the replay's #70, the offender; the on-screen race-control line says "Car #32", which is unresolved.
-- ph46: the visible contact is at 1139-1140 s (measured in W1-02), before the key's window.
-- ph13 shows the same contact twice; the second angle is at about 33-36 s.
+- Report 46: the visible contact is at 1139-1140 s (measured in W1-02), before the key's window.
+- Report 13 shows the same contact twice; the second angle is at about 33-36 s.
 - Forklift: batch 1's 19 of 20 put the clip's filename, which names the label, in the prompt; with an opaque case reference it is 11 of 20 (W1-15).
 - W2-03's report 14 knew the camera car from W0-01's telemetry sync, so that case is key-assisted.
 - The scorer scored a leading-zero number ("01") wrong; fixed during the run, so W1-07's offender score is 6 of 12, not 5.
@@ -79,4 +79,4 @@ Frames and clips are not in the repo.
 ## Waiting
 
 - W0-03 and W1-16 run on the Modal GPU ($30 limit), with a higher Glimmer token limit; W0-03 reads the race footage and is not the router's label pass.
-- Which number is right for ph15's camera car, #32 on screen or #70 in the replay.
+- Which number is right for report 15's camera car, #32 on screen or #70 in the replay.
