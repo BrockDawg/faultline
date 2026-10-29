@@ -48,6 +48,7 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `d6edd0f` | 2026-10-27T16:15:19-0500 | docs: the no-hi-vis scene's worker wears a plain shirt, not a blue vest | claude-opus-5-5 via Claude Code | none |
 | `83eeff3` | 2026-10-27T17:00:33-0500 | docs: four more experiment logs, smoke tests E to H, and the count now reads fifteen | claude-fable-5-1 via Claude Code | none |
 | `8eaf9eb` | 2026-10-27T17:00:33-0500 | docs: the build log, up to the commit before this one | claude-fable-5-1 via Claude Code | none |
-| `b178f8a` | 2026-10-28T16:02:56-0500 | docs: the design brief, graded three times and decided by Brock on 28 Oct | Claude Code (Claude Fable 5.1) | none |
-| `3f997bb` | 2026-10-29T16:23:33-0500 | racing: pre-registration for the combined racing judge | claude-opus-5-5 via Claude Code | none |
-| `5508efe` | 2026-10-29T16:40:46-0500 | racing: the core every data source shares | claude-opus-5-5 via Claude Code | none |
+| `53f9303` | 2026-10-29T16:23:33-0500 | racing: pre-registration for the combined racing judge | claude-opus-5-5 via Claude Code | none |
+| `b08d309` | 2026-10-29T16:40:46-0500 | racing: the core every data source shares | claude-opus-5-5 via Claude Code | none |
+| `9d2d919` | 2026-10-29T17:34:06-0500 | racing: the PitBot adapter, from feed to fact sheet | claude-opus-5-5 via Claude Code | none |
+| `4637320` | 2026-10-29T18:11:25-0500 | docs: 21 more experiment logs, rounds 3 and 4, and the count now reads 36 | claude-opus-5-5 via Claude Code | none |
