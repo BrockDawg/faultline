@@ -3,7 +3,7 @@
 [![Licence: Apache-2.0](https://img.shields.io/badge/licence-Apache--2.0-blue)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)](pyproject.toml)
 [![8 rules packs](https://img.shields.io/badge/rules%20packs-8-blue)](packs/README.md)
-[![36 experiments](https://img.shields.io/badge/experiments-36-blue)](experiments/README.md)
+[![37 experiments](https://img.shields.io/badge/experiments-37-blue)](experiments/README.md)
 
 faultline is a rules-compliance judge for video.
 Give it a rules pack and footage, and it says for each rule whether it was followed and who broke it.
@@ -47,8 +47,9 @@ The car behind runs into the car ahead on the exit of a corner
 - The loader in this repo (`src/faultline/pack.py`), rewritten from a written contract during the hackathon.
 - Pack metadata edited to drop dates and internal file names; no rule text changed.
 - The `forklift-site-rules` pack, four rules a site sets for itself.
-- Thirty-six measured experiments, logged under `experiments/`: twenty-one model experiments; eleven smoke tests of the scripted pieces, six of them with no paid call, three with SAM masks or tracks and two with Spark Open rulings; three scripted experiments with no model call; and one check of the tournament's code-only grader.
-  Thirteen of the thirty-six made no metered model call: nine cost nothing at all, and four used only GPU time on Modal.
+- The racing judge: the core every data source shares, the PitBot adapter, the `faultline` command line, and the racing prep, score and evidence-card scripts.
+- Thirty-seven measured experiments, logged under `experiments/`: twenty-two model experiments; eleven smoke tests of the scripted pieces, six of them with no paid call, three with SAM masks or tracks and two with Spark Open rulings; three scripted experiments with no model call; and one check of the tournament's code-only grader.
+  Thirteen of the thirty-seven made no metered model call: nine cost nothing at all, and four used only GPU time on Modal.
 - The forklift scan route design note (`docs/forklift-scan-route.md`).
 - The nine scenes in `assets/scenes/`.
 - The licence files `LICENSE` and `NOTICE`, and `assets/NOTICE.md`.
@@ -58,7 +59,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 64 |
+| Commits in this repo | 66 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 36 |
 | Experiment scripts in the working repo | 215 |
@@ -68,7 +69,7 @@ The car behind runs into the car ahead on the exit of a corner
 | Build plans in the working repo | 5 |
 | Rules packs | 8 |
 | Rules | 110 |
-| Tests | 520 |
+| Tests | 540 |
 | Paid calls to Meta models | 4552 |
 | Dollars metered on Meta models | $78.61 |
 
@@ -93,6 +94,9 @@ These tools are private and not in this repo; [PROVENANCE.md](PROVENANCE.md) say
 ---
 
 ## How it works
+
+faultline is one judge, and any data source plugs in through an adapter: a sim feed, a forklift's own telemetry, or video where a site only has cameras.
+The core never knows which source it is reading.
 
 ### Rules packs
 
@@ -138,11 +142,80 @@ The site pack holds rules a site sets for itself, and each of its rules says so 
 The sim-racing packs and the site pack carry `[placeholders]` where each league or site sets its own values.
 Every forklift rule has an `On video:` line, every OSHA rule cites a 1910.178 clause, and the tests check both.
 
+### Racing
+
+Racing is the first adapter, [`src/faultline/adapters/pitbot/`](src/faultline/adapters/pitbot), for leagues on PitBot.
+Its results are measured in the [racing pipeline log](experiments/2026-10-29-racing-pipeline/LOG.md), on 10 steward decisions from a PitBot league.
+
+A steward's protest and the sim's own feed go in.
+The protest is the driver's report and the race it is about.
+The feed is the sim's replay of that race, with the broadcast stream and its measured offset.
+
+One ruling line comes out per protest, and one per car over the incident limit.
+Each line carries the rule, the offender, the window, the candidates, the facts, the frames, the model's read, the evidence and a record hash.
+`faultline replay` rebuilds every line from its record, byte-identical, with the network off.
+
+A protest is read in six steps:
+
+1. Every car number and driver name in the protest becomes `car <sim number>`, and a lint refuses any name left in the text.
+2. The steward gives the moment, as a steward reviewing a protest does; the window runs from 3 s before it to 2 s after.
+3. Scripts confirm contact from the sim's own paired +4 count and close the set of cars within 8 m of a protest car.
+4. The facts are blame-neutral sentences from the feed, each with its time resolution.
+5. The broadcast gives 17 frames, 2 a second over 4 s either side of the moment, with names masked and every frame named by its own hash.
+6. A Meta model gives its read of fault under the league's rules pack, from 8 of those frames, choosing the offender only from the closed set.
+   It runs three times, and a read counts only when all three agree.
+
+For a contact, the script never rules a breach.
+The steward rules, and the model's read sits beside the evidence, never as a ruling.
+The incident limit (league code 9.2) rules from the feed alone.
+
+The demo shows the evidence pack and the steward's ruling, without the model's read.
+The model's read did not pass its mark: 4 of 8 on both arms, Spark Open and Spark 1.3, against a mark of 8 of 8.
+The evidence cards list each read as the model's read, with this result beside it, and never as a ruling.
+Every agreed read that named a car named the right one, 4 of 4 on each arm, and the agreement gate kept every wrong single run out.
+
+| Mark | Result | Pass mark | Verdict |
+|---|---|---|---|
+| Rule A, incident limit | 7 of 7 decisions found, byte-identical over two runs | 7 of 7 | pass |
+| Locator | 2 of 7 windows hold the truth second ±2 s | 5 of 7 | fail |
+| Closed set | the truth parties inside on 8 of 10, median size 3.5 over all 10 and 4 over the 8 located | 7 of 10, median 4 or fewer | pass |
+| Model's read, offender | 4 of 8 on each arm | 8 of 8 | fail |
+| Replay | byte-identical with the network blocked, on both arms | byte-identical | pass |
+| Spend | $1.76 on the metering proxy | $5 | pass |
+
+- The incident limit also found 29 cars over the limit: 8 match a ruling on record, and 21 are over the limit, no ruling on record.
+  Under code 9.9 only reported incidents are ruled, and only the stewards can say why no ruling exists.
+- The locator failed, so the steward gives the moment; the locator still runs and its window stays on each line.
+- Around the locator's own windows, the closed set held the truth parties on 9 of 10.
+- The car-behind constant names 7 of 8 offenders, because it is handed the confirmed contact second.
+- On decision 18 the frames do not clearly show the contact.
+  Spark 1.3 agreed on all three runs that it is not visible and named no car; one Spark Open run named car 5, and the gate kept it out.
+- Spark Open returned no text on 6 of 24 runs, all on decisions 11 and 24, because its reasoning used the whole 12,000-token ceiling.
+
+The commands run from the repo root on a league's own data:
+
+```sh
+uv run faultline racing limits --league data/racing/league.json --out runs/limits.jsonl
+uv run faultline racing judge data/racing/reports.jsonl --league data/racing/league.json \
+    --rules <the league's rules pack> --moments data/racing/moments.json \
+    --masks data/racing/masks.json --stage rule \
+    --model meta-models/muse-spark-open-1026 --arm 1 --out runs/judge.jsonl
+uv run faultline replay runs/judge.jsonl --out runs/judge.replay.jsonl
+uv run python scripts/racing_score.py runs/limits.jsonl runs/judge.jsonl
+uv run python scripts/racing_card.py
+```
+
+`--stage` stops at `locate`, `frames` or `rule`, and `--model muse-spark-1.3 --arm 2` runs the second arm with a strict reply schema.
+`scripts/racing_prep.py` builds the league file and the protests from the league's own records first.
+`moments.json` holds one feed second per protest, given by the steward.
+`masks.json` holds the rectangles that black out names on each stream, and the broadcast layouts whose frames are dropped.
+`scripts/racing_card.py` writes one evidence card per ruling, an over-limit page per session, the honesty card for decision 18 and an index.
+
 ### Built, and still in design
 
-In this repo today: the pack format, the loader, the eight packs, their tests and the provenance tooling.
-In design: the steward model pipeline that reads footage and writes the rulings.
-It is being designed from the measurements below, and no code in this repo calls a model yet.
+In this repo today: the pack format, the loader, the eight packs, the racing judge with its PitBot adapter, their tests and the provenance tooling.
+In design: the forklift adapter, from the [forklift scan route](docs/forklift-scan-route.md).
+The racing judge calls Spark Open and Spark 1.3 at runtime.
 
 ---
 
@@ -256,6 +329,7 @@ Each experiment has one log with the question, the run, the cost, the findings a
 | [Grader v2](experiments/2026-10-28-grader-v2/LOG.md) | Can a code-only grader rank candidates the same way every time? | Byte-identical on two grades; 7 of 16 candidates pass the gate; the top three find 3 of 14 breaches | $1.50 of grader spend |
 | [League catalogue](experiments/2026-10-28-league-catalogue/LOG.md) | Can scripts align a league's streams to its replay feed? | All 11 race sessions aligned at about ±2 s; 10 of 19 on-track decisions match feed events | $0 |
 | [Racing telemetry judge](experiments/2026-10-29-racing-telemetry-judge/LOG.md) | Can league rules be ruled from the feed alone? | Incident limit 7 of 7; contact referral covered 2 of 9 decisions and named 0 of 3 offenders | $0 |
+| [Racing pipeline](experiments/2026-10-29-racing-pipeline/LOG.md) | Do the pieces that each worked alone make one judge? | Incident limit 7 of 7; locator 2 of 7; closed set 8 of 10; the model's read 4 of 8 on both arms against a mark of 8 of 8 | $1.76 |
 
 **[Capability probe](experiments/2026-10-26-capability-probe/LOG.md), 26 Oct.**
 What can Meta's models do on each candidate steward feature?
@@ -441,6 +515,12 @@ Can two league rules be ruled from the companion feed alone, with no video?
 The incident limit passed: all 7 incident-total decisions have a car over the limit on exactly the stated total.
 Contact referral failed, covering 2 of 9 on-track decisions and naming 0 of 3 offenders, so it stays a timeline of contacts, never a ruling.
 
+**[Racing pipeline](experiments/2026-10-29-racing-pipeline/LOG.md), 29 and 30 Oct.**
+Do the pieces that each worked alone, the feed, the closed set, the frames and a Meta model's read, make one judge?
+The incident limit found 7 of 7 decisions, and 21 cars are over the limit, no ruling on record.
+The locator held the truth second on 2 of 7 and failed, so the steward gives the moment; around that moment the closed set held the parties on 8 of 10.
+The model's read named the offender on 4 of 8 on both arms against a mark of 8 of 8, every agreed named car right, and the replay was byte-identical offline; it cost $1.76.
+
 **Design notes:** [the forklift scan route](docs/forklift-scan-route.md) sets out, from these measurements, how scripts find candidate moments in long warehouse footage with no report and a model writes only the ruling.
 
 ### What the measurements settled
@@ -546,8 +626,8 @@ Built with Muse Spark Open.
 
 | Model | Id | Served by | Measured for |
 |---|---|---|---|
-| Muse Spark 1.3 | `muse-spark-1.3` | Meta Model API | Rulings from frames, reports and telemetry; router tier 2 until 26 Oct |
-| Muse Spark Open | `meta-models/muse-spark-open-1026` | Baseten | Router tier 2; evidence planning and tool use; native video; compiling rulebooks into packs; forklift rulings from a fact sheet |
+| Muse Spark 1.3 | `muse-spark-1.3` | Meta Model API | Rulings from frames, reports and telemetry; router tier 2 until 26 Oct; the racing judge's read, arm 2 |
+| Muse Spark Open | `meta-models/muse-spark-open-1026` | Baseten | Router tier 2; evidence planning and tool use; native video; compiling rulebooks into packs; forklift rulings from a fact sheet; the racing judge's read, arm 1 |
 | Muse Wonder 1.0 | `muse-wonder-1.0` | Meta Model API | Router tier 3; deeper rulings; grading compiled packs |
 | Muse Glimmer | `muse-glimmer:30b` | Ollama, locally and on a Modal L40S | Router tier 1, from Modal with the local copy as fallback; reading the clock strip and hi-vis vests |
 | SAM 3.1 | `sam-3.1` | Meta Model API | Masks, tracking and contact frames, from a box prompt or from text alone |
@@ -555,6 +635,7 @@ Built with Muse Spark Open.
 | Llama 3.2 1B | `llama3.2:1b` | Locally | Router tier 1, replaced by Glimmer on 26 Oct |
 | DETR ResNet-50 | `facebook/detr-resnet-50` | Locally, pinned, and on Modal CPU | Person counts and tracks; car crops for OCR |
 
+The racing judge calls two of these at runtime: Spark Open as arm 1 and Spark 1.3 as arm 2.
 The task router sends each call to one of three tiers: Glimmer, then Spark Open, then Wonder.
 A classifier trained on the labelled prompts picks the tier, and Glimmer's labels were remeasured by asking it every prompt and judging the answer.
 The judge is Qwen 2.5 7B (`qwen2.5:7b`), run locally; it is not a Meta model and never answers a prompt.
@@ -564,6 +645,7 @@ The probe ledger, shared by the capability probe, the steward limits, Discovery 
 It passed the cap at $20.09 during the 50-case panel test, and I let the panel arm run.
 The router ledger stood at $3.3158 after the Glimmer bench, under a $10 cap in code.
 From round 4 on, each experiment also held its own spend cap in code, checked before every paid call.
+The racing pipeline spent $1.76 on the metering proxy against a $5 limit.
 Glimmer on Modal used $2.68 of GPU time, all covered by Modal's $30 starter credits.
 
 ---
@@ -585,6 +667,8 @@ for pack in load_packs("packs", domain="warehouse-forklift"):
     print(pack.name, len(pack.rules))
 ```
 
+Run the racing judge with the commands in [Racing](#racing).
+
 > [!TIP]
 > After cloning, run `uv run python scripts/install_hooks.py` once.
 
@@ -601,11 +685,13 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 | Path | What it holds |
 |---|---|
 | [`src/faultline/pack.py`](src/faultline/pack.py) | The rules-pack loader |
+| [`src/faultline/`](src/faultline) | The core every data source shares: the record (`record.py`), the reply ledger (`ledger.py`), the closed set (`roster.py`), the name lint (`lint.py`), the model client (`client.py`), the frame cutter (`frames.py`), the model's read (`ruling.py`) and the `faultline` command line (`cli.py`) |
+| [`src/faultline/adapters/pitbot/`](src/faultline/adapters/pitbot) | The racing adapter: the feed, its events, the protest normaliser, the locator, the facts, the incident limit and the `faultline racing` commands |
 | [`packs/`](packs/README.md) | The eight rules packs, and the format in [`packs/README.md`](packs/README.md) |
 | [`experiments/`](experiments/README.md) | One log per measured experiment, with an index |
 | [`docs/`](docs/forklift-scan-route.md) | Design notes; [`docs/forklift-scan-route.md`](docs/forklift-scan-route.md) designs the forklift route for long footage with no report |
-| [`tests/`](tests) | Tests for the loader, the shipped packs, the hook, the history check, the build log, the running count and the provenance text; `tests/fixtures/` holds two small packs |
-| [`scripts/`](scripts) | The hook installer, the history check, the build-log generator and the running-count renderer |
+| [`tests/`](tests) | Tests for the loader, the shipped packs, the racing judge and its adapter, the public-tree sweeps, the hook, the history check, the build log, the running count and the provenance text; `tests/fixtures/` holds two small packs |
+| [`scripts/`](scripts) | The hook installer, the history check, the build-log generator, the running-count renderer, and the racing prep, score and evidence-card scripts |
 | [`.githooks/commit-msg`](.githooks/commit-msg) | The provenance hook |
 | [`PROVENANCE.md`](PROVENANCE.md) | What was built during the hackathon, what existed before it, and the models used |
 | [`PROVENANCE_START`](PROVENANCE_START) | The first hooked commit, where the history check starts |
@@ -614,6 +700,56 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 | [`pyproject.toml`](pyproject.toml), [`uv.lock`](uv.lock) | The project and its locked dev tools |
 | [`assets/`](assets/NOTICE.md) | The images, with their notice in [`assets/NOTICE.md`](assets/NOTICE.md) |
 | [`LICENSE`](LICENSE), [`NOTICE`](NOTICE) | The Apache License 2.0 and the copyright notice |
+
+---
+
+## After the hackathon
+
+The hackathon build stops on 4 November 2026.
+The work does not.
+This is what I build next, in the order I expect to do it, so a reader can see where the project is going and hold me to it.
+
+### Racing truth from the sim's own replay
+
+The racing judge reads a broadcast and a once-a-second position feed, and both are a step away from the truth.
+A sim replay file is the truth: every car's position on every tick, and who touched whom, by construction.
+The file itself is a closed binary, and only the sim decodes it, so the plan is to play it back inside the sim and read the live arrays through the SDK while a script chooses the camera and the car.
+I have the first replay from a league in hand.
+The first step is a probe that proves the per-car arrays fill during playback, and that a script can seek and switch camera.
+If they do, the re-render replaces every screen read for leagues that save their replays, and the judge's racing rulings get a key that nobody drafted.
+
+### Cleaner labels, then the model's read again
+
+The racing corpus labels come from what the reviewer says on the recording, and the labeller counted the word "point" as a penalty.
+The model's three-run read of that corpus loses to the constant answer on the labels as they stand, and beats it on the clean subset.
+The replay of that read costs nothing: every reply is recorded.
+So the next step is a relabel by hand, reviewed before any score is trusted, and the read scored again.
+The rule does not change: a model's read ships beside a ruling only where three runs agree and beat the constant.
+
+### The forklift metre, on a site that states its camera
+
+The judge measured against a synthetic twin found a real error: it read the truck's lowest pixels as the floor, when they are the truck's underside.
+The fix is in and guarded, and it changes nothing on a hand-marked site, because the hand marks do not give a camera.
+On a site that states its camera and the truck's clearance it halves the error in speed and distance.
+That is the first site I want to run it on.
+
+### The twin, closer to a real site
+
+The twin that renders the forklift clips with exact per-frame truth needs a human mesh with clothes instead of a mannequin, lens distortion in the camera model, more than one truck shape, and a clip where a person does not get out of the way.
+Each of those is a parameter the generator draws, so each adds to the same held-out split.
+
+### Reads the judge still refuses
+
+A truck whose outline the frame's edge cuts cannot be read as stopped or reversing from its footpoint, so the judge says unable.
+Reading its direction from the fork end instead is the next measurement to try.
+The commentator scan, which finds candidate incidents in the broadcast, sits under its precision floor, and the next attempt checks every miss against the position feed for a light touch the sim never counted.
+One ruling waits on a site owner, not on code: whether a touch on racking with no visible consequence is a breach when the pack's words say so.
+The judge keeps saying unable until that answer is written into the pack.
+
+### More sims, more sites
+
+The core is domain-neutral and every data source is an adapter.
+The next adapters are a second racing sim's feed and a second kind of site, so the same packs and the same judge run where the rules are written in plain words.
 
 ---
 

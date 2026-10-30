@@ -47,6 +47,14 @@ The trailers record the models the build session declared.
   Each piece in them was generated on Higgsfield with Nano Banana 2, then vectorized with Ideogram Vector: forklift, worker, rack bay, pallet, race car, CCTV pole, dock door, crane hook with load, scaffold, worker in a harness, barrier set, press with a guard, lockout station, operator, traffic light, saloon car, cyclist, aircraft, baggage tug and marshaller.
   The pieces were cleaned and composed into the scenes by private scripts written the same day, which also draw the floors, the track and the junction.
 - The licence files `LICENSE` and `NOTICE`, and `assets/NOTICE.md`, 27 Oct.
+- The racing judge, 29 Oct onward.
+  The core every data source shares: `src/faultline/record.py`, `ledger.py`, `roster.py`, `lint.py`, `client.py`, `frames.py`, `ruling.py` and `cli.py`.
+  The PitBot adapter, `src/faultline/adapters/pitbot/`: the feed, its events, the protest normaliser, the locator, the facts, the incident limit and the `faultline racing` commands.
+  The scripts `scripts/racing_prep.py`, `scripts/racing_score.py` and `scripts/racing_card.py`.
+  It reuses designs from private experiments before it was written.
+  The paired +4 contact pairing (two cars each gaining 4 incident points or more within 8 m of each other) and the feed event thresholds came from private experiments on 27 and 28 Oct.
+  The shape of the record and the reply ledger came from a tournament candidate on 28 Oct.
+  The code was written new in this repo, and its log is `experiments/2026-10-29-racing-pipeline/LOG.md`.
 
 ## Models used
 
@@ -55,4 +63,5 @@ The trailers record the models the build session declared.
 - Measured in the experiments (`experiments/`): Muse Spark 1.3 (`muse-spark-1.3`), Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten), Muse Wonder 1.0 (`muse-wonder-1.0`), Muse Glimmer (`muse-glimmer:30b`, open weights on Ollama, on this machine and on a Modal L40S), SAM 3.1 (`sam-3.1`) and Muse Voice Transcribe 1.0 (`muse-voice-transcribe-1.0`).
   Llama 3.2 1B (`llama3.2:1b`) was measured as a router tier and dropped.
   The local judge in those experiments is Qwen 2.5 7B (`qwen2.5:7b`), which is not a Meta model and never answers a prompt.
-- At runtime in this repo: Meta models, listed here as each is first used (none yet).
+- At runtime in this repo: Meta models, listed here as each is first used.
+  Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten) and Muse Spark 1.3 (`muse-spark-1.3`), called by the racing judge for the model's read, from 30 Oct.
