@@ -222,4 +222,11 @@ They are written here, in their own commit, before the first score.
   Its locator input is the reporter's car alone.
 - Protests 16 and 18 name drivers in full, and both resolve.
 
+### How marks 2 and 3 treat a refusal (30 Oct, from the scorer's review)
+
+- A refused protest is a miss for marks 2 and 3, even when the locator found a window before the refusal.
+- Mark 3's median has two readings, because a refused protest has no set.
+  The mark passes only when both are 4 or fewer: the median over all 10 with a refusal counted as size 0, and the median over the located protests only.
+- Mark 2 prints each window's width beside it, so a wide window that holds the truth second by its width alone shows.
+
 ## Results

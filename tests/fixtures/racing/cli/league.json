@@ -1,0 +1,24 @@
+{
+  "number_map": {"entries": [], "rule": "synthetic: no league numbers"},
+  "pack": {"rule_id": "T1"},
+  "sessions": {
+    "9000100/RACE": {
+      "clause": "9.2.2",
+      "incident_limit": 2,
+      "offset_error_s": 2.0,
+      "offset_s": 1000.0,
+      "session": "RACE",
+      "subsession": "9000100",
+      "track": "Thruxton Circuit"
+    },
+    "9000200/RACE": {
+      "clause": "9.2.2",
+      "incident_limit": 2,
+      "offset_error_s": 2.0,
+      "offset_s": 500.5,
+      "session": "RACE",
+      "subsession": "9000200",
+      "track": "Thruxton Circuit"
+    }
+  }
+}
