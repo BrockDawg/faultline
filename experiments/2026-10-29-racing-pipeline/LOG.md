@@ -194,4 +194,32 @@ The prep script rebuilt both constants from the confirmed table, recomputing the
 - The truth contact second now comes from the answer key on 6 scored decisions and from the video on 1 (decision 24).
 - The car-behind constant uses the answer key's contact second, and the key's offenders were read partly from the same feed, so its 5 of 5 may be partly circular.
 
+## Fixed during the build, before any score (29 to 30 Oct)
+
+These three points were settled while the adapter was built and reviewed, before the locator or the closed set had been scored.
+They are written here, in their own commit, before the first score.
+
+### Locator scope
+
+- An event is in scope when its lap span overlaps the stated lap ±1.
+- An event's lap span runs from the lowest to the highest of the leader's lap and each protest car's own lap, read at the event's start and end.
+- The first build tested only the laps at the event's two ends, so an event spanning the stated lap could be missed.
+  An incident rise whose counter was hidden for a while can span leader laps 5 to 9, and it is in scope for "lap 7".
+
+### Gap collapses: 504, not the catalogue's 501
+
+- The paired +4 count matches the 28 Oct catalogue exactly: 100 across the 11 sessions.
+- The collapse count is 504 against the catalogue's 501.
+- The catalogue looks back 3 feed lines, and the pre-registered rule says 3 seconds.
+  Where the feed repeats a second, 3 lines span less than 3 seconds, and the catalogue misses 3 collapses.
+- This build keeps the pre-registered 3 seconds.
+  The drift test asserts the catalogue's 501 are all found, plus exactly these 3.
+
+### What the protest normaliser resolves
+
+- A lone lower-case word that matches part of a driver's name becomes `[unresolved driver]` rather than refusing the whole protest (protests 23 and 24).
+- Protest 15 names a driver by a first name that another person in the league also holds, so it resolves no named car.
+  Its locator input is the reporter's car alone.
+- Protests 16 and 18 name drivers in full, and both resolve.
+
 ## Results
