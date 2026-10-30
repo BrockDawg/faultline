@@ -55,3 +55,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `e671cc0` | 2026-10-29T18:11:25-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
 | `c7f4f17` | 2026-10-29T18:44:57-0500 | docs: the racing pipeline log names who confirmed the truth, in plain words | claude-opus-5-5 via Claude Code | none |
 | `3a7338a` | 2026-10-29T20:11:47-0500 | docs: the README, provenance and experiment logs speak in the first person | claude-opus-5-5 via Claude Code | none |
+| `bd6972e` | 2026-10-29T20:11:55-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
+| `3a148cc` | 2026-10-29T20:53:41-0500 | fix: the racing prep script's notes and output name no person | claude-opus-5-5 via Claude Code | none |
