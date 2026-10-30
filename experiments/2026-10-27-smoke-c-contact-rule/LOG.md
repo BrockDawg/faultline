@@ -1,6 +1,6 @@
 # Smoke test C: contact assertion rule behind a shot-cut gate
 
-Pieces 7 and 8 of the deterministic-reads design, a private note not in this repo. Scripts on recorded masks cost $0. The one paid SAM track on report 9 ran on Brock's go: $0.0175 ($0.0025 box image, $0.015 video, 75 frames at 30 fps, 26.5-29.0 s).
+Pieces 7 and 8 of the deterministic-reads design, a private note not in this repo. Scripts on recorded masks cost $0. The one paid SAM track on report 9 ran once I approved it: $0.0175 ($0.0025 box image, $0.015 video, 75 frames at 30 fps, 26.5-29.0 s).
 
 ## What was built
 
@@ -28,7 +28,7 @@ The gate earns its place once: on report 10 1684 it removes the assertion born o
 
 1. **The doc's pass mark "no false assertion on the W1-04 windows" is the wrong test.** Report 46 holds a real contact (01 into 334, key stop at 1142), so the rule should assert there, and does on the rescue clip. The right scoring is per window against the key, as above.
 2. **A pixel difference cannot find cuts on a panning broadcast.** Steady shots sat at 6 to 8 against 12 to 17 on cuts. The histogram separates the hard cuts (0.106, 0.135, 0.484 against a median of 0.01 to 0.02).
-3. **The gate finds 3 hard cuts and misses the soft ones.** The notes name cuts by eye at 1137.5, 1142 (report 46) and 1569, 1570, 1574 (report 10). I looked at contact sheets: 1137.5 and 1142 are a continuous pan with no cut; 1568.8 and 1569.6 are real changes of shot in similar scenery that the histogram scores at 0.02 to 0.04. A motion-compensated difference did not separate them cleanly either. So the gate is not yet proven for same-scenery cuts, and the by-eye cut times in the notes are not a reliable truth set.
+3. **The gate finds 3 hard cuts and misses the soft ones.** The notes name cuts by eye at 1137.5, 1142 (report 46) and 1569, 1570, 1574 (report 10). The contact sheets show: 1137.5 and 1142 are a continuous pan with no cut; 1568.8 and 1569.6 are real changes of shot in similar scenery that the histogram scores at 0.02 to 0.04. A motion-compensated difference did not separate them cleanly either. So the gate is not yet proven for same-scenery cuts, and the by-eye cut times in the notes are not a reliable truth set.
 4. **The mask floor (piece 9) catches what the gate misses.** The report 10 1574.3 yaw step is a re-acquisition after a soft cut the histogram scored at 0.02; the area-collapse check removes it.
 5. **The SAM prompt identity holds only in the shot that holds the prompt frame.** After a cut the track is a re-acquisition, so the rule asserts only in the first shot. Not in the doc; it is what removes the post-cut reopening on report 10 1684.
 6. **Gap reopening is the weakest consequence.** Any pass ends with the gap opening. It is kept because the doc names it, but it fires alone on r_report46 at 1140.267, and that one has no second check.
@@ -46,7 +46,7 @@ Deviation: SAM's box call found only the purple car (plus a 29 x 12 px sliver), 
 Which car is #959 and which is #555 was not read: the rule is symmetric in the two cars.
 It is not a project dependency.
 
-## Two more clips (Brock's go; $0.038: report 13 $0.0205, report 9 10-12.5 s $0.0175)
+## Two more clips (I approved them; $0.038: report 13 $0.0205, report 9 10-12.5 s $0.0175)
 
 | Clip | Truth | Rule says | Verdict |
 |---|---|---|---|
@@ -56,10 +56,10 @@ It is not a project dependency.
 
 - **Negative on report 9 fails.** In a chase view the car behind overlaps the car ahead in the picture at 4-9 m, so the masks touch at 1 px for 1.5 s with no contact. The yaw step is the purple car cornering (axis angle -78 to -5 degrees over 0.6 s, noisy frame to frame), and 150 deg/s over 3 frames is under that noise. The rule's three parts cannot tell a bend from a spin on one camera angle. With telemetry the verdict is a flag, not a contact, which is the designed behaviour. Without telemetry it is a false contact.
 - **A relative-yaw fix (heading change minus the other car's) was tried and reverted.** It did not clear the report 9 negative, because the chase camera turns with the black car, so only the purple car appears to rotate. It was written after seeing this clip, so the clip was no longer a held-out test. Kept out.
-- **Report 13 0-3 s was the wrong window.** I read the bracket from the incident-count jumps (te 1375-1378) instead of from the offset table, whose contact is te 1387-1388 = clip 11.5-12.5 s. Silent here says nothing about the rule. Round 4 re-runs it on the right window.
+- **Report 13 0-3 s was the wrong window.** The bracket was read from the incident-count jumps (te 1375-1378) instead of from the offset table, whose contact is te 1387-1388 = clip 11.5-12.5 s. Silent here says nothing about the rule. Round 4 re-runs it on the right window.
 - **What it means for the claim.** One positive (report 9, 0.1 s truth), one clean negative failed, and a wrong-window report 13 that is not evidence. The rule's contact claim holds when the consequence is a spin or a gap reopening on a close camera. It does not hold up as an adjacency-plus-yaw rule on chase footage without telemetry. A fix needs a second signal that tells a bend from a spin (for example the yaw rate against the track curve, or a speed collapse in the victim); that is not built.
 
-## Round 3: more samples (Brock's go, 27 Oct)
+## Round 3: more samples (I approved it, 27 Oct)
 
 Eight windows were planned from the key: three on report 15 (lap-1 contact 4134-4135 s, lap-2 contact 4341.0-4343.5 s, a side-by-side stretch 4205-4208 s, offset 3808.5 +- 1.5 from W0-01), one on report 46 (1139.4-1142.4 s, after the 1139.333 cut) and four report 9 negatives (959 4-9 m behind 555, no contact).
 All eight first-frame box calls ran. Only the four report 9 negatives were tracked.
@@ -76,7 +76,7 @@ The failure needs close following plus a bend, so it is a specific shape, not a 
 
 **Report 15 and report 46 were not tracked, and that is a finding.**
 - Report 15 is an in-car (cockpit) view. The contact is the camera car's own, and the camera car is never a mask, so a two-mask rule has nothing to measure. The boxes found 7, 3 and 3 cars ahead, none of them one of the pair. Own-car contact needs an own-car signal (camera shake, speed collapse, the telemetry bracket), not mask adjacency.
-- Report 46 1139.4 is the wide reverse shot after the cut: seven small boxes in a pack, and I could not tell the orange car from the gold one by eye at that size. Picking blind would make the score meaningless.
+- Report 46 1139.4 is the wide reverse shot after the cut: seven small boxes in a pack, and the orange car could not be told from the gold one by eye at that size. Picking blind would make the score meaningless.
 The box calls for these four windows ($0.0025 each, $0.01 in all) are spent and kept, one folder per window, if a later pick is made.
 
 **Positives still stand at one.** Report 9 27.733 s is the only clip with a sharp truth. The other brackets in the key (report 13 3 s wide, report 46 plus or minus 2 s) are too wide to call a hit or a miss, and report 15 cannot be measured by masks. A second positive needs either a new report 9-style clip with a visible pair and a 0.1 s truth sheet, or a wider tolerance agreed first.

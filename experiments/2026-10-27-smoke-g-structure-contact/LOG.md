@@ -2,7 +2,7 @@
 
 Run on all 10 clips on 27 Oct, $0.146 of SAM.
 The design it tests is piece 13 of [the forklift scan route](../../docs/forklift-scan-route.md).
-Two clips (`bump_guard_cctv_28`, `loading_dock_spotter_08`) had no truck on the first frame, so the box prompt went on frame 12 (1 s) for them, after a retry Brock approved.
+Two clips (`bump_guard_cctv_28`, `loading_dock_spotter_08`) had no truck on the first frame, so the box prompt went on frame 12 (1 s) for them, after a retry I approved.
 
 ## Result
 

@@ -20,13 +20,13 @@ Source: 597 spoken labels from 87 public steward-stream reviews, 584 of them wit
 All 597 labels are drafts: a pattern match on the steward's own captions, the last verdict phrase in a segment.
 None has a human-reviewed label.
 Segments are the presenter's talk, median 132 s, longest 2,628 s.
-So the pilot scores against the steward's own words, read by me, and only for cases that pass that read.
+So the pilot scores against the steward's own words, read once by hand in a pilot, and only for cases that pass that read.
 
 - Pool: window 20 to 120 s, label confidence at least 0.6, verdict penalty, no_action or racing_incident, video on disk: 191 labels (92, 61 and 38).
 - First draw, 20 labels with a 300 s window cap: 7 of 20 closing quotes had no verdict at all (outros, announcements) and 3 windows held several incidents.
   No model had run, so the window cap went from 300 s to 120 s and the draw was redone.
 - Second draw: seeded order by sha256 of seed and label id, at most 2 a video, a quota of 8 penalty, 6 no_action and 6 racing_incident, spares in order.
-- Quote check: I read the last 300 characters of each window.
+- Quote check: the last 300 characters of each window were read.
   A case stays only if the steward states a verdict on one incident there, and a dropped case is replaced by the next spare in its stratum.
 - Result of the check: 35 labels read, 15 dropped, 20 kept from 17 videos, 1,097 s of window in all.
 - The quotes are kept with this experiment's private record, because they name drivers.
@@ -48,7 +48,7 @@ Contact sheets are used because Baseten refuses more than 8 images a call (found
 The plan named the report normaliser, smoke A's closed set, smoke B's clock fix and smoke C's contact gate.
 All four read PitBot replay telemetry, which exists only for the 12 PitBot answer-key cases in [Discovery 3](../2026-10-26-discovery-3/LOG.md), not for the 87 reviews.
 So identity is scored only by what the model says it can name, and contact is the model's own read, not the mask gate.
-This deviation was raised with Brock before the run.
+I was told of this deviation before the run.
 
 ## Marks, fixed before the first run
 
@@ -137,8 +137,8 @@ The mark fixed before the run: the crop counts as the main lever only if agreeme
 - Two independent passes of fresh readers (Claude Opus) read each window's caption text and nothing else.
   For each window they returned whether it rules on exactly one incident, the verdict the steward states, and a short verbatim quote.
 - A case enters the cleaned set only if both passes say one incident and give the same verdict in the three classes.
-- Calibration mark, fixed before cleaning: against my own 35 pilot reads, the pair must agree with me on 29 of 35 or better.
-  If it fails, the cleaned set is not used before Brock decides.
+- Calibration mark, fixed before cleaning: against the 35 pilot reads, the pair must agree with them on 29 of 35 or better.
+  If it fails, the cleaned set is not used before I decide.
 
 | Measure | Result |
 |---|---|
@@ -146,18 +146,18 @@ The mark fixed before the run: the crop counts as the main lever only if agreeme
 | One incident, pass A and pass B | 75 and 78 |
 | The cleaned set | 58 (penalty 26, no_action 18, racing_incident 14) |
 | Cleaned verdict differs from the pattern-match label | 5 of 58 |
-| Calibration against my 35 reads | **24 of 35, the mark was 29: fails** |
-| Of my 20 kept, the pair keeps with my verdict | 9 (mark 17) |
-| Of my 15 dropped, the pair drops | 15 (mark 12) |
+| Calibration against the 35 pilot reads | **24 of 35, the mark was 29: fails** |
+| Of the 20 pilot keeps, the pair keeps with the pilot verdict | 9 (mark 17) |
+| Of the 15 pilot drops, the pair drops | 15 (mark 12) |
 
-- The pair is a high-precision, low-recall filter: nothing I dropped got through, but it dropped 11 of my 20 keeps.
-- Four of the keeps it dropped were later called `label` misses by a grader (one in both rounds, three in round 2), so some of my keeps were loose too.
+- The pair is a high-precision, low-recall filter: nothing the pilot dropped got through, but it dropped 11 of the 20 pilot keeps.
+- Four of the keeps it dropped were later called `label` misses by a grader (one in both rounds, three in round 2), so some of the pilot keeps were loose too.
 - Only 58 of 191 windows (30%) hold one stated verdict by the two-reader rule.
 
-### The run, on Brock's override
+### The run, on my override
 
-Brock chose to run the 58 after the calibration failed.
-That is his decision against the rule fixed before cleaning, and it is recorded as his, not as the calibration passing.
+I chose to run the 58 after the calibration failed.
+That is my decision against the rule fixed before cleaning, and it is recorded as mine, not as the calibration passing.
 The configuration is round 1's, unchanged; the 20 pilot cases also in the 58 reused their round 1 replies at no cost.
 Two fresh graders staged a seeded sample of 40 of the 42 misses.
 
@@ -207,7 +207,7 @@ Stage table, 40 sampled misses: contact 13, locating 11, identity 7, ruling 6, l
 ## What it does not prove
 
 - The labels are the steward's words read through a pattern match and a quote check, not a reviewed answer key.
-- The cleaned set failed its own calibration (24 of 35) and was run on Brock's choice; the 58 are likely clean but not complete, and say nothing about the 133 windows left out.
+- The cleaned set failed its own calibration (24 of 35) and was run on my choice; the 58 are likely clean but not complete, and say nothing about the 133 windows left out.
 - Graders ran one pass each, so stage splits are readings, not counts.
 - Identity and contact are the model's read, not the telemetry closed set or the mask gate, so this is not the full pipeline of the design brief.
 

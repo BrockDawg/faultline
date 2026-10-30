@@ -2,7 +2,7 @@
 
 Every model call faultline makes goes through this task router, so the tier it picks sets the steward's cost and its quality floor.
 The plan here is the written plan this build followed, in four checkpoints.
-What we built, how we ran it, what it cost and what we found.
+What I built, how I ran it, what it cost and what I found.
 All times are Central (CDT, UTC-5), from the proxy ledger, the Modal dashboard and git, unless marked otherwise.
 
 ## Result
@@ -46,13 +46,13 @@ And once it can, which of the 220 labelled prompts can Glimmer actually answer, 
 - 21:10 `deploy/modal/glimmer.py`, `deploy/modal/README.md` and the `modal_route` and `modal_problem` fields in `proxy.json` built; `tests/test_modal_deploy.py` (8 static tests, each guarantee shown red by mutation).
 - 21:20 Found a pre-existing race: `test_stop_and_status` failed 9 times in 300 repeats. `stop` and the server thread both rewrote `proxy.json`, so a read between truncate and write saw a half-written file. One lock now serialises every in-process read and write: 0 failures in 300 repeats, and a regression test that fails without the lock (177 misses in 1 s).
 - 21:30 Full suite 1687 passed. Ruff clean on `src`, `tests` and `deploy`. The repo-wide ruff run is red only in other runs' `experiments/` scripts, left alone.
-- 21:35 Brock signed in to the Modal workspace (`python -m modal token new`), made a proxy auth token and put `MODAL_PROXY_TOKEN` and `MODAL_STYLE` into `.env` by hand. The `modal` command is not on this PC's shell PATH, so the README uses `python -m modal`.
+- 21:35 I signed in to the Modal workspace (`python -m modal token new`), made a proxy auth token and put `MODAL_PROXY_TOKEN` and `MODAL_STYLE` into `.env` by hand. The `modal` command is not on this PC's shell PATH, so the README uses `python -m modal`.
 - 21:40 The first pull never ran: the Modal CLI crashed on the tick mark in its own output (`'charmap' codec can't encode character '✓'`). With `PYTHONUTF8=1` it ran.
 - 21:48 to 21:57 The pull, on a CPU container: Ollama `0.40.11` installed from the `.tar.zst` archive (the pin holds), `muse-glimmer:30b` pulled in 8 min 40 s, ID `de878ce33ad8`, 18 GB, the same ID as this PC's copy.
 - 22:00 `modal deploy` in 2 s: `Glimmer.serve -> <modal endpoint>`, proxy-auth locked. The lock check: no token `401`, a wrong Bearer `401`, and no container started.
 - 22:04 First calls through the proxy: `502 upstream unreachable: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired`. The proxy trusted the Windows certificate store, which on this PC builds an expired chain to Modal's Let's Encrypt (`YE2`) certificate. The same request with certifi's bundle got Modal's `401`. Fix: every upstream verifies against certifi (now a direct dependency), the proxy still starts without it on the OS store, and its start-up line names which (`upstream TLS trusts certifi 2026.10.23.`).
 - 22:08 The relock made `uv sync` fail on `tourney.exe`, held open by the running d0 proxy, after it had already removed `task-router.exe`, `cap-probe.exe` and `steward-eval.exe`. Moving the in-use launcher aside (`tourney.exe.in-use-by-d0`) let the sync finish with d0 untouched.
-- 22:12 Modal's edge answered `401 missing credentials for proxy authorization`: the token in `.env` was a Modal API token (`ak-`), not a proxy auth token (`wk-` / `ws-`). Brock made a proxy auth token. With it, the Bearer form passes the edge, so the plan's header was right. Added: a token not shaped `<token-id>.<token-secret>` leaves the route off with a plain message, and a client's own `Modal-Key` / `Modal-Secret` headers are never forwarded.
+- 22:12 Modal's edge answered `401 missing credentials for proxy authorization`: the token in `.env` was a Modal API token (`ak-`), not a proxy auth token (`wk-` / `ws-`). I made a proxy auth token. With it, the Bearer form passes the edge, so the plan's header was right. Added: a token not shaped `<token-id>.<token-secret>` leaves the route off with a plain message, and a client's own `Modal-Key` / `Modal-Secret` headers are never forwarded.
 - 22:19 The first end-to-end call through the proxy: `200`, `Ready.`, cold call 30.9 s (the container was already starting), warm call 2.8 s. The activity entries read `provider: modal`, `family: muse`, `meta: true`, `qualifies: true`, `usd: 0.0`. `task-router proof`: `modal/muse-glimmer:30b` listed, `reconcile OK` (245 of 245).
 - 22:19 `reasoning_effort` on the Modal build: `"none"` gave 24 completion tokens, the default gave 100 for the same prompt, so `"none"` works on Modal as it does locally and stays.
 - 22:25 Full suite 1707 passed, ruff clean on `src`, `tests` and `deploy`.
@@ -70,7 +70,7 @@ And once it can, which of the 220 labelled prompts can Glimmer actually answer, 
 - 23:19 Warm-up probe `via modal` in 73.8 s (cold start).
 - 23:20 to 23:34 `relabel --workers 4 --confirm --no-apply`: 220 of 220 answered `via modal` (none local, none cached), every answer `finish_reason: stop`, median 13.7 s, longest 33.0 s, 14 minutes in all.
 - The verdicts: Glimmer passed the judge on 206 of 220 (93.6%). By prior tier: tier 1, 38 pass and 2 fail. Tier 2, 119 pass and 11 fail. Tier 3, 49 pass and 1 fail. Traps: 20 of 20 pass, including the 5 drafted at tier 3.
-- The finding that stops the apply: the judge's reason on the tier-3 traps reads "On topic, no invented details". It checks topic and invention, not whether the ruling is right. Applied by the plan's rule, 168 labels would move to tier 1 (119 from tier 2, 49 from tier 3) on a judge that cannot tell a right ruling from a fluent one. The labels are unchanged (`--no-apply`); the apply waits for Brock's call.
+- The finding that stops the apply: the judge's reason on the tier-3 traps reads "On topic, no invented details". It checks topic and invention, not whether the ruling is right. Applied by the plan's rule, 168 labels would move to tier 1 (119 from tier 2, 49 from tier 3) on a judge that cannot tell a right ruling from a fluent one. The labels are unchanged (`--no-apply`); the apply waits for my call.
 
 ### Checkpoint 3 close: labels, review and training (27 Oct)
 
@@ -78,7 +78,7 @@ And once it can, which of the 220 labelled prompts can Glimmer actually answer, 
 - The 14 misses re-asked with a brevity line: 12 pass. Those passes were not used; the originals stand.
 - A stricter judge (graded against each row's own `why`, fails when unsure) passed 129 of 206. Traps held fixed at their labels throughout: strict still passed hard traps 02, 04 and 05.
 - Fresh reviewing agents read every strict-confirmed move from the prompt text alone: tier 3 to 1, 6 of 29 safe; tier 2 to 1, 32 of 65 safe. The 7B judges wrongly passed 56 of 94. Three one-off scripts did this work: `redo_misses.py` re-asks the misses, `strict_rejudge.py` re-judges strictly and `apply_strict.py` applies the result; their answers stay in gitignored `router-state/`.
-- A fresh audit by a Fable agent found three more labels to put back (done) and asked for Brock's original `why` to be kept (`prior_why`, done).
+- A fresh audit by a Fable agent found three more labels to put back (done) and asked for my original `why` to be kept (`prior_why`, done).
 - Final labels: tier 1 = 66, tier 2 = 108, tier 3 = 46 (from 40 / 130 / 50). No trap moved.
 - The 9 moved down are drafted tier-1 rows whose Glimmer answer failed, which the rule sends to tier 2: 2 failed the 7B judge, and 7 passed it but failed the strict re-judge (`router-state/strict-rejudge.jsonl`).
 - Classifier v1 before the floor, on the model trained before the Fable audit's three put-backs: held-out accuracy 69.1%, traps 44.4%, three short hard traps (01, 02, 03) routed to tier 2. The saved v1 without the floor scores 70.9%, under-route 5.5%, traps 55.6% (recomputed 27 Oct).
@@ -88,7 +88,7 @@ And once it can, which of the 220 labelled prompts can Glimmer actually answer, 
 
 ### Checkpoint 4: the bench (27 Oct)
 
-- Run with the paid gate open, `serve` stopped, Modal warm (`tier1-probe` via modal), router cap headroom $6.69 against a $18.08 worst case. Brock chose to run as is.
+- Run with the paid gate open, `serve` stopped, Modal warm (`tier1-probe` via modal), router cap headroom $6.69 against a $18.08 worst case. I chose to run as is.
 - 55 held-out prompts, both arms, judged by local qwen2.5:7b (a weak judge: see the checkpoint 3 audit). Routed: tier 1 = 5, tier 2 = 35, tier 3 = 15. All-tier-3: 55.
 - Quality: routed 92.7% (51 of 55) against all-tier-3 92.7% (51 of 55).
 - Cost in the ledger: routed $0.0079, all-tier-3 $0.0000. This is flattered by the proxy cache: 52 of 55 routed calls and all 55 all-tier-3 calls were repeats of earlier bodies and cost $0. At list price the routed arm is $0.82 against $2.37 for all-tier-3 (65% lower).
@@ -104,7 +104,7 @@ And once it can, which of the 220 labelled prompts can Glimmer actually answer, 
 
 ## Cost
 
-### Modal (GPU seconds, Brock's own account)
+### Modal (GPU seconds, my own account)
 
 - Dashboard: total usage $2.68 for the billing cycle 1 to 31 Oct 2026, read from the Modal usage page at about 00:50 on 27 Oct. All of it was covered by the $30 Starter credits, so $0 was charged. Usage limit $30.
 - The page's breakdown reads $2.75 deployed apps and $0.01 ephemeral apps, which does not sum to the $2.68 headline.
@@ -123,16 +123,16 @@ And once it can, which of the 220 labelled prompts can Glimmer actually answer, 
 ## Decision
 
 - Glimmer on Modal stays as tier 1 (`modal/muse-glimmer:30b`), with local Ollama `muse-glimmer:30b` as the fallback.
-- The labels as reviewed are the ones v1 is trained on: tier 1 = 66, tier 2 = 108, tier 3 = 46, with every moved row keeping Brock's original `why` as `prior_why`.
+- The labels as reviewed are the ones v1 is trained on: tier 1 = 66, tier 2 = 108, tier 3 = 46, with every moved row keeping my original `why` as `prior_why`.
 - The 7B judge's pass is not evidence of correctness on its own. It checks topic and invention, not whether a ruling is right, so the moves rest on the strict re-judge, the fresh reviewing agents and the Fable agent's audit, not on the 206 of 220.
 - The tier-2 pass (`--tier2-pass`) did not run, so the boundary between tier 2 and tier 3 still rests on the draft labels plus the floor.
 
 ## Open
 
-- Brock did not run `label review --moved`. The moved labels were reviewed by fresh reviewing agents and an audit by a Fable agent on his say-so.
+- I did not run `label review --moved`. The moved labels were reviewed by fresh reviewing agents and an audit by a Fable agent on my say-so.
 - The tier-2 pass (`--tier2-pass`) did not run.
 - Relabel timestamp: `router-data/tier1-verdicts.jsonl` runs from 2026-10-27T04:21:02Z to 2026-10-27T04:34:21Z (23:21:02 to 23:34:21 on 26 Oct). A later `retrain` can drop audit training rows older than that.
 - The Modal 303 behaviour (a request over 150 s turned into a redirect to a result URL) was never seen in this run: the longest relabel answer took 33.0 s, and the ledger's Modal statuses are 451 `200`, 4 `401` and 2 `502`, all at checkpoint 1.
 - The router cap also refuses Modal calls at the cap, so tier 1 would answer locally mid-run without a word.
-- Whether the router proxy on 8766 runs as a scheduled task is still Brock's call.
+- Whether the router proxy on 8766 runs as a scheduled task is still my call.
 - The floor firing is not written to the audit record (it needs a column).

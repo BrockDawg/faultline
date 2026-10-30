@@ -122,9 +122,9 @@ Do those flips find human-penalty cases better than the same number of flips at 
 **No.** The gain is the penalty base rate: the shipped ruling says penalty on 8 of 44, the humans on 18.
 The paid replication of penalty voting is off.
 
-### 3. Brock's check of the four confident misses
+### 3. My check of the four confident misses
 
-Brock watched 335, 391, 452 and 502, and all four labels hold as penalty, so nothing is rescored.
+I watched 335, 391, 452 and 502, and all four labels hold as penalty, so nothing is rescored.
 On 335 the penalty belongs to the car that hit the driver the clip follows, a point the verdict-only key does not score.
 Every one of the four shipped rulings reasons "no contact visible, so no action"; on 452 the model saw the rejoin and still ruled no action, so that miss is rules knowledge, not vision.
 

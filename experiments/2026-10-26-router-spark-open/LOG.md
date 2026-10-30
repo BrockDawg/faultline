@@ -2,7 +2,7 @@
 
 Every model call faultline makes goes through this task router, so its choice of tier sets the steward's cost and its quality floor.
 
-What we tested, how we ran it, what it cost and what we found.
+What I tested, how I ran it, what it cost and what I found.
 All times are Central (CDT, UTC-5) on Monday 26 Oct 2026, from the proxy ledger and git, unless marked otherwise.
 
 ## Result
@@ -22,9 +22,9 @@ The routed router stays within two to four points of sending everything to Wonde
 
 ## Question
 
-Brock received a $100 Baseten API key (2M tokens a minute) for Muse Spark Open, sent with the hackathon emails.
+I received a $100 Baseten API key (2M tokens a minute) for Muse Spark Open, sent with the hackathon emails.
 Baseten offers no spend cap on its site, so the router's own $10 cap in code is the only cap.
-Brock saved the key into the `.env` at 18:05 (the file's modified time).
+I saved the key into the `.env` at 18:05 (the file's modified time).
 
 Can Muse Spark Open replace `muse-spark-1.3` as the router's tier 2 without losing answer quality?
 If it can, tier 2 spends the Baseten credit instead of the $150 Meta credit.
@@ -46,9 +46,9 @@ When: 26 Oct, before the first paid call at 18:08 (no exact time kept).
 Sources: artificialanalysis.ai/models/muse-spark-open, artificialanalysis.ai/models/muse-spark-1-3, orcarouter.ai/blog/muse-spark-open-vs-muse-spark-1-3, dev.meta.ai/models/muse-spark-open, baseten.co/library/muse-spark-open.
 Baseten's page gives the size as 816B-A42B (a mixture-of-experts model) and no benchmarks.
 
-None of these tests measure our job, ruling on racing incidents.
+None of these tests measure my job, ruling on racing incidents.
 A weaker tier 2 also sends more prompts up to Wonder, which costs $20 per 1M output tokens.
-So we measure on our own held-out set instead of trusting the general scores.
+So I measure on my own held-out set instead of trusting the general scores.
 
 ## How it runs (technical)
 
@@ -56,7 +56,7 @@ So we measure on our own held-out set instead of trusting the general scores.
   Port 8765 belongs to the `d0` probe proxy, so the router proxy moved to 8766.
 - Each call is a line in `runs/router/spend.jsonl` (the ledger), with a UTC timestamp.
 - Router cap: `TOURNEY_ROUTER_CAP_USD`, not set in `.env`, so the code default of $10 applies.
-- The Baseten key sits in `.env` as `BASETEN_API_KEY`, put there by Brock.
+- The Baseten key sits in `.env` as `BASETEN_API_KEY`, which I put there.
   The proxy sends any `meta-models/...` model to `https://inference.baseten.co/v1` with that key.
 - The bench: `task-router bench --set heldout --confirm` (described in the "Bench" section of the router's guide).
   It replays the 55 frozen held-out prompts twice: once through the router as it routes live, once forced to tier 3.
@@ -99,7 +99,7 @@ One held-out prompt, sent with `scripts/len_check.py` at `max_tokens` 256:
 | default effort, `max_tokens` 2048 | 725 tokens, `stop` | 993 tokens, `stop` | 883 tokens, `stop` |
 
 - Meta's API accepts `minimal`, `low`, `medium`, `high`, `xhigh` and `max` for Spark 1.3 and Wonder.
-- Between 18:10 and 18:23: Baseten's reasoning docs (docs.baseten.co/inference/model-apis/reasoning, link from Brock) confirm Spark Open always reasons.
+- Between 18:10 and 18:23: Baseten's reasoning docs (docs.baseten.co/inference/model-apis/reasoning, a link I supplied) confirm Spark Open always reasons.
   Its values are `low`, `medium`, `high` and `xhigh` (the default), and `none` and `minimal` run at `low`.
 - Both APIs count reasoning inside `max_tokens`, and the answer comes back in `content`, the reasoning in `reasoning_content`.
 - Finding: the router gave every paid call 256 tokens, so every paid answer came back empty, live and in the bench.
@@ -173,8 +173,8 @@ The first estimate was $2 to $3 for both runs, and the total came to $3.31.
 
 ## Decision
 
-Brock, 26 Oct about 19:15 (chat message, no exact time kept): tier 2 switches to `meta-models/muse-spark-open-1026`.
-His reason: Spark Open scored close to Spark 1.3, and the steward should use more of Meta's open-weights models.
+My call, 26 Oct about 19:15 (chat message, no exact time kept): tier 2 switches to `meta-models/muse-spark-open-1026`.
+My reason: Spark Open scored close to Spark 1.3, and the steward should use more of Meta's open-weights models.
 
 ## Open
 

@@ -1,7 +1,7 @@
 # Smoke test H: person detector and one ruling (27 Oct 2026)
 
 Part 1 is free and local.
-Part 2 is paid: six Spark Open calls through the metering proxy, on Brock's go.
+Part 2 is paid: six Spark Open calls through the metering proxy, once I approved them.
 The design it tests is pieces 3 and 12 of [the forklift scan route](../../docs/forklift-scan-route.md).
 
 ## Part 1: DETR ResNet-50 on the 16 fixed-camera clips

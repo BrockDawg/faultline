@@ -14,7 +14,7 @@ PRE_EXISTING_HEADING = "## What existed before the hackathon"
 
 ROUTER_SENTENCE = (
     "Pre-existing tooling I'd built, which already routed to Meta models. "
-    "During the hackathon we extended it to:"
+    "During the hackathon I extended it to:"
 )
 
 # The one regulation citation the section must carry; its part number reads like a year.

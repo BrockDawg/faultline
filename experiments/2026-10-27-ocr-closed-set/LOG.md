@@ -2,7 +2,7 @@
 
 It builds on [smoke test A](../2026-10-27-smoke-a-closed-set-identity/LOG.md) (the snap rule and the 8 m closed set) and the [Discovery 3](../2026-10-26-discovery-3/LOG.md) answer key.
 The first run used scripts and the CPU only, for $0.
-A retest with SAM boxes cost $0.105 of SAM, on Brock's go.
+A retest with SAM boxes cost $0.105 of SAM, once I approved it.
 Both runs failed.
 
 ## Question

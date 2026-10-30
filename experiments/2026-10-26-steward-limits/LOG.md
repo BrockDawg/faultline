@@ -1,6 +1,6 @@
 # Steward limits: experiment log (26 Oct 2026)
 
-What we ran to find out what a video-only steward on Meta's models can do, how we ran it, what it cost and what we learned.
+What I ran to find out what a video-only steward on Meta's models can do, how I ran it, what it cost and what I learned.
 
 ## Question
 
@@ -18,7 +18,7 @@ It may serve only as an answer key for grading.
 - Every Meta call goes through the metering proxy, run `d0`, on 127.0.0.1:8765, under the `tourney-probe` token.
 - The proxy runs from the scheduled task "ai-steward d0 proxy" (`runs/d0/proxy-loop.ps1`), which restarts it 60 s after any exit.
 - Each call is a line in `runs/d0/spend.jsonl` (the ledger).
-- Probe cap: `TOURNEY_PROBE_CAP_USD`, raised from $5 to $10 on Brock's word on 26 Oct and to $20 at 19:35 Chicago, set in `proxy-loop.ps1`.
+- Probe cap: `TOURNEY_PROBE_CAP_USD`, raised from $5 to $10 on my word on 26 Oct and to $20 at 19:35 Chicago, set in `proxy-loop.ps1`.
 - Models:
   - `muse-spark-1.3`: chat completions with images, $1.25 in / $4.25 out per 1M tokens.
   - `muse-wonder-1.0`: same API, $4 in / $20 out per 1M tokens.
@@ -56,7 +56,7 @@ Runs 1 to 9 ran on 26 Oct, 15:46 to 17:26 Central, by the ledger's timestamps.
 
 Spend: $0.330 measured on the ledger for runs 1 to 9 (48 lines; the ledger stood at $0.445 after run 9, the rest being the capability probe's calls).
 The 31 SAM calls among those lines came before the meter fix, so the ledger logs them at $0 with no frame count; their cost was estimated at about $0.21 early on and about $0.47 later, and the ledger cannot settle which.
-Brock's dashboard showed $149.74 left after run 3, which matched the reconstruction.
+My dashboard showed $149.74 left after run 3, which matched the reconstruction.
 
 ## Findings from runs 1-9
 

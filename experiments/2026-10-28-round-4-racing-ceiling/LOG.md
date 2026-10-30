@@ -121,7 +121,7 @@ These stewards narrate fault and verdict in one breath, so the oracle cannot be 
 ### Frontier reader on the masked frames ($0)
 
 The earlier run's own frame times (17 frames per case), with the race-control log and penalty text masked, as 116 contact sheets.
-Claude Opus read them on Brock's subscription, sheets and the same prompt only, no captions or labels, and returned 58 of 58 parsed answers.
+Claude Opus read them on my subscription, sheets and the same prompt only, no captions or labels, and returned 58 of 58 parsed answers.
 The free-tier routes send text only, so no free-tier model could read a frame.
 
 | Measure | Claude Opus, masked frames | Spark Open, earlier run (unmasked) |
@@ -168,7 +168,7 @@ The key cannot be cleared until people rate the same frames blind.
 | Scoreboard, ranking | 0 | $0 |
 | SAM pass | 232 | $1.479 |
 | Oracle | 0 (leak mark failed) | $0 |
-| Frontier reader | Claude Opus on Brock's subscription | $0 |
+| Frontier reader | Claude Opus on my subscription | $0 |
 | Total | | **$1.479 of the $6.00 cap** |
 
 ## Needs

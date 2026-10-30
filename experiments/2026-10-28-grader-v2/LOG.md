@@ -86,7 +86,7 @@ Every pass mark met, on the real 26 clips.
 - Two full grades of both stubs gave byte-identical score files and leaderboard.
 - Nine source mutations each turned at least one test red: a false breach not counted, a duplicate id accepted, any verdict accepted, invented fields ignored, bare literals ignored, the gate ignored, the key review skipped, the allowed rules dropped, and a one-byte replay drift with the guard off.
 - Deviation: the key pin is the hash of the key's canonical JSON, not of the file bytes, so a line-ending change never trips it while any content change does.
-- That evening, on Brock's decision, the key file itself took the three reviewed labels and the grader's own override was removed.
+- That evening, on my decision, the key file itself took the three reviewed labels and the grader's own override was removed.
   The stub scores did not move, and two grades were still byte-identical.
 
 ## Wave 1 (29 Oct)
@@ -94,7 +94,7 @@ Every pass mark met, on the real 26 clips.
 The first scores were wrong: judge and compile spent from each candidate's own $1 cap, most of which were already spent, and every failed call counted as an invalid line.
 The fix gives the grader its own cap, $0.75 a candidate; an invalid line now means one that breaks the schema, and an id with no line is counted apart as missing.
 The ranking rule is unchanged.
-All 16 were graded again at their collected commits, on Brock's word.
+All 16 were graded again at their collected commits, on my word.
 
 | # | Candidate | Gate | False breaches | Found | Unable | Invalid | Missing | Replay | Compile | Invented | Bare |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -119,7 +119,7 @@ All 16 were graded again at their collected commits, on Brock's word.
   The top three find 3 of 14 and leave 62 to 75 of 96 rulings unable.
 - wild-01 ranks fourth with 0 found: it rules every clip clear, and its replay fails.
 - wild-03 (12 of 14 found, 2 false) and wild-09 (9 of 14 found, 1 false, compile 4 of 4, replay pass) are the strongest judges on recall.
-- The rule stays as registered; it rewards abstention, which is for Brock to weigh before wave 2.
+- The rule stays as registered; it rewards abstention, which is for me to weigh before wave 2.
 
 ## Spend
 

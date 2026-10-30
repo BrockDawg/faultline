@@ -8,7 +8,7 @@
 faultline is a rules-compliance judge for video.
 Give it a rules pack and footage, and it says for each rule whether it was followed and who broke it.
 Every output is a ruling: the rule, the offender and the evidence, never tips or statistics.
-It covers two domains today: warehouse forklifts, under OSHA 29 CFR 1910.178 and each site's own rules, and sim-racing leagues on PitBot (pitbot.gg), Brock's league management platform.
+It covers two domains today: warehouse forklifts, under OSHA 29 CFR 1910.178 and each site's own rules, and sim-racing leagues on PitBot (pitbot.gg), my league management platform.
 
 <table>
 <tr>
@@ -214,7 +214,7 @@ Airport ramps, the airport's ramp rules: a baggage tug drives inside the wing-ti
 
 ## What was measured
 
-Before designing the steward, we measured what Meta's models can and cannot do on real league footage, with real driver reports and human steward decisions as the answer key.
+Before designing the steward, I measured what Meta's models can and cannot do on real league footage, with real driver reports and human steward decisions as the answer key.
 The forklift side was measured on synthetic warehouse clips against a hand key, and on a rendered aisle that records its own truth.
 Each experiment has one log with the question, the run, the cost, the findings and the decision; the index is [experiments/README.md](experiments/README.md).
 
@@ -269,7 +269,7 @@ The first batch scored 18 right, 4 wrong and 3 not scorable for $1.998; the seco
 **[Router tier 2: Spark Open](experiments/2026-10-26-router-spark-open/LOG.md), 26 Oct.**
 Can Muse Spark Open replace `muse-spark-1.3` as the router's tier 2 without losing answer quality?
 Spark Open passed 49 of 55 (89.1%) against Spark 1.3's 50 of 55 (90.9%), at about the same cost per call.
-Brock switched tier 2 to Spark Open, because it scored close and the steward should use more of Meta's open-weights models.
+I switched tier 2 to Spark Open, because it scored close and the steward should use more of Meta's open-weights models.
 
 **[Discovery 3](experiments/2026-10-26-discovery-3/LOG.md), 26 Oct.**
 Which of 28 follow-up tests on footage, telemetry and tools change the steward design?
@@ -561,7 +561,7 @@ The judge is Qwen 2.5 7B (`qwen2.5:7b`), run locally; it is not a Meta model and
 
 Every paid call went through a metering proxy that holds the API key and enforces a spend cap, apart from two direct calls to Baseten of well under a cent.
 The probe ledger, shared by the capability probe, the steward limits, Discovery 3, the steward panel and smoke test C, stood at $13.82 of its $20 cap after Discovery 3 and $16.67 after the steward panel and $16.81 after smoke test C.
-It passed the cap at $20.09 during the 50-case panel test, and Brock let the panel arm run.
+It passed the cap at $20.09 during the 50-case panel test, and I let the panel arm run.
 The router ledger stood at $3.3158 after the Glimmer bench, under a $10 cap in code.
 From round 4 on, each experiment also held its own spend cap in code, checked before every paid call.
 Glimmer on Modal used $2.68 of GPU time, all covered by Modal's $30 starter credits.

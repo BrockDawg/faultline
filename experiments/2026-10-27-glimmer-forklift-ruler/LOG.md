@@ -1,7 +1,7 @@
 # Glimmer as tier-1 ruler and weak labeller on the forklift clips (27 Oct 2026)
 
 Part A6 ran on the live Modal app (8,192-token context).
-Part A3 first stood blocked by its own 32K rule; Brock chose to run it on the live app as a written amendment, made before any A3 call, and it then ran and failed.
+Part A3 first stood blocked by its own 32K rule; I chose to run it on the live app as a written amendment, made before any A3 call, and it then ran and failed.
 The design it tests is pieces 7 and 9 of [the forklift scan route](../../docs/forklift-scan-route.md) (A6) and the scan-mode ruling tier (A3).
 Pass marks, prompts and void rules were written down before any Glimmer call.
 
@@ -70,8 +70,8 @@ Reported, not gated:
 - The marks said A3 runs only on a 32,768 context with prompts of at least 5,000 tokens.
   The 32K redeploy of [Glimmer at 32K](../2026-10-27-glimmer-32k-two-cameras/LOG.md) had been rolled back, because its 64-image call dropped frames.
 - A probe call with smoke J's real prompt read 3,982 prompt tokens, five frames included, so the frames fit; the 12,000-token reply budget did not.
-  The 5,000 gate was my guess from Spark's image size and was wrong for Glimmer.
-- Brock chose to run it anyway.
+  The 5,000 gate was a guess from Spark's image size and was wrong for Glimmer.
+- I chose to run it anyway.
   Amendment 3 changed only the run conditions: the live 8,192 app, a prompt gate of 3,500 tokens, `max_tokens` 3,500, `reasoning_effort` none, and a `length` finish counted as a fail.
   The pass marks did not change.
 

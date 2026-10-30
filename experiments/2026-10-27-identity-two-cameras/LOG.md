@@ -47,8 +47,8 @@ Prompt tokens scale now: 1,240 for one camera, 2,235 for both.
 
 - Glimmer on Modal reads POS and lap boxes reliably, so it works as a locator.
 - Camera A's car is described three different ways across the two a calls, so "who is A" is not stable.
-- The only number read is "6" on camera B's car. B's frames show the camera car's own hood only at the bottom edge, so I do not trust it.
-- The one cross-camera match came only in the "both" call. I have no ground truth for it.
+- The only number read is "6" on camera B's car. B's frames show the camera car's own hood only at the bottom edge, so it is not trusted.
+- The one cross-camera match came only in the "both" call. There is no ground truth for it.
 - The model named no culprit in any call.
 - Nothing here says a second camera settles identity. It also does not say it fails.
 
@@ -63,7 +63,7 @@ Prompt tokens scale now: 1,240 for one camera, 2,235 for both.
 
 1. Build a key by eye for this window: which car in A is which car in B, by number.
 2. Raise `OLLAMA_CONTEXT_LENGTH` on the Modal app.
-   That needs a redeploy and changes the router's tier 1 too, so it needs Brock's call.
+   That needs a redeploy and changes the router's tier 1 too, so it needs my call.
 3. Send crops of the cars from SAM instead of whole frames, so each image is cheap and more fit.
 
 ## Cost

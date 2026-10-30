@@ -45,13 +45,13 @@ This build tests the pieces together, which no run has done yet.
 ### Truth
 
 - Three sources sit side by side for each decision: the catalogue's penalised car, the answer key joined by session, lap and cars (never by id), and the decisions file's penalised driver resolved to a car number in memory.
-- Every disagreement is a conflict row for Brock to settle, never resolved by code.
-- Nothing is scored until Brock has confirmed the table.
+- Every disagreement is a conflict row for me to settle, never resolved by code.
+- Nothing is scored until I have confirmed the table.
 - A truth contact second exists only where the answer key gives one: decisions 1, 11, 13, 15, 16, 23 and 46, so n is 7 for the locator.
   Decisions 14, 18 and 24 are reported and not scored for the locator.
 - Answer key report 23 (car 12 on car 18, lap 27) matches both decision 23 and decision 24 by session, lap and cars.
-  The prep script attaches it to neither and lists both assignments for Brock, so the draft holds 6 contact seconds until he rules.
-  The locator's 7 assumes he gives that key row to decision 23.
+  The prep script attaches it to neither and lists both assignments for me, so the draft holds 6 contact seconds until I rule.
+  The locator's 7 assumes I give that key row to decision 23.
 
 ### The pipeline
 
@@ -72,7 +72,7 @@ It sends the window, the closed set, the facts and the frames to the steward, an
 1. Rule A, incident limit (a drift check, not new evidence: it must reproduce the 29 Oct result): 7 of 7 incident-total decisions found (19, 20, 22, 25, 26, 27, 28), breaching cars with no decision listed as "not ruled" under 9.9, byte-identical over two runs.
 2. Locator: the window holds the key's `closest_te` ±2 s on at least 5 of the 7 decisions with a truth second (1, 11, 13, 15, 16, 23, 46). Decisions 14, 18 and 24 are reported, unscored. The 10 were chosen because they already match feed events, which flatters the locator: say so in the LOG. The 9 on-track decisions with no feed match (2, 3, 4, 5, 6, 7, 9, 10, 48) run too and are expected to refuse, and the LOG counts them.
 3. Closed set: every truth party (offender and victim, through the number map) is inside the candidate set on at least 7 of the 10, median set size 4 or fewer. Rule B alone scored 2 of 9 (decision 1 left out there): show both denominators side by side.
-4. Model's read, offender: n is the count of decisions with a Brock-confirmed offender. The mark is fixed in this section after the two constants are computed in `racing_prep.py` and before any model call: an agreed read names the truth offender on more decisions than the better constant. If the better constant already scores n of n, mark 4 is "equal to it with every read agreed", and the LOG says the constant is hard to beat. No agreed read counts as not right.
+4. Model's read, offender: n is the count of decisions with an offender I confirmed. The mark is fixed in this section after the two constants are computed in `racing_prep.py` and before any model call: an agreed read names the truth offender on more decisions than the better constant. If the better constant already scores n of n, mark 4 is "equal to it with every read agreed", and the LOG says the constant is hard to beat. No agreed read counts as not right.
 5. Model's read, verdict: reported only, no mark, because the constant "penalty" already scores most rows.
 6. Replay: `faultline replay` rebuilds preds byte-identical with the network blocked, on two runs.
 7. Spend: at most $5 on the d0 proxy for this build.
@@ -87,7 +87,7 @@ The two offender constants, computed at $0 by the prep script before any model c
 - **Accused**: the first car named in the protest's `involved` field that is not the reporter's car.
   `involved` is empty on 6 of the 10 protests (1, 11, 13, 14, 15, 18) and names only the reporter's own car on 1 more (16), so it says nothing on 7 of the 10.
 
-On the draft truth table, before Brock's confirmation:
+On the draft truth table, before my confirmation:
 
 | Constant | Right | n |
 |---|---|---|
@@ -95,23 +95,23 @@ On the draft truth table, before Brock's confirmation:
 | Accused | 1 | 5 |
 
 - n is 5: the decisions whose draft offender has no open conflict (1, 11, 13, 16, 46).
-  Decisions 23 and 24 are out until Brock says which of them answer key report 23 belongs to.
+  Decisions 23 and 24 are out until I say which of them answer key report 23 belongs to.
 - The better constant is the car behind, at 5 of 5.
 - **Mark 4 on the draft: the better constant already scores 5 of 5, so mark 4 is "equal to it with every read agreed": an agreed read names the truth offender on all 5 of 5 decisions.**
 - The car-behind constant is hard to beat: it already names every draft offender, because it is given the answer key's contact second.
-- When Brock confirms the table, the prep script rebuilds both constants from it, recomputing the car-behind guess at each confirmed contact second.
+- When I confirm the table, the prep script rebuilds both constants from it, recomputing the car-behind guess at each confirmed contact second.
   This pre-registration is not edited after its commit.
   The confirmed n and the constants' scores land in a separate "Mark 4 on the confirmed table" section, in its own commit, after the pre-registration commit and before any model call.
   The rule stays as worded above; only n and the constant's count follow the confirmed table.
 
-### Decisions Brock answered at plan time (29 Oct), recorded rather than re-asked
+### Decisions I answered at plan time (29 Oct), recorded rather than re-asked
 
 The approved design brief is followed except in four places:
 
 1. Model: Spark Open gives the read, as the brief says.
    Spark 1.3 is the pre-registered fallback arm, used only if Spark Open fails mark 4 or more than a third of its runs fail to parse.
 2. Car and lap: scripts read them from the feed, not a vision model.
-   Brock agreed on one condition: the core stays one piece for every setting, so the "who and when" facts come from an adapter (the racing feed here, vision for forklift sites later) and the core never knows which.
+   I agreed on one condition: the core stays one piece for every setting, so the "who and when" facts come from an adapter (the racing feed here, vision for forklift sites later) and the core never knows which.
 3. Public numbers: the README may quote this build's scores, with car numbers only and the league unnamed.
 4. Forklift: out of this build, in its own plan after this one.
 
@@ -135,8 +135,8 @@ The pre-registration above is not edited; the rule for mark 4 is applied as word
 
 ### The confirmed truth
 
-The truth calls come from a frame check of the broadcast on 29 Oct, and Brock accepted them.
-Every row below is recorded as confirmed by Brock on that basis.
+The truth calls come from a frame check of the broadcast on 29 Oct.
+Every row below is recorded as confirmed by me on that basis.
 Car numbers are sim numbers in the session.
 
 | Decision | Session | Offender | Victim | Contact second (te) | Source of the second | Scored as |
@@ -171,7 +171,7 @@ Car numbers are sim numbers in the session.
 
 ### A fifth deviation: the race is given, not found
 
-- Brock's call on 29 Oct: a real steward always knows which race a protest is about.
+- My call on 29 Oct: a real steward always knows which race a protest is about.
 - Each protest line now carries its session as an input, beside the report fields.
 - The judge is told the race and finds the second and the cars inside it; finding the race is not part of what is scored.
 - The 9 no-feed protests carry the catalogue's session where it names one (7 of 9), and none for decisions 2 and 48.

@@ -45,7 +45,7 @@ No crash is visible in either view over b 361 to 391 s: the stills show a pack r
 So the lap 4 "crash" named in the first two-camera log was a guess and is wrong.
 
 The window moved from the first log's b 345 to 375 s to b 361 to 391 s before any call, because the earlier window held only 2 pairs the frames confirm and the mark needs 3.
-Brock chose this.
+I chose this.
 
 ## Pass marks (fixed before the run)
 
@@ -96,7 +96,7 @@ Under the rule written before the run, A2 is reported as not testable, and no GP
   It shows that at 16 frames a camera, 640 px, over one 30 s pass, Glimmer named 1 and 2 of the 3 pairs the key holds, and invented an incident.
 - It does not show that 32K works.
   The app reported 32,768 per slot, but the 64-image call came back at 13,090 prompt tokens with its first frames gone.
-  The cause was not found: it could be the image count, the Ollama runner or the proxy, and I did not test which.
+  The cause was not found: it could be the image count, the Ollama runner or the proxy, and which was not tested.
 - The key is one person's eye on 1280 by 720 stills, and the red 8 pair is medium to high, not certain.
 - One window, one race, two runs.
 - A2's real question, whether the model can locate incidents in a whole broadcast, is untested.

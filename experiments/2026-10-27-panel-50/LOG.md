@@ -38,14 +38,14 @@ Does a prosecutor, defence and judge panel rule more often like the human stewar
 | S: single call | Spark 1.3 (`muse-spark-1.3`) | 1 |
 | P: panel | Spark 1.3 as prosecutor, defence and judge (the steward panel's prompts, setup A) | 3 |
 
-A Spark Open panel was optional, left to Brock's go, and did not run.
+A Spark Open panel was optional, left for me to approve, and did not run.
 
 ### Scoring
 
 - A call is correct when its verdict equals the drafted label's verdict exactly.
 - A call with no parsed verdict, a verdict outside the three, or a finish other than `stop` counts as wrong and stays in the denominator of 50.
   A wrong pass is worse than a wrong fail, so nothing is retried to rescue a case; one retry on an HTTP error is allowed, once, and logged.
-- The label is a model-drafted reading of the reviewer's spoken words, only partly reviewed by Brock.
+- The label is a model-drafted reading of the reviewer's spoken words, only partly reviewed by me.
   Agreement here means agreement with the drafted label, not with a verified human steward decision.
 
 ### Pass marks
@@ -63,8 +63,8 @@ A Spark Open panel was optional, left to Brock's go, and did not run.
 ## Amendments, all before any model call
 
 1. The first rule had a confidence floor of 0.8, which found a pool of 21 cases and could not fill 50.
-   I wrote that floor without counting the pool.
-   The floor became 0.6, every kept label, with a new seed so the set is not a trimmed version of one I had looked at.
+   That floor was written without counting the pool.
+   The floor became 0.6, every kept label, with a new seed so the set is not a trimmed version of one already looked at.
    A new reported figure, with no mark: correct per confidence band.
 2. One chosen case's window ended 0.2 s after the end of its video file.
    A case is now eligible only when its window ends inside the video; the seed, quotas and ranking are unchanged, so the next case in rank order replaced it.
@@ -96,8 +96,8 @@ A Spark Open panel was optional, left to Brock's go, and did not run.
 | no action (15) | 4 | 2 | 9 |
 
 - Cost: $1.64 by the proxy ledger.
-- The probe ledger stood at $20.09 after arm S, past its $20 cap, so the run stopped and Brock was asked.
-  He said to run P, and P ran with no refusal.
+- The probe ledger stood at $20.09 after arm S, past its $20 cap, so the run stopped and waited for my call.
+  I said to run P, and P ran with no refusal.
 
 ### Arm P
 
@@ -169,7 +169,7 @@ A Spark Open panel was optional, left to Brock's go, and did not run.
 ## Needs
 
 - If the panel stays in the design, it stays as an appeal tier on cases where the single call and a human steward disagree, and that needs its own test on disagreements only.
-- Brock to review a sample of the 0.6-confidence labels before any agreement figure from this corpus is quoted.
+- I will review a sample of the 0.6-confidence labels before any agreement figure from this corpus is quoted.
 - Check whether a higher-resolution crop of the replay pane changes S and P before the corpus input is ruled unusable.
 
 ## Files

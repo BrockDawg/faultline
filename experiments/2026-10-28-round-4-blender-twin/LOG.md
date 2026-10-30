@@ -110,7 +110,7 @@ The interval is wide where it needs to be, so read the interval, never the point
 
 - SAM through the metering proxy: $0.3685 (one image probe, 13 text-prompt videos, 13 box-prompt videos, 4 "person" videos), under the $1.00 cap in code.
 - Modal: two DETR runs, $0.3011 in all, under the $5 cap; the two runs gave byte-identical boxes.
-- Renders on a local GPU and the blind markers on Brock's Claude subscription: $0.
+- Renders on a local GPU and the blind markers on my Claude subscription: $0.
 
 ## What it does not prove
 

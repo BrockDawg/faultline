@@ -2,7 +2,7 @@
 
 [Self-compiling rules](../2026-10-27-self-compiling-rules/LOG.md) compiled league B's 297-sentence rulebook in one call and got a condensed pack.
 This run cuts the rulebook at its headings, compiles each section on its own and joins the packs by code.
-The paid steps are Spark Open compile calls through the metering proxy, on Brock's go.
+The paid steps are Spark Open compile calls through the metering proxy, run once I approved them.
 
 ## Question
 
@@ -105,7 +105,7 @@ Seven hand rules were split over several compiled rules and three kept their spl
 
 ## Needs
 
-- Brock to read the 41 reworded and 58 missing sentences and say what they have in common.
+- I will read the 41 reworded and 58 missing sentences and say what they have in common.
 - A new experiment, if wanted, with its own marks: a prompt change aimed at that sentence type, or one sentence per call for the failed sections.
   This run's marks are closed and are not re-run.
 

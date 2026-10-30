@@ -1,6 +1,6 @@
 # Racing telemetry judge: two league rules over the companion feed (29 Oct 2026)
 
-Brock's question: can faultline rule racing from the data PitBot's companion already collects, rather than from video?
+My question: can faultline rule racing from the data PitBot's companion already collects, rather than from video?
 Scripts only: no model, no SAM, no proxy call, $0.
 The league is the PitBot league of [the 28 Oct catalogue](../2026-10-28-league-catalogue/LOG.md); car numbers only.
 This record tests each rule alone; [the racing pipeline](../2026-10-29-racing-pipeline/LOG.md) tests the pieces together.
@@ -65,7 +65,7 @@ Every incident-total decision with a feed has a breaching car on exactly the sta
 - Oulton HEAT 1 is skipped: its feed shows a counter for none of its 22 cars.
 - 21 cars over the limit have no ruling on record: 2 at Spa, 1 in Snetterton HEAT 1, 6 at Donington, and all 12 in Season 2 (Cadwell and Thruxton).
   No incident-total decision exists for Season 2 at all, so the stewards either stopped ruling on totals or have not yet.
-  Under code 9.9 these are "not ruled", and only Brock can say which.
+  Under code 9.9 these are "not ruled", and only I can say which.
 - The truth set is 7 decisions from 2 race days, and the limit per format is read from codes 2.1 and 9.2, not from a steward.
 
 ### Rule B: contact referral, under the mark (fail)

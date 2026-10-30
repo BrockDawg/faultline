@@ -15,18 +15,18 @@ The trailers record the models the build session declared.
 ## What existed before the hackathon
 
 - The task router.
-  Pre-existing tooling I'd built, which already routed to Meta models. During the hackathon we extended it to:
+  Pre-existing tooling I'd built, which already routed to Meta models. During the hackathon I extended it to:
   - turn off Muse Glimmer's thinking mode on local calls, so it returns an answer instead of spending its whole budget thinking;
   - serve Muse Glimmer from a Modal L40S as tier 1, through the metering proxy, with local Ollama as the fallback;
   - remeasure its 220 routing labels against Glimmer with a local judge.
-- PitBot (pitbot.gg), Brock's sim-racing league management platform, with its paying leagues.
+- PitBot (pitbot.gg), my sim-racing league management platform, with its paying leagues.
 - Race telemetry and results data from PitBot leagues.
 - Steward-report video footage and the human steward decisions from PitBot leagues.
 - PitBot's Rule Library, the source of the `oval`, `road-gt` and `open-wheel` packs.
 - The four OSHA `forklift-*` packs, based on OSHA 29 CFR 1910.178.
 - The rules-pack format (a folder of markdown rule files plus `pack.json`) and an earlier private loader for it.
-- Brock's development workflows (Claude Code with his own skills and orchestration).
-- Private tooling Brock built, not in this repo:
+- My development workflows (Claude Code with my own skills and orchestration).
+- Private tooling I built, not in this repo:
   - a tournament harness that runs many coding agents on one brief and grades them against held-out human steward decisions;
   - an evaluation and scoring kit;
   - a capability probe for vision models, including a contact detector built on SAM;
@@ -50,7 +50,7 @@ The trailers record the models the build session declared.
 
 ## Models used
 
-- Building: `claude-opus-5-5` and `claude-fable-5-1` via Claude Code, on Brock's subscription.
+- Building: `claude-opus-5-5` and `claude-fable-5-1` via Claude Code, on my subscription.
 - Images: Nano Banana 2 (`nano_banana_flash`) and Ideogram Vector (`ideogram_vector`), both on Higgsfield.
 - Measured in the experiments (`experiments/`): Muse Spark 1.3 (`muse-spark-1.3`), Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten), Muse Wonder 1.0 (`muse-wonder-1.0`), Muse Glimmer (`muse-glimmer:30b`, open weights on Ollama, on this machine and on a Modal L40S), SAM 3.1 (`sam-3.1`) and Muse Voice Transcribe 1.0 (`muse-voice-transcribe-1.0`).
   Llama 3.2 1B (`llama3.2:1b`) was measured as a router tier and dropped.

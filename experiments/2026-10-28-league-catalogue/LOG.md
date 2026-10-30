@@ -22,7 +22,7 @@ The feed fields were profiled before this section was written, and no stream fra
 
 ### The method, fixed in advance
 
-1. Feed update rate, measured first because Brock said the older feeds update positions only when a lap completes: the share of frame pairs where a car's track position (`pct`) changed, the frame cadence, and the spread of each car's speed.
+1. Feed update rate, measured first because I said the older feeds update positions only when a lap completes: the share of frame pairs where a car's track position (`pct`) changed, the frame cadence, and the spread of each car's speed.
 2. Clock alignment, with smoke B's strip reader and templates unchanged: `video_t = te + offset`.
    Every keyframe of every stream is read; sessions are split by the TIME constant; each cluster is tried against each feed session with the LAP witness.
    A session is aligned when one cluster gives a LAP bracket no wider than 4 s.
@@ -70,7 +70,7 @@ The feed fields were profiled before this section was written, and no stream fra
 - The real difference between older and newer feeds is cadence: Oulton and both Snetterton sessions write a frame about every 2 s, the rest nearly every second.
   Read their event counts as lower bounds with 2 s timing.
 - Oulton HEAT 1 covers only about 9 minutes (leader laps 1 to 7) and shows no incident counter; Oulton FEATURE has no feed rows.
-- These figures hold for these seven races only, so Brock's word on earlier races stands until he checks.
+- These figures hold for these seven races only, so my word on earlier races stands until I check.
 
 ### Clock alignment
 
@@ -186,10 +186,10 @@ A check of every feed driver name against the catalogue file found none.
 
 ## Needs
 
-1. The 75 per-driver telemetry files from the server, for Brock to pull, to replace the feed for those cars and rerun the event counts.
-2. Brock's check on the update-rate claim, if he meant other races or another field.
+1. The 75 per-driver telemetry files from the server, for me to pull, to replace the feed for those cars and rerun the event counts.
+2. My check on the update-rate claim, if I meant other races or another field.
 3. Oulton FEATURE and the rest of Oulton HEAT 1; decisions 3, 4, 5 and 7 wait on them.
 4. Replays for Silverstone and the second Donington race; decision 48 waits on Silverstone.
-5. Decision 21: penalised #7 is in neither Snetterton feed, so Brock to say which race it was.
+5. Decision 21: penalised #7 is in neither Snetterton feed, so I need to say which race it was.
 6. Camera-switch detection by frame difference, at $0, to measure how many contacts were ever on screen, which is a scan's real ceiling; it needs its own pre-registration.
 7. A strip template for times past an hour, to give Spa's first hour a second witness.

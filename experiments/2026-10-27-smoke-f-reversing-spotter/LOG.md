@@ -1,6 +1,6 @@
 # Smoke test F: reversing direction and spotter rule (27 Oct 2026)
 
-Cost: $0.04 of SAM box prompts (4 calls, each 50 frames at $0.01, by the proxy ledger), on Brock's go.
+Cost: $0.04 of SAM box prompts (4 calls, each 50 frames at $0.01, by the proxy ledger), once I approved them.
 The design it tests is piece 9 of [the forklift scan route](../../docs/forklift-scan-route.md).
 
 ## What was run
@@ -54,7 +54,7 @@ The design it tests is piece 9 of [the forklift scan route](../../docs/forklift-
 `boxes.json` (hand), `sam_boxes.json` (SAM truck and fork, hand people), `scripts/reversing.py`, `scripts/sam_track.py`, `run1.json` and `run2.json` (hand), `sam_run1.json` and `sam_run2.json` (SAM), `sens_minview3.json`, `sam_minview3.json`, `mut_reversed.json`, `sam_mut_reversed.json`, `calls.jsonl` and the raw SAM replies.
 The scripts, the run files and the replies are kept with this experiment's private record, and the re-encoded clips stay out of git.
 
-## SAM run (paid, Brock's go)
+## SAM run (paid, approved by me)
 
 - One SAM 3.1 video call per clip through the metering proxy: two hand-drawn box prompts (truck, fork end) on the first frame, tracked forward at 10 fps.
   Truck and fork boxes at 1 s steps replaced the hand boxes; people are still hand-drawn, and the vest is still read by eye.
@@ -80,11 +80,11 @@ The scripts, the run files and the replies are kept with this experiment's priva
 
 ## Open question
 
-Brock thinks 05 is labelled "reversing with a spotter" but the footage may not show it.
+I think 05 is labelled "reversing with a spotter" but the footage may not show it.
 Both the hand boxes and SAM say the truck moves toward its mast.
 The label needs a second pair of eyes before 05 is used as a pass mark.
 
-## Does 05 show a reversing truck? (checked after Brock's question)
+## Does 05 show a reversing truck? (checked after my question)
 
 - `scripts/flow.py` block-matches the truck's interior between 10 fps frames, with no SAM mask and no hand box in the loop.
   Run on the re-encoded clips: the truck interior moves up the frame in every 0.2 s step, 203 px in total on 05, 251 px on 14 and 236 px on 08 (1280 px frame, camera fixed, racks do not move).
@@ -98,7 +98,7 @@ The label needs a second pair of eyes before 05 is used as a pass mark.
 - Not checked: the other spotter clips in the set (`spotters_front_and_back_02`, `spotter_ahead_01`, the pairs).
   One of them may show a truck that really reverses with a spotter behind it.
 
-## The Seedance clip (`model_test/A_rear_spotter_seedance.mp4`), checked at Brock's prompting
+## The Seedance clip (`model_test/A_rear_spotter_seedance.mp4`), checked at my prompting
 
 - It is a camera on the truck, looking along the forks (the tines are in the foreground), not a fixed camera.
   Smoke F's pass marks are for one fixed camera, so this clip is outside them.

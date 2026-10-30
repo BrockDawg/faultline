@@ -19,7 +19,7 @@ Hi-vis vest and spotter checks are a required capability even though they are si
 A truck is identified by the fleet number painted on it, matched to the site's fleet roster (one entry id per truck), never by faces.
 People are never identified: a person is only "a person" with a position.
 
-## Decisions Brock made
+## Decisions I made
 
 - One fixed camera is enough on its own; two-camera fusion waits for real footage.
 - Hi-vis vest and spotter checks are a required capability: they are site rules, not OSHA clauses, but they are common on real sites.
@@ -31,7 +31,7 @@ People are never identified: a person is only "a person" with a position.
 - **Two-camera and multi-view fusion are out of scope for this round:** the synthetic clips that carry a front and a back view (`pairs/`, `superseded/pairs_v1/` and the two-view sources) are mostly wrong and do not work, so fusing views needs real, non-synthetic footage before it can be investigated.
 - **Driver-view (POV) footage is out of scope for scan mode:** a camera on the truck moves with it, so no floor calibration holds; the static-camera gate (piece 1) refuses it.
 - **Reproducible by construction:** scripts are deterministic; every model read is recorded once in the read ledger, keyed by the SHA-256 of model id, version, parameters and input bytes, and replayed from there on every rerun.
-- **Paid calls only on Brock's go**, through the metering proxy.
+- **Paid calls only when I approve them**, through the metering proxy.
 
 ## The synthetic clips tested against
 
@@ -402,7 +402,7 @@ Every piece costs $0 to run apart from the SAM 3.1 frames in piece 3 and the rul
   After the call, code rejects anything outside the enums, and where the measured candidate and the model's verdict disagree, both are kept and shown.
   Stated confidence is not used for gating, since it carried no signal in the racing runs.
 - **Why it is reproducible:** the reply is recorded in the ledger by input hash, so the same window returns the same ruling on a rerun.
-- **How to measure it:** a paid check on Brock's go: the 16 clips with opaque ids and the fact sheet, against the W1-15 opaque baseline of 11 of 20.
+- **How to measure it:** a paid check, once I approve it: the 16 clips with opaque ids and the fact sheet, against the W1-15 opaque baseline of 11 of 20.
   Pass: no compliant clip ruled a breach, and at least 9 of 11 labelled clips ruled under the right rule.
 - **Cost:** about $0.02-0.05 a window going by the batch 1 forklift calls, so under $1 for the 16 clips; 3-4 hours.
 - **Smoke:** validate ten hand-written replies, four of them broken on purpose, against the schema and the post-checks.

@@ -21,7 +21,7 @@ All 29 probes that can run have run: 15 worked, 14 worked badly.
 | 4 | 0.48 | Precedent and consistency auditor | badly, worked, badly |
 | 5 to 9 | 0.21 to 0.25 | Debris flag, occlusion-robust tracking, track limits from masks, contact from chat-model vision, spoken emphasis | worked badly |
 
-Brief: two lines written into `brief/BRIEF.md` under "Measured on Day 0" (commit `9e65b7f`, 19:55), chosen by Brock.
+Brief: two lines written into `brief/BRIEF.md` under "Measured on Day 0" (commit `9e65b7f`, 19:55), chosen by me.
 Calibrated confidence was left out (see spark-05 below).
 
 ## Every probe, in run order
@@ -78,7 +78,7 @@ The SAM probes ran before the proxy priced SAM by images and frames (`acf2b30`, 
 - The 9 probes had status `not_configured` from runs before the slots were named.
 - `tourney-probe` had spent $6.94 of its $10 cap, shared with the steward-limits run, and the 9 probes' budgets added up to $3.30.
 - `cap-probe` read its own cap as the $5 default, so it would have refused to run.
-- Brock said yes to $20 (about 19:33): `$env:TOURNEY_PROBE_CAP_USD = '20'` in `proxy-loop.ps1`, and the same cap in the local environment file so `cap-probe` reads the same.
+- I said yes to $20 (about 19:33): `$env:TOURNEY_PROBE_CAP_USD = '20'` in `proxy-loop.ps1`, and the same cap in the local environment file so `cap-probe` reads the same.
 - The proxy task was ended and run again at 19:35, a gap of about a second for the other run.
 - Results: spark-05, spark-vision-contact, wonder-01 and cross-01 ran; five broke.
 
@@ -97,7 +97,7 @@ The SAM probes ran before the proxy priced SAM by images and frames (`acf2b30`, 
 ### 6. Reruns, rank and brief (19:50 to 19:55)
 
 - The five reran at 19:50 (results in the table above).
-- `cap-probe brief` proposed three lines; Brock chose two.
+- `cap-probe brief` proposed three lines; I chose two.
 - Both were reworded to claim only what the probes showed:
   the router line names log-probabilities (local-01) and says agreement gave no signal on Glimmer (local-03), and the SAM line says its cost was not metered.
 
