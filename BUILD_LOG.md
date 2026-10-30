@@ -57,3 +57,7 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `3a7338a` | 2026-10-29T20:11:47-0500 | docs: the README, provenance and experiment logs speak in the first person | claude-opus-5-5 via Claude Code | none |
 | `bd6972e` | 2026-10-29T20:11:55-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
 | `3a148cc` | 2026-10-29T20:53:41-0500 | fix: the racing prep script's notes and output name no person | claude-opus-5-5 via Claude Code | none |
+| `dfd970d` | 2026-10-29T20:53:42-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
+| `cbc4c1c` | 2026-10-30T10:03:19-0500 | docs: the racing LOG records three build-time choices before the first score | claude-opus-5-5 via Claude Code | none |
+| `8c09c74` | 2026-10-30T10:31:14-0500 | racing: the faultline command line and the scorer, before the first score | claude-opus-5-5 via Claude Code | none |
+| `90e9bf7` | 2026-10-30T10:36:14-0500 | racing: the $0 score, rule A 7 of 7, the locator 2 of 7 against a mark of 5 | claude-opus-5-5 via Claude Code | none |
