@@ -459,10 +459,10 @@ def test_a_planted_name_in_a_reason_is_a_failed_run_and_recorded(
     install(monkeypatch, [reply("7"), reply("7", reason=named), reply("7")])
     got = do_read(ledger)
     assert got.agreed is False and got.lint_hits == 1 and got.parse_failures == 1
-    hits = [e["lint_hit"] for e in ledger.entries()]
+    hits = [e["name_hit"] for e in ledger.entries()]
     assert sorted(hits) == [False, False, True]
     # The flag is a bare boolean: the matched text is never written beside it.
-    assert all(isinstance(e["lint_hit"], bool) for e in ledger.entries())
+    assert all(isinstance(e["name_hit"], bool) for e in ledger.entries())
     # A replay with no names still sees the stored hit.
     again = do_read(ledger, names=[], replay_only=True)
     assert again.as_dict() == got.as_dict()
@@ -502,3 +502,71 @@ def test_replay_only_never_calls_the_client(monkeypatch, env, tmp_path) -> None:
 
 def test_the_module_has_no_order_matching_left() -> None:
     assert not hasattr(ruling, "proxy_uncached") and not hasattr(ruling, "last_seq")
+
+
+# ------------------------------------------------------------- the reply's name check
+
+PATH_SHAPED_REASON = (
+    "Rule 9.5/9.5.2: frames 1/2/3 show 7 closing at 5.6m/s, careless/non-intentional."
+)
+
+
+def test_path_shapes_in_a_reason_are_not_a_lint_hit(monkeypatch, env, tmp_path) -> None:
+    ledger = Ledger(tmp_path / "ledger")
+    install(monkeypatch, [reply("7", reason=PATH_SHAPED_REASON)] * 3)
+    got = do_read(ledger)
+    assert got.lint_hits == 0 and got.parse_failures == 0 and got.agreed is True
+    assert [e["name_hit"] for e in ledger.entries()] == [False, False, False]
+    assert all("lint_hit" not in e for e in ledger.entries())
+
+
+@pytest.mark.parametrize(
+    "leak",
+    [" Verna Talbrook braked late.", " Mail someone@example.org.", " See https://example.invalid."],
+)
+def test_a_name_email_or_url_in_a_reason_fails_the_run(
+    monkeypatch, env, tmp_path, leak: str
+) -> None:
+    ledger = Ledger(tmp_path / "ledger")
+    leaked = PATH_SHAPED_REASON[:-1] + "." + leak
+    install(monkeypatch, [reply("7", reason=leaked), reply("7"), reply("7")])
+    got = do_read(ledger)
+    assert got.lint_hits == 1 and got.parse_failures == 1 and got.agreed is False
+
+
+def test_the_prompt_keeps_the_full_lint(monkeypatch, env, tmp_path) -> None:
+    fake = install(monkeypatch, [reply()] * 3)
+    with pytest.raises(LintError):
+        ruling.read(
+            prompt() + "\nSee and/or the clip.\n",
+            IMAGES,
+            MODEL,
+            Ledger(tmp_path / "ledger"),
+            "r15",
+            candidates=CANDIDATES,
+            frame_labels=LABELS,
+            names=NAMES,
+            verdicts=VERDICTS,
+        )
+    assert fake.calls == []
+
+
+def test_an_old_lint_hit_entry_is_judged_again_clean(monkeypatch, env, tmp_path) -> None:
+    """An entry the old code wrote with `lint_hit: true` for path shapes alone reads clean."""
+    first = Ledger(tmp_path / "first")
+    install(monkeypatch, [reply("7", reason=PATH_SHAPED_REASON)] * 3)
+    do_read(first)
+    old = Ledger(tmp_path / "old")
+    for path in sorted(first.root.glob("*.json")):
+        entry = json.loads(path.read_text("utf-8"))
+        del entry["name_hit"]
+        entry["lint_hit"] = True  # what the full lint wrote for these path shapes
+        old.put(path.stem, entry)
+    before = {p.name: p.read_bytes() for p in old.root.glob("*.json")}
+    got = do_read(old)
+    assert got.lint_hits == 0 and got.parse_failures == 0 and got.agreed is True
+    assert got.sent_refs == ()
+    again = do_read(old, names=[], replay_only=True)
+    assert again.as_dict() == got.as_dict()
+    # Nothing was rewritten: the ledger never overwrites a recorded entry.
+    assert {p.name: p.read_bytes() for p in old.root.glob("*.json")} == before

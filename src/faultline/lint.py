@@ -32,6 +32,12 @@ name token (nor is a single-word name equal to it treated as a phrase). Allowing
 not allow a multi-word name that contains it: the full phrase is still refused.
 
 `lint` returns every hit's matched text, ordered by character offset, then end offset.
+Both `lint` and `assert_clean` take `paths` (keyword only, default True). With `paths=False`
+only the person-identifying kinds are checked: names (phrase and tokens), `extra_banned`,
+URLs, email addresses and @handles; drive, rooted and joined paths and file extensions are
+not. That form is for text that came back from a reader shown no path at all (a model's
+written reason, say), where a path shape such as `9.5/9.5.2` or `-0.7m/s` cannot leak
+anything. Outgoing text keeps the default, the full check.
 `assert_clean` raises `LintError` on any hit; its message gives only the number of hits, their
 kinds and their character offsets, never the matched text, so a refusal cannot itself leak.
 """
@@ -39,7 +45,7 @@ kinds and their character offsets, never the matched text, so a refusal cannot i
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 
 __all__ = ["LintError", "assert_clean", "lint", "name_tokens"]
@@ -133,7 +139,11 @@ def _token_pattern(tokens: set[str]) -> re.Pattern[str] | None:
 
 
 def _hits(
-    text: str, names: Iterable[str], extra_banned: Iterable[str], allow: Iterable[str]
+    text: str,
+    names: Iterable[str],
+    extra_banned: Iterable[str],
+    allow: Iterable[str],
+    paths: bool = True,
 ) -> list[_Hit]:
     names = list(names)
     allowed = _casefolded(allow)
@@ -164,6 +174,12 @@ def _hits(
         add(match.start(), match.start() + len(match.group().rstrip(".-")), "email")
     for match in _HANDLE.finditer(text):
         add(match.start(), match.end(), "handle")
+    if paths:
+        _add_paths(text, add)
+    return [_Hit(start, end, kind) for (start, end), kind in sorted(found.items())]
+
+
+def _add_paths(text: str, add: Callable[[int, int, str], None]) -> None:
     for pattern in (_DRIVE, _ROOTED, _JOINED):
         for match in pattern.finditer(text):
             run = match.group().rstrip(".-")
@@ -172,7 +188,6 @@ def _hits(
             add(match.start(), match.start() + len(run), "path")
     for match in _EXTENSION.finditer(text):
         add(match.start(), match.end(), "extension")
-    return [_Hit(start, end, kind) for (start, end), kind in sorted(found.items())]
 
 
 def lint(
@@ -180,9 +195,15 @@ def lint(
     names: Iterable[str],
     extra_banned: Iterable[str] = (),
     allow: Iterable[str] = (),
+    *,
+    paths: bool = True,
 ) -> list[str]:
-    """Return the matched text of every hit in `text`, ordered by start then end offset."""
-    return [text[hit.start : hit.end] for hit in _hits(text, names, extra_banned, allow)]
+    """Return the matched text of every hit in `text`, ordered by start then end offset.
+
+    `paths=False` checks only the person-identifying kinds (see the module docstring).
+    """
+    hits = _hits(text, names, extra_banned, allow, paths)
+    return [text[hit.start : hit.end] for hit in hits]
 
 
 def assert_clean(
@@ -190,8 +211,13 @@ def assert_clean(
     names: Iterable[str],
     extra_banned: Iterable[str] = (),
     allow: Iterable[str] = (),
+    *,
+    paths: bool = True,
 ) -> None:
-    """Raise `LintError` if `text` has any hit; the error never repeats the matched text."""
-    hits = _hits(text, names, extra_banned, allow)
+    """Raise `LintError` if `text` has any hit; the error never repeats the matched text.
+
+    `paths=False` checks only the person-identifying kinds (see the module docstring).
+    """
+    hits = _hits(text, names, extra_banned, allow, paths)
     if hits:
         raise LintError(tuple(hit.start for hit in hits), tuple(hit.kind for hit in hits))

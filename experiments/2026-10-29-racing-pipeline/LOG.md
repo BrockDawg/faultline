@@ -373,3 +373,14 @@ This is a look, not a score.
 - No extra calls are made for the card.
 - Mark 4, its n of 8 and its pass at 8 of 8 are unchanged.
 - Spend: 24 calls an arm, arm 2 only under the rule already written, an upper estimate of $3.60 for both arms, inside the $5 line.
+
+## Fixed after arm 1's replies came back, before any score (30 Oct)
+
+- Arm 1 made 24 calls for $1.11, with no cached reply.
+- Six runs used the whole 12,000-token ceiling on reasoning and returned no text: those runs stay failed.
+- Seventeen replies were marked as lint hits, and every hit was a slash the path check reads as a file path ("5.6m/s", "9.5/9.5.2", "green/blue").
+- None of the 17 held a name.
+- This LOG's rule for the reply is a name check ("What the frames hide"), and the code ran the whole prompt lint instead.
+- The reply check now refuses names, emails, handles and URLs only, as this LOG says, and the stored replies are judged again from the ledger at $0.
+- No prompt changed, no call was repeated, and the arm 2 rule is unchanged.
+- I read the reply endings to find the cause, before any score was computed.

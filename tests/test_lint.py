@@ -167,3 +167,43 @@ def test_per_person_id_passed_in_extra_banned_is_caught() -> None:
         assert_clean(text, NAMES, extra_banned=("4410273",))
     assert "4410273" not in str(caught.value)
     assert "banned at 21" in str(caught.value)
+
+
+# --------------------------------------------------------------- the names-only form
+
+PATH_SHAPES = (
+    "Car 7 was crashing/careless at 5.6m/s, closing at -0.7m/s.",
+    "Under 9.5/9.5.2 the contact was careless/non-intentional.",
+    "Frames 1/2/3 show it; the green/blue car held its line.",
+)
+
+
+@pytest.mark.parametrize("text", PATH_SHAPES)
+def test_names_only_lets_path_shapes_through(text: str) -> None:
+    assert lint(text, NAMES)  # the full prompt lint still refuses them
+    assert lint(text, NAMES, paths=False) == []
+    assert_clean(text, NAMES, paths=False)
+
+
+@pytest.mark.parametrize(
+    ("text", "kind"),
+    [
+        ("Frames 1/2/3 show Test Driver A braking late.", "name"),
+        ("Under 9.5/9.5.2 Ravelstone was careless.", "name"),
+        ("Write to someone@example.org about 5.6m/s.", "email"),
+        ("Ask @someone about frames 1/2/3.", "handle"),
+        ("See https://example.invalid/clip for it.", "url"),
+        ("This is the harbourline night series at 5.6m/s.", "banned"),
+    ],
+)
+def test_names_only_still_refuses_people(text: str, kind: str) -> None:
+    with pytest.raises(LintError) as raised:
+        assert_clean(text, NAMES, extra_banned=[SITE], paths=False)
+    assert set(raised.value.kinds) == {kind}
+
+
+@pytest.mark.parametrize("text", ["and/or", "d:/runs", "/home/x", "a.jsonl"])
+def test_the_default_is_still_the_full_check(text: str) -> None:
+    with pytest.raises(LintError):
+        assert_clean(text, NAMES)
+    assert lint(text, NAMES, paths=False) == []

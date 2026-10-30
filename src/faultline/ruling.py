@@ -37,17 +37,25 @@ Contract:
   schema, max_tokens)`). A ledger hit sends nothing; a miss calls `client.chat(...,
   spent_entries=ledger.entries())` and always stores the reply first, whatever follows: its
   usage as reported (an absent count stays null and is priced by the per-call fallback), the
-  proxy's `cached` word and raw `X-Tourney-Cache` header, and `lint_hit` (whether the reply's
-  reason failed the leak lint, never the matched text). Only then can it refuse: a real reply
+  proxy's `cached` word and raw `X-Tourney-Cache` header, and `name_hit` (whether the reply's
+  reason failed the name check, never the matched text). Only then can it refuse: a real reply
   (ledger key `source` "model") whose stored `cached` is not False raises `RulingError`
-  naming its reference, on the run that sent it and on any later run that reads it back. A
-  validated reply whose reason fails the lint (`lint_hit`, or the lint run again with the
-  names given) is a failed run; the run carries on. With `replay_only=True` a ledger miss
-  raises `RulingError` instead of calling the client, so a replay can never spend; `source`
-  (replay only) is the ledger key's recorded source. `agreed` is true only when every run
-  validates and all give the same offender and verdict; then the read carries that offender,
-  verdict and the first run's reason. Otherwise offender, verdict and reason are null. The
-  read's `source` is the ledger key's source, so a fake read never passes as a real one.
+  naming its reference, on the run that sent it and on any later run that reads it back.
+  The name check is the lint's person kinds only (`assert_clean(..., paths=False)`: names,
+  `extra_banned`, emails, @handles, URLs), never its path shapes, since the model is shown no
+  path. Every run is judged again from the stored reply text: a validated reply whose reason
+  fails the name check (stored `name_hit` true, or the check run again with the names given)
+  is a failed run; the run carries on. An entry written before this rule holds `lint_hit`
+  (the full prompt lint) instead; it is read past and never decides, so such a reply is
+  judged by the name check alone. A replay that passes no names sees a stored `name_hit`,
+  but for an old entry it can only check emails, handles and URLs, so a name hit in an old
+  entry makes its replay differ from the line and refuse (it fails closed).
+  With `replay_only=True` a ledger miss raises `RulingError` instead of calling the client,
+  so a replay can never spend; `source` (replay only) is the ledger key's recorded source.
+  `agreed` is true only when every run validates and all give the same offender and verdict;
+  then the read carries that offender, verdict and the first run's reason. Otherwise
+  offender, verdict and reason are null. The read's `source` is the ledger key's source, so
+  a fake read never passes as a real one.
   `json_mode=True` sends the strict schema; `json_mode=False` sends no `response_format` and
   checks the reply after the call, the same way.
 
@@ -318,9 +326,14 @@ def _usage(reply: client.Reply) -> dict[str, int | None]:
     return {name: reply.usage.get(name) for name in ("prompt_tokens", "completion_tokens")}
 
 
-def _lint_hit(text: str, names: list[str], extra_banned: list[str], allow: list[str]) -> bool:
+def _name_hit(text: str, names: list[str], extra_banned: list[str], allow: list[str]) -> bool:
+    """Whether a reply's reason names a person: the lint's person kinds only, no path shapes.
+
+    The model is shown no path, so a path shape in its reason ("9.5/9.5.2", "-0.7m/s") cannot
+    leak one; a name it read from a missed card, an address or a link can.
+    """
     try:
-        assert_clean(text, names, extra_banned, allow)
+        assert_clean(text, names, extra_banned, allow, paths=False)
     except LintError:
         return True
     return False
@@ -403,7 +416,7 @@ def read(
                 spent_entries=list(ledger.entries()),
             )
             first_check = validate(reply.text, candidates, frame_labels, verdicts)
-            hit = first_check is not None and _lint_hit(
+            hit = first_check is not None and _name_hit(
                 first_check["reason"], names, extra_banned, allow
             )
             # The call is paid: the reply is stored before any refusal below.
@@ -419,7 +432,7 @@ def read(
                     "finish_reason": reply.finish_reason,
                     "cached": reply.cached,
                     "cache_header": reply.cache_header,
-                    "lint_hit": hit,
+                    "name_hit": hit,
                 },
             )
             sent.append(run_ref)
@@ -429,9 +442,11 @@ def read(
                 f"{entry.get('cached')!r}), so it cannot count as a run; the reply is kept in "
                 "the ledger, which counts its spend"
             )
+        # Judged again from the stored reply text every time. An old entry's `lint_hit` (the
+        # full prompt lint, path shapes included) is read past and never decides.
         run = validate(str(entry["reply"]), candidates, frame_labels, verdicts)
         if run is not None and (
-            entry.get("lint_hit") is True or _lint_hit(run["reason"], names, extra_banned, allow)
+            entry.get("name_hit") is True or _name_hit(run["reason"], names, extra_banned, allow)
         ):
             lint_hits += 1
             run = None

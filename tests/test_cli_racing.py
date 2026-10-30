@@ -1234,7 +1234,7 @@ def test_a_planted_name_in_a_reply_never_reaches_the_line(
     assert one["offender"] is None
     assert "fenwhistle" not in _written_text(out)
     hits = sorted(
-        json.loads(p.read_text("utf-8"))["lint_hit"] for p in (tmp_path / "ledger").glob("*.json")
+        json.loads(p.read_text("utf-8"))["name_hit"] for p in (tmp_path / "ledger").glob("*.json")
     )
     assert hits == [False, False, True]
 
