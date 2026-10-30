@@ -302,3 +302,15 @@ Under code 9.9 only reported incidents are ruled, and only the stewards can say 
 
 The run found 29 cars over the limit: 8 match a ruling on record and 21 have none.
 Oulton HEAT 1 shows no counter, so it is not ruled.
+
+## A sixth deviation: the steward gives the moment (30 Oct, after the locator failed, before any frame is cut)
+
+- My call on 30 Oct, after the locator scored 2 of 7: the steward gives the moment, as a steward reviewing a protest does.
+- Each protest gets one feed second as an input beside the report: the confirmed contact second from the truth table, the same second the car-behind constant is handed.
+- Decision 18 has no truth contact second.
+  Its moment is te 322 (stream 39:45), where the 30 Oct frame check placed the lap 1 turn 4 pile-up, and the Checkpoint 4 frame look confirms or rejects it.
+- Duplicates 14 and 23 take their primary's second.
+- From this point the window, the closed set, the facts and the frames are built around that second: 3 s before to 2 s after for the window, 4 s either side for the frames.
+- The locator still runs, its window is kept in each record, and its 2 of 7 stands as its own result.
+- Mark 4 is now a fair test of the model's read against the car-behind constant, because both are handed the same second.
+- Mark 4's rule, its n of 8 and its pass at 8 of 8 are unchanged.
