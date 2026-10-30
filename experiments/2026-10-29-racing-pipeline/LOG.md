@@ -230,3 +230,75 @@ They are written here, in their own commit, before the first score.
 - Mark 2 prints each window's width beside it, so a wide window that holds the truth second by its width alone shows.
 
 ## Results
+
+### Checkpoint 3, the $0 score (30 Oct)
+
+Decision 18's victim stays car 899 alone, as confirmed, settled before this score was computed.
+The incident-limit run and the locate run were each run twice, and each pair is byte-identical.
+`faultline replay` rebuilt both files byte-identically from their records.
+
+| Mark | Result | Pass mark | Verdict |
+|---|---|---|---|
+| 1, incident limit | 7 of 7 decisions found | 7 of 7 | pass |
+| 2, locator | 2 of 7 windows hold the truth second ±2 s | 5 of 7 | **fail** |
+| 3, closed set | truth parties inside on 9 of 10, median size 3 (3 over the 9 located) | 7 of 10, median 4 or fewer | pass |
+
+- Mark 2 with no tolerance at all also gives 2 of 7.
+- The 9 protests with no feed match all refused, as expected: 4 have no feed for their session, 2 name no session, 2 name no car, and 1 holds no feed event with a protest car.
+- Beside rule B: rule B's closed read covered 2 of 9; this build's closed set holds the parties on 9 of 10, and 9 of 9 without decision 1.
+
+### Why mark 3 passes and what it does not show
+
+- The closed set is built around the protest's own cars, so a car the protest names is always a candidate once a window exists.
+- On all 9 located decisions, both truth parties are cars the protest names.
+- Mark 3 therefore shows that the protest names the right cars and that the window was found, not that the window is the right moment.
+- Rule B had no protest to read, so its 2 of 9 is not a like-for-like comparison.
+
+### Where the locator went wrong, per decision
+
+| Decision | Truth second | Window | What the locator picked | What the feed holds at the truth second |
+|---|---|---|---|---|
+| 1 | 175 | refused | no event: Oulton HEAT 1 shows no incident counter | no event |
+| 11 | 3787 | 3784 to 3792 | held | |
+| 13 | 1387 | 1217 to 1257 | a paired +4 on the lap before, holding one protest car (44) | a gap collapse with an incident rise holding both protest cars, 26 and 44, at 1387 |
+| 15 | 533 | 286 to 336 | an earlier paired +4 between the same two cars, 32 and 70, on leader lap 1 | a second paired +4 between 32 and 70 at 531 to 534, on leader lap 3 |
+| 16 | 299 | 279 to 284 | a gap collapse at 282, holding car 68 | no event at 299 holds car 68 or car 18, other than a long incident rise on 68 from 244 to 322 |
+| 24 | 2471 | 2241 to 2252 | the first paired +4 in the session holding two protest cars (18 and 899) | the protest states no lap, so the whole race was searched |
+| 46 | 162 | 159 to 167 | held | |
+
+- On decision 13, the pre-registered order ranks the kind of event above the number of protest cars it holds.
+- On decision 15, both events hold the same two cars and both sit inside the stated lap ±1, and the tie goes to the earlier one.
+- On decision 16, the feed holds no event at the truth second; Snetterton writes a frame about every 2 s.
+- On decision 24, with no lap stated, the earliest event holding protest cars wins across the whole race.
+- The order and the tie-break are pre-registered, and they are not changed after this score.
+
+### Over the limit, no ruling on record
+
+Under code 9.9 only reported incidents are ruled, and only the stewards can say why no ruling exists.
+
+| Track | Session | Car | Total | Limit | Clause |
+|---|---|---|---|---|---|
+| Spa | RACE | 26 | 29 | 25 | 9.2.2 |
+| Spa | RACE | 70 | 30 | 25 | 9.2.2 |
+| Snetterton | HEAT 1 | 91 | 27 | 20 | 9.2.1 |
+| Donington | RACE | 5 | 27 | 25 | 9.2.2 |
+| Donington | RACE | 12 | 29 | 25 | 9.2.2 |
+| Donington | RACE | 18 | 27 | 25 | 9.2.2 |
+| Donington | RACE | 19 | 30 | 25 | 9.2.2 |
+| Donington | RACE | 69 | 27 | 25 | 9.2.2 |
+| Donington | RACE | 418 | 29 | 25 | 9.2.2 |
+| Cadwell | HEAT 1 | 01 | 24 | 20 | 9.2.1 |
+| Cadwell | HEAT 1 | 18 | 29 | 20 | 9.2.1 |
+| Cadwell | HEAT 1 | 19 | 25 | 20 | 9.2.1 |
+| Cadwell | HEAT 1 | 44 | 21 | 20 | 9.2.1 |
+| Cadwell | HEAT 1 | 334 | 22 | 20 | 9.2.1 |
+| Cadwell | FEATURE | 19 | 25 | 20 | 9.2.1 |
+| Cadwell | FEATURE | 44 | 21 | 20 | 9.2.1 |
+| Cadwell | FEATURE | 84 | 28 | 20 | 9.2.1 |
+| Cadwell | FEATURE | 123 | 27 | 20 | 9.2.1 |
+| Thruxton | FEATURE | 19 | 23 | 20 | 9.2.1 |
+| Thruxton | FEATURE | 57 | 22 | 20 | 9.2.1 |
+| Thruxton | FEATURE | 84 | 25 | 20 | 9.2.1 |
+
+The run found 29 cars over the limit: 8 match a ruling on record and 21 have none.
+Oulton HEAT 1 shows no counter, so it is not ruled.
