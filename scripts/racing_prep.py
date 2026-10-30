@@ -30,7 +30,7 @@ identical bytes):
   A key row that matches more than one decision is attached to none of them: each gets a
   blocking conflict and the draft it would carry under every possible assignment.
 
-When `<data>/truth.json` (Brock's confirmed table) exists, both constants are rebuilt from it
+When `<data>/truth.json` (the table confirmed by hand) exists, both constants are rebuilt from it
 under `constants.confirmed`: the car-behind guess is recomputed at each row's own session and
 contact second, and a row with no contact second gets no guess. Its shape is one object with a
 `decisions` list; each row holds `id` (decision id), `session` (`<subsession>/<session>`, one
@@ -553,7 +553,7 @@ def build(data: Path) -> dict[str, int]:
         "number_map": number_map,
     }
 
-    # truth, when Brock has confirmed it
+    # truth, once it is confirmed by hand
     truth_path = data / "truth.json"
     truth_rows = _read_truth(truth_path, feeds) if truth_path.is_file() else None
     truth_session = {r["id"]: r["session"] for r in truth_rows or []}
@@ -617,7 +617,7 @@ def build(data: Path) -> dict[str, int]:
         }
         claims = [rid for rid, hits in key_claims.items() if did in hits]
         # A key row that matches exactly one decision is its source; a row that matches several
-        # is attached to none of them until Brock says which.
+        # is attached to none of them until a person says which.
         owned = [rid for rid in claims if len(key_claims[rid]) == 1]
         ambiguous = [rid for rid in claims if len(key_claims[rid]) > 1]
         src_key = _key_source(key_by_report[owned[0]]) if owned else None
@@ -639,7 +639,7 @@ def build(data: Path) -> dict[str, int]:
             conflict(
                 "key_join",
                 f"answer key report {rid} matches decisions {', '.join(held)} by session, lap and"
-                " cars; it is attached to none until Brock says which",
+                " cars; it is attached to none until a person says which",
                 True,
             )
             for target in held:
@@ -776,7 +776,7 @@ def build(data: Path) -> dict[str, int]:
         key=lambda x: numkey(x["report"]),
     )
     truth = {
-        "status": "draft: Brock confirms each row before truth.json is written",
+        "status": "draft: each row is confirmed by hand before truth.json is written",
         "join_rules": {
             "session": "the catalogue's race join (ruling text, then form fields, then race day)",
             "answer_key": (
@@ -931,7 +931,7 @@ def _better(b: int, a: int) -> str:
 
 
 def _read_truth(path: Path, feeds: dict[str, Session]) -> list[dict[str, Any]]:
-    """Brock's truth.json rows, checked field by field; any bad row refuses the whole file."""
+    """The truth.json rows, checked field by field; any bad row refuses the whole file."""
     try:
         truth = json.loads(path.read_text(encoding="utf-8"))
         rows = truth["decisions"]
