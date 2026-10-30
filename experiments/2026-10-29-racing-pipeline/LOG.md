@@ -357,3 +357,19 @@ This is a look, not a score.
 
 - The camera shows the contact clearly on 1 of 8 scored protests, and the aftermath on 3 more.
 - The `not_visible` verdict exists for exactly this, and the model may use it.
+
+## A seventh deviation: 8 frames a call, the 8 scored protests, and the honesty card on 18 (30 Oct, before any model call)
+
+- Arm 1's model is served by a host that refuses more than 8 images in one request.
+- The cut stays 17 frames a protest, and every one stays on the ruling line as evidence.
+- Each model call takes 8 of them: the frame nearest each whole second from 4 s before the moment to 3 s after, within 0.5 s, the earlier one on a tie.
+- A protest with dropped frames may send fewer than 8.
+- Both arms send the same 8 frames, so the two arms differ only in the model and the reply form.
+- Only the 8 scored protests are sent (1, 11, 13, 15, 16, 18, 24, 46).
+- Duplicates 14 and 23 would send their primary's moment and frames again, so they are not sent.
+- The honesty card planned on 14 or 24 cannot fire, because the moment gives every scored protest a window and no scored protest is refused.
+- The card moves to decision 18, where the frame look found the contact not clearly in frame.
+- The card sets the model's read on 18 beside that look: a `not_visible` read is the honest answer, and a named offender is a read of something the frames do not show.
+- No extra calls are made for the card.
+- Mark 4, its n of 8 and its pass at 8 of 8 are unchanged.
+- Spend: 24 calls an arm, arm 2 only under the rule already written, an upper estimate of $3.60 for both arms, inside the $5 line.
