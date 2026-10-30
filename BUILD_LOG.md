@@ -61,3 +61,6 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `cbc4c1c` | 2026-10-30T10:03:19-0500 | docs: the racing LOG records three build-time choices before the first score | claude-opus-5-5 via Claude Code | none |
 | `8c09c74` | 2026-10-30T10:31:14-0500 | racing: the faultline command line and the scorer, before the first score | claude-opus-5-5 via Claude Code | none |
 | `90e9bf7` | 2026-10-30T10:36:14-0500 | racing: the $0 score, rule A 7 of 7, the locator 2 of 7 against a mark of 5 | claude-opus-5-5 via Claude Code | none |
+| `f602eec` | 2026-10-30T10:36:15-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
+| `e8b2c5e` | 2026-10-30T10:46:05-0500 | docs: the racing LOG records that the steward gives the moment, before any frame is cut | claude-opus-5-5 via Claude Code | none |
+| `af717c7` | 2026-10-30T11:51:38-0500 | racing: frames at the steward's moment, the model read, and an offline replay | claude-opus-5-5 via Claude Code | none |
