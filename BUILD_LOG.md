@@ -69,3 +69,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `74aca13` | 2026-10-30T12:28:44-0500 | racing: the model is sent 8 frames a read, 1 a second around the moment; every cut frame stays on the line | claude-opus-5-5 via Claude Code | none |
 | `f952270` | 2026-10-30T12:55:07-0500 | racing: the model's reason gets the name check the LOG states, not the path check; stored replies judged again at $0 | claude-opus-5-5 via Claude Code | meta-models/muse-spark-open-1026 |
 | `d070c76` | 2026-10-30T13:19:28-0500 | racing: the model's read, Spark Open and Spark 1.3, 4 of 8 each against a mark of 8 of 8; every agreed named car right | claude-opus-5-5 via Claude Code | meta-models/muse-spark-open-1026, muse-spark-1.3 |
+| `fb98add` | 2026-10-30T13:19:28-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
+| `a870a28` | 2026-10-30T13:51:25-0500 | racing: the public surface, a README racing section, provenance and the evidence cards | claude-opus-5-5 via Claude Code | none |
