@@ -384,3 +384,65 @@ This is a look, not a score.
 - The reply check now refuses names, emails, handles and URLs only, as this LOG says, and the stored replies are judged again from the ledger at $0.
 - No prompt changed, no call was repeated, and the arm 2 rule is unchanged.
 - I read the reply endings to find the cause, before any score was computed.
+
+## Checkpoint 5, the model's read (30 Oct, paid)
+
+Both arms ran, under the arm 2 rule written before any call: arm 1 cannot pass mark 4 with 4 agreed reads of 8.
+Each arm made 24 calls, 3 runs on each of the 8 scored protests, with no cached reply.
+Each call sent 8 frames, except decision 16, which sent 7 because its cut has dropped frames.
+
+| Decision | Track | Cars in the set | Truth offender | Arm 1 read (Spark Open) | Arm 2 read (Spark 1.3) |
+|---|---|---|---|---|---|
+| 1 | Oulton Park | 12, 18, 44, 111 | 44 | runs disagree | runs disagree |
+| 11 | Spa | 22, 418 | 418 | no text, 3 of 3 runs | runs disagree |
+| 13 | Spa | 12, 26, 44, 899 | 44 | penalty, 44 | penalty, 44 |
+| 15 | Spa | 12, 32, 70 | 70 | penalty, 70 | penalty, 70 |
+| 16 | Snetterton | 16, 18, 19, 37, 68 | 68 | penalty, 68 | penalty, 68 |
+| 18 | Snetterton | 5, 899 | 5 | runs disagree | not visible |
+| 24 | Brands Hatch | 11, 12, 18, 68, 899 | 12 | no text, 3 of 3 runs | runs disagree |
+| 46 | Cadwell Park | 01, 18, 44, 334 | 01 | penalty, 01 | penalty, 01 |
+
+### The marks
+
+- Mark 4, offender: 4 of 8 on each arm, against a pass of 8 of 8.
+- Mark 4 fails on both arms.
+- The car-behind constant scores 7 of 8.
+- Every agreed read that named a car named the truth offender: 4 of 4 on each arm.
+- Single runs did name a wrong car, and the agreement gate kept each one out.
+- On arm 2, one run on decision 11 named car 22, the car the truth table holds as the victim.
+- On arm 2, one run on decision 1 named car 44 beside two `not_visible` runs, so that read did not agree.
+- Mark 5, verdict (reported, no mark): 4 of 8 match the truth verdict on each arm.
+- Arm 1 agreed on 4 reads and arm 2 on 5.
+- Mark 6, replay: both arms ran a second time from the ledger with the network blocked and wrote byte-identical files.
+- `faultline replay` rebuilt both files byte-identically.
+- Mark 7, spend: $1.76 on the metering proxy (arm 1 $1.11, arm 2 $0.66), inside the $5 line.
+- Arm 1 returned no text on 6 of 24 runs, all on decisions 11 and 24, because its reasoning used the whole 12,000-token ceiling.
+- That is 1 run in 4, under the arm 2 rule's one third.
+- Arm 2 returned valid replies on 24 of 24 runs.
+- Mark 2 rerun at this stage scores the window built around the steward's moment, so it holds 7 of 7 by construction.
+- The locator's own result is still 2 of 7 (Checkpoint 3).
+- Mark 3 at this stage is 8 of 10, median set size 3.5 over all 10 and 4 over the 8 located.
+
+### Fixed in the scorer before the scores were written
+
+- The scorer labelled an agreed read with no offender as "offender outside candidates", because a null offender is not in the set.
+- That label was false, since the read named no car.
+- The fix keeps such a read as agreed, never right on mark 4, and counted on mark 5.
+- It changed one row: arm 2's agreed `not_visible` read on decision 18.
+- Neither numerator changed: mark 4 stays 4 of 8 and mark 5 stays 4 of 8 on both arms.
+- Both score files were written after the fix.
+
+### The honesty card, decision 18
+
+- At decision 18's moment, the frame look found spray and then the cars after the pile-up, with the contact itself not clearly in frame.
+- Arm 2 agreed on all three runs that the contact is not visible, and named no car.
+- Arm 1's three runs disagreed: two said `not_visible` and one named car 5 for a penalty.
+- That one run read something the frames do not show, and the agreement gate kept it out of the read.
+- The steward's ruling names car 5.
+- No agreed read claimed to see what the frames do not show.
+
+### What the demo shows
+
+- The model's read fails mark 4 on both arms, so the demo shows the evidence pack and the steward's ruling without the model's read, as the design allows.
+- The evidence cards still list each read as "the model's read", with this result beside it, and never as a ruling.
+- Any change to chase the mark is a new arm in a new section, written before its first call.

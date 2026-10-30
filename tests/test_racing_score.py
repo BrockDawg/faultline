@@ -514,6 +514,28 @@ def test_mark4_offender_outside_candidates_not_counted(data: Path) -> None:
     assert s["mark_5"]["numerator"] == 7
 
 
+def test_mark4_agreed_null_offender_stays_agreed_and_counts_on_mark5(data: Path) -> None:
+    # An agreed not_visible read names no car: it is not "outside candidates", it is agreed,
+    # not right on mark 4, and its verdict is scored on mark 5 like any other agreed read.
+    truth = json.loads((data / "truth.json").read_text(encoding="utf-8"))
+    for d in truth["decisions"]:
+        if d["id"] == "46":
+            d["verdict"] = "not_visible"
+    (data / "truth.json").write_text(json.dumps(truth), encoding="utf-8")
+    reads = {d: contact_line(d, read=_read(TRUTH[d][1])) for d in TRUTH}
+    reads["46"] = contact_line("46", cands=["34"], read=_read(None, verdict="not_visible"))
+    s = run(data, all_contact(**reads))
+    row = {r["id"]: r for r in s["mark_4"]["rows"]}["46"]
+    assert row["read"] == "agreed"
+    assert row["offender"] is None and row["offender_right"] is False
+    assert (s["mark_4"]["numerator"], s["mark_4"]["pass"], s["mark_4"]["agreed"]) == (7, False, 8)
+    r5 = {r["id"]: r for r in s["mark_5"]["rows"]}["46"]
+    assert (r5["verdict"], r5["verdict_right"]) == ("not_visible", True)
+    assert (s["mark_5"]["numerator"], s["mark_5"]["agreed"]) == (8, 8)
+    line = next(ln for ln in rs.render(s).splitlines() if "decision  46" in ln and "read" in ln)
+    assert "read agreed" in line and "offender    -" in line and line.endswith("not right")
+
+
 def test_mark3_both_medians_must_pass(data: Path) -> None:
     # Three refused (size 0); seven located with sizes 2, 2, 5, 5, 5, 5, 5, every party inside.
     # Over all 10 the median is (2 + 5) / 2 = 3.5, a pass; over the 7 located it is 5, a fail.

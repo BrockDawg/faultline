@@ -534,9 +534,14 @@ def marks45(
             status = "agreed" if read.get("agreed") is True else "not agreed"
             if status == "agreed" and not _located(line):
                 status = "not counted: line not located"
-            elif status == "agreed" and read.get("offender") not in (line or {}).get(
-                "candidates", []
+            elif (
+                status == "agreed"
+                and read.get("offender") is not None
+                and read.get("offender") not in (line or {}).get("candidates", [])
             ):
+                # A null offender (not_visible, no_action, racing_incident) named no car,
+                # so it is not outside the set: it stays agreed, not right on mark 4, and
+                # its verdict counts on mark 5.
                 status = "not counted: offender outside candidates"
         agreed = status == "agreed"
         rows.append(
