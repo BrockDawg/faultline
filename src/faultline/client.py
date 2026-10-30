@@ -8,7 +8,12 @@ Contract:
 - `chat(messages, model, images=(), schema=None, max_tokens=8000, *, spent_entries)` posts one
   `/chat/completions` request and returns a `Reply` (the reply text, its `usage` holding
   `prompt_tokens` and `completion_tokens` with None for an absent count, and `finish_reason`).
-  `spent_entries` is required, so the cap cannot be skipped by leaving it out. Images are JPEG
+  `spent_entries` is required, so the cap cannot be skipped by leaving it out.
+  `Reply.cached` is the metering proxy's own word on whether it served the reply from its
+  cache: the response header `X-Tourney-Cache` (`hit` is True, `miss` is False; absent or any
+  other value is None), and `Reply.cache_header` is the header as sent (None when absent).
+  An odd header never raises: the call was paid, so the reply always comes back for the
+  caller to store before it refuses. Images are JPEG
   bytes (or paths to JPEG files) sent as base64 data URIs in the last message. A `schema` is
   sent as strict structured output: `response_format = {"type": "json_schema", "json_schema":
   {"name": ..., "strict": True, "schema": schema}}`, the shape that worked with images in
@@ -24,8 +29,10 @@ It refuses (`ClientError`), before any request is sent:
 - a model with no row in `PRICES` (an unknown model is never priced at zero);
 - a call whose estimated cost, added to the priced cost of every entry in `spent_entries`
   (dicts holding `model` and `usage`, as the ledger stores them), would pass
-  `FAULTLINE_CAP_USD` (default 5.00). The estimate counts prompt tokens from the text length
-  and the image count, and `max_tokens` as completion tokens.
+  `FAULTLINE_CAP_USD` (default 5.00). The cap is per ledger folder: `spent_entries` is one
+  ledger's entries, so spend recorded in another folder is not counted against it. The
+  estimate counts prompt tokens from the text length and the image count, and `max_tokens`
+  as completion tokens.
 
 A 429 from the proxy (its budget is spent) stops the run: `SystemExit` with the proxy's message.
 It is never retried. Any other HTTP failure or an unexpected reply shape raises `ClientError`.
@@ -53,6 +60,7 @@ from urllib.parse import urlsplit
 import httpx
 
 __all__ = [
+    "CACHE_HEADER",
     "CLIENT",
     "ClientError",
     "PRICES",
@@ -74,6 +82,8 @@ TIMEOUT_S = 900.0
 FAKE_REASON = "Fixed test reply from the fake model seam; no model was called."
 FAKE_TEXT = "fake model reply"
 _LOOPBACK_HOSTS = ("127.0.0.1", "localhost")
+CACHE_HEADER = "X-Tourney-Cache"
+_CACHE_VALUES = {"hit": True, "miss": False}
 
 # Prices copied as data from ai-steward/prices.json (verified there 2026-10-25 from the Meta
 # Model API pricing page, Standard mode, and the Baseten library page; copied 2026-10-29).
@@ -108,11 +118,15 @@ class ClientError(RuntimeError):
 @dataclass(frozen=True)
 class Reply:
     """One model reply: its text, the usage the API reported (None for an absent count), and
-    the finish reason (None when the API gave none)."""
+    the finish reason (None when the API gave none), and `cached`, the proxy's cache header
+    (True for a reply served from its cache, False for a fresh one, None when absent or odd)
+    with `cache_header`, the header's raw value (None when absent)."""
 
     text: str
     usage: dict[str, int | None] = field(default_factory=dict)
     finish_reason: str | None = None
+    cached: bool | None = None
+    cache_header: str | None = None
 
 
 def _post(url: str, headers: dict[str, str], payload: dict[str, Any]) -> httpx.Response:
@@ -320,6 +334,14 @@ def _stop_on_budget(resp: httpx.Response) -> None:
     raise SystemExit(message or "the metering proxy answered 429: this token's budget is spent")
 
 
+def _cached(resp: httpx.Response) -> tuple[bool | None, str | None]:
+    """(cached, raw header): never raises, since the call has already been paid for."""
+    raw = resp.headers.get(CACHE_HEADER)
+    if raw is None:
+        return None, None
+    return _CACHE_VALUES.get(raw.strip().lower()), raw[:80]
+
+
 def _pick(seed: str, path: str, n: int) -> int:
     digest = hashlib.sha256(f"{seed}\n{path}".encode()).hexdigest()
     return int(digest, 16) % n
@@ -448,6 +470,7 @@ def chat(
             raise TypeError("usage is not an object")
     except (ValueError, KeyError, IndexError, TypeError, AttributeError) as exc:
         raise ClientError(f"unexpected reply shape from the model API ({exc!r})") from exc
+    cached, cache_header = _cached(resp)
     return Reply(
         text=str(text or ""),
         usage={
@@ -455,4 +478,6 @@ def chat(
             "completion_tokens": _count(usage.get("completion_tokens"), "completion_tokens"),
         },
         finish_reason=None if finish is None else str(finish),
+        cached=cached,
+        cache_header=cache_header,
     )

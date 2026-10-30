@@ -148,6 +148,7 @@ def test_entries_yield_in_sorted_key_order(tmp_path: Path) -> None:
     [
         ({"usage": {"prompt_tokens": 1, "completion_tokens": -1}}, "completion_tokens"),
         ({"usage": {"prompt_tokens": True, "completion_tokens": 1}}, "prompt_tokens"),
+        ({"usage": {"prompt_tokens": 1}}, "completion_tokens"),
         ({"prompt_sha": "abc"}, "prompt_sha"),
         ({"image_shas": ["X" * 64]}, "image_shas"),
         ({"reply": None}, "reply"),
@@ -248,3 +249,12 @@ def test_corrupt_file_is_named(tmp_path: Path) -> None:
     (tmp_path / f"{key}.json").write_text("{not json", encoding="utf-8")
     with pytest.raises(LedgerError, match="could not be read"):
         Ledger(tmp_path).get(key)
+
+
+def test_an_absent_count_is_stored_as_null(tmp_path: Path) -> None:
+    """A reply with no usage is still recorded, so its spend is counted by the fallback."""
+    key = Ledger.key(MODEL, PARAMS, PROMPT, IMAGES)
+    usage = {"prompt_tokens": None, "completion_tokens": None}
+    stored = Ledger(tmp_path).put(key, make_entry(usage=usage))
+    assert stored["usage"] == usage
+    assert Ledger(tmp_path).require(key)["usage"] == usage

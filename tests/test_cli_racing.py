@@ -10,17 +10,20 @@ from __future__ import annotations
 import ast
 import dataclasses
 import gzip
+import hashlib
 import json
 import shutil
+import subprocess
 from importlib import metadata
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pytest
 from adapters.conftest import write_feed
 from test_public_tree import CORE_WORDS, _imports_adapter
 
-from faultline import cli, record
+from faultline import cli, client, record
 from faultline.adapters.pitbot import cli as racing_cli
 from faultline.adapters.pitbot.feed import Feed
 from faultline.adapters.pitbot.locator import NO_CAR, NO_EVENT_LAP, Window
@@ -291,14 +294,23 @@ def test_a_rule_missing_from_the_pack_is_refused(
 
 
 @pytest.mark.parametrize("stage", ["frames", "rule"])
-def test_later_stages_exit_non_zero(
+def test_later_stages_need_masks(
     world: dict[str, Path], tmp_path: Path, capsys: pytest.CaptureFixture[str], stage: str
 ) -> None:
     out = tmp_path / "locate.jsonl"
     assert judge(world, out, stage=stage) != 0
     err = capsys.readouterr().err.strip()
-    assert "later checkpoint" in err and stage in err
+    assert "needs --masks" in err and stage in err
     assert len(err.splitlines()) == 1
+    assert not out.exists()
+
+
+def test_the_rule_stage_needs_a_model(
+    world: dict[str, Path], tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    out = tmp_path / "rule.jsonl"
+    assert judge(world, out, "--masks", CLI_FIXTURES / "masks.json", stage="rule") == 2
+    assert "needs --model" in capsys.readouterr().err
     assert not out.exists()
 
 
@@ -608,15 +620,598 @@ def test_a_verifier_runs_on_its_input_key(
     assert seen == ["T1"] * 6
 
 
+# ---------------------------------------------------------------- the steward gives the moment
+
+
+def _moments() -> dict[str, dict[str, Any]]:
+    return json.loads((CLI_FIXTURES / "moments.json").read_text(encoding="utf-8"))["moments"]
+
+
+def test_without_moments_locate_is_byte_identical_to_before(
+    world: dict[str, Path], tmp_path: Path
+) -> None:
+    """The hashes of a locate run taken before the moments, masks, frames and rule options."""
+    before = json.loads((CLI_FIXTURES / "locate_before.json").read_text(encoding="utf-8"))
+    out = tmp_path / "locate.jsonl"
+    assert judge(world, out) == 0
+    assert hashlib.sha256(out.read_bytes()).hexdigest() == before["preds_sha256"]
+    bundles = {
+        p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in sorted(record.bundle_dir(out).iterdir())
+    }
+    assert bundles == before["bundles"]
+
+
+def test_a_moment_builds_the_window_around_it(world: dict[str, Path], tmp_path: Path) -> None:
+    out = tmp_path / "locate.jsonl"
+    assert judge(world, out, "--moments", CLI_FIXTURES / "moments.json") == 0
+    rows = by_id(out)
+    moments = _moments()
+    feed = Feed.load(world["base"] / "replay-a.ndjson.gz", "RACE")
+
+    one = rows["1"]
+    m = moments["1"]["te"]
+    assert one["verdict"] == "steward_review"
+    assert one["window"] == {
+        "session": "9000100/RACE",
+        "te": [m - 3, m + 2],
+        "lap": feed.leader_lap(m),
+        "stream_s": [m - 3 + 1000.0, m + 2 + 1000.0],
+        "offset_error_s": 2.0,
+    }
+    bundle = record.read_bundle(out, one["record"])
+    assert bundle["inputs"]["moment"] == moments["1"]
+    detail = bundle["detail"]["locate"]
+    assert detail["contact_te"] == m and detail["moment"] == moments["1"]
+    # The locator still ran; its own window is kept for reference only.
+    assert detail["locator"]["result"] == "window"
+    assert detail["locator"]["te"] != one["window"]["te"]
+    assert "the steward gave feed second" in one["evidence"].casefold()
+
+    # The locator refuses report 5, but the steward's moment still places it.
+    five = record.read_bundle(out, rows["5"]["record"])["detail"]["locate"]
+    assert five["locator"] == {
+        "result": "refusal",
+        "missing_fact": NO_EVENT_LAP,
+        "session": "9000100/RACE",
+    }
+    assert five["window"]["te"] == [moments["5"]["te"] - 3, moments["5"]["te"] + 2]
+
+    # A report with no feed still refuses, its moment recorded beside the refusal.
+    three = rows["3"]
+    assert three["missing_fact"] == racing_cli.NO_FEED
+    assert record.read_bundle(out, three["record"])["inputs"]["moment"] == moments["3"]
+
+    # A report with no moment keeps the locator's window exactly.
+    plain = tmp_path / "plain.jsonl"
+    assert judge(world, plain) == 0
+    assert rows["10"] == by_id(plain)["10"]
+
+
+def test_a_bad_moments_file_is_refused(
+    world: dict[str, Path], tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    bad = world["base"] / "moments.json"
+    bad.write_text(json.dumps({"moments": {"1": {"te": "120", "source": "x"}}}), "utf-8")
+    assert judge(world, tmp_path / "x.jsonl", "--moments", bad) == 2
+    assert "te is not a whole second" in capsys.readouterr().err
+
+
+# ---------------------------------------------------------------- frames and rule stages
+
+HAVE_FFMPEG = bool(shutil.which("ffmpeg") and shutil.which("ffprobe"))
+needs_ffmpeg = pytest.mark.skipif(not HAVE_FFMPEG, reason="ffmpeg and ffprobe are not on PATH")
+VIDEO_S = 80
+OFFSET_S = -80.0  # feed second te shows at stream second te - 80 in the test video
+MODEL = "muse-spark-1.3"
+REASON = "Rule T1: frame 9 shows the front of one car meeting the rear of the other."
+
+
+@pytest.fixture(scope="module")
+def test_video(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    if not HAVE_FFMPEG:
+        pytest.skip("ffmpeg and ffprobe are not on PATH")
+    path = tmp_path_factory.mktemp("video") / "stream.mp4"
+    subprocess.run(
+        ["ffmpeg", "-hide_banner", "-loglevel", "error", "-f", "lavfi", "-i",
+         f"testsrc=duration={VIDEO_S}:size=320x180:rate=5", "-pix_fmt", "yuv420p", str(path)],
+        check=True,
+        capture_output=True,
+    )  # fmt: skip
+    return path
+
+
+@pytest.fixture
+def video_world(world: dict[str, Path], test_video: Path) -> dict[str, Path]:
+    """The world with session 9000100 on the test video, and three reports: 1, 3 and 4."""
+    league = json.loads(world["league"].read_text(encoding="utf-8"))
+    league["sessions"]["9000100/RACE"].update(stream=str(test_video), offset_s=OFFSET_S)
+    world["league"].write_text(json.dumps(league, indent=2), encoding="utf-8")
+    reports = json.loads((CLI_FIXTURES / "reports.json").read_text(encoding="utf-8"))
+    keep = [r for r in reports if r["id"] in ("1", "3", "4")]
+    world["reports"] = _write_reports(world["base"] / "three.jsonl", keep)
+    return world
+
+
+def stage_run(world: dict[str, Path], out: Path, stage: str, *extra: str | Path) -> int:
+    masks = ("--masks", CLI_FIXTURES / "masks.json")
+    moments = ("--moments", CLI_FIXTURES / "moments.json")
+    return judge(world, out, *masks, *moments, *extra, stage=stage)
+
+
+def _fake_model(monkeypatch: pytest.MonkeyPatch) -> list[int]:
+    """The fake model on, every other key unset; counts calls that reach `client.chat`."""
+    for name in ("MODEL_API_KEY", "MODEL_API_BASE", "STEWARD_ENV_FILE", "FAULTLINE_CAP_USD"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("FAULTLINE_FAKE_MODEL", "1")
+    calls: list[int] = []
+    real = client.chat
+
+    def counting(*args: Any, **kwargs: Any) -> client.Reply:
+        calls.append(1)
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(client, "chat", counting)
+    return calls
+
+
+def _no_client(monkeypatch: pytest.MonkeyPatch) -> None:
+    def boom(*_args: Any, **_kwargs: Any) -> Any:
+        raise AssertionError("the model client was called")
+
+    monkeypatch.setattr(client, "chat", boom)
+    monkeypatch.setattr(client, "CLIENT", boom)
+
+
+def _gray(jpg: Path) -> bytes:
+    done = subprocess.run(
+        ["ffmpeg", "-loglevel", "error", "-i", str(jpg), "-f", "rawvideo", "-pix_fmt", "gray", "-"],
+        check=True,
+        capture_output=True,
+    )
+    return done.stdout
+
+
+def _region_max(pixels: bytes, x0: int, y0: int, x1: int, y1: int) -> int:
+    return max(pixels[y * 1280 + x] for y in range(y0, y1) for x in range(x0, x1))
+
+
+@needs_ffmpeg
+def test_frames_stage_cuts_masked_frames_around_the_moment(
+    video_world: dict[str, Path], tmp_path: Path
+) -> None:
+    out = tmp_path / "frames.jsonl"
+    assert stage_run(video_world, out, "frames") == 0
+    rows = by_id(out)
+    one = rows["1"]
+    m = _moments()["1"]["te"]
+    assert one["verdict"] == "steward_review"
+    assert len(one["frames"]) == 17
+    assert [f["stream_s"] for f in one["frames"]][8] == m + OFFSET_S
+    assert one["frames"][0]["stream_s"] == m + OFFSET_S - 4
+    bundle = record.read_bundle(out, one["record"])
+    inputs = bundle["inputs"]
+    masks = json.loads((CLI_FIXTURES / "masks.json").read_text(encoding="utf-8"))
+    session_masks = masks["default"] + masks["sessions"]["9000100/RACE"]
+    assert inputs["masks_sha256"] == record.record_hash(session_masks)
+    assert inputs["frame_sha256"] == [f["sha256"] for f in one["frames"]]
+    assert inputs["ffmpeg_version"].startswith("ffmpeg version")
+    frames_dir = Path(f"{out}.frames")
+    for f in one["frames"]:
+        data = (frames_dir / f"{f['sha256']}.jpg").read_bytes()
+        assert hashlib.sha256(data).hexdigest() == f["sha256"]
+    # Both masks hold: the default's top-left box and the session's own bottom-right box.
+    pixels = _gray(frames_dir / f"{one['frames'][8]['sha256']}.jpg")
+    assert _region_max(pixels, 8, 8, 192, 112) < 40
+    assert _region_max(pixels, 1088, 608, 1272, 712) < 40
+    assert _region_max(pixels, 400, 200, 800, 500) > 100
+    # The report with no feed still refuses and has no frames.
+    assert rows["3"]["missing_fact"] == racing_cli.NO_FEED and rows["3"]["frames"] == []
+
+
+@needs_ffmpeg
+def test_drop_layouts_are_recorded_and_an_all_dropped_window_refuses(
+    video_world: dict[str, Path], tmp_path: Path
+) -> None:
+    out = tmp_path / "frames.jsonl"
+    assert stage_run(video_world, out, "frames") == 0
+    one = by_id(out)["1"]
+    bundle = record.read_bundle(out, one["record"])
+    masks = json.loads((CLI_FIXTURES / "masks.json").read_text(encoding="utf-8"))
+    assert bundle["inputs"]["drop_rules_sha256"] == record.record_hash(masks["drop_layouts"])
+    assert bundle["detail"]["frames"]["dropped"] == []  # the test video has one layout only
+
+    # A rule every pixel matches: every second is another layout, so nothing can be shown.
+    everything = {"name": "any", "probes": [[640, 360]], "rgb_min": [0, 0, 0]}
+    masks["drop_layouts"] = [{**everything, "rgb_max": [255, 255, 255]}]
+    path = video_world["base"] / "masks-all.json"
+    path.write_text(json.dumps(masks), encoding="utf-8")
+    other = tmp_path / "all.jsonl"
+    moments = ("--moments", CLI_FIXTURES / "moments.json")
+    assert judge(video_world, other, "--masks", path, *moments, stage="frames") == 0
+    refused = by_id(other)["1"]
+    assert refused["verdict"] == "unable_to_rule"
+    assert refused["missing_fact"] == racing_cli.NO_STANDARD_VIEW
+    assert refused["frames"] == [] and refused["window"] == {"session": "9000100/RACE"}
+    assert racing_cli.NO_STANDARD_VIEW in refused["evidence"]
+    assert not Path(f"{other}.frames").exists() or not list(Path(f"{other}.frames").iterdir())
+
+
+@needs_ffmpeg
+def test_frames_stage_twice_gives_equal_bytes(video_world: dict[str, Path], tmp_path: Path) -> None:
+    one, two = tmp_path / "o1" / "frames.jsonl", tmp_path / "o2" / "frames.jsonl"
+    assert stage_run(video_world, one, "frames") == 0
+    assert stage_run(video_world, two, "frames") == 0
+    assert one.read_bytes() == two.read_bytes()
+
+
+@needs_ffmpeg
+def test_a_moment_near_the_stream_end_refuses_not_covered(
+    video_world: dict[str, Path], tmp_path: Path
+) -> None:
+    out = tmp_path / "frames.jsonl"
+    assert stage_run(video_world, out, "frames") == 0
+    four = by_id(out)["4"]
+    assert four["verdict"] == "unable_to_rule"
+    assert four["missing_fact"] == "stream does not cover the window"
+    assert four["window"] == {"session": "9000100/RACE"}
+    assert four["frames"] == [] and four["candidates"] == []
+    bundle = record.read_bundle(out, four["record"])
+    assert "frame_sha256" not in bundle["inputs"]
+    assert bundle["detail"]["frames"]["refused"] == "stream does not cover the window"
+    assert bundle["detail"]["locate"]["window"]["te"] == [152, 157]
+
+
+@needs_ffmpeg
+def test_without_moments_frames_centre_on_the_contact_second(
+    video_world: dict[str, Path], tmp_path: Path
+) -> None:
+    out = tmp_path / "frames.jsonl"
+    assert judge(video_world, out, "--masks", CLI_FIXTURES / "masks.json", stage="frames") == 0
+    one = by_id(out)["1"]
+    contact = record.read_bundle(out, one["record"])["detail"]["locate"]["contact_te"]
+    assert one["frames"][8]["stream_s"] == round(contact + OFFSET_S, 1)
+    assert "moment" not in record.read_bundle(out, one["record"])["inputs"]
+
+
+@needs_ffmpeg
+def test_any_other_frames_error_stops_the_run(
+    video_world: dict[str, Path], tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    league = json.loads(video_world["league"].read_text(encoding="utf-8"))
+    league["sessions"]["9000100/RACE"]["stream"] = str(video_world["base"] / "absent.mp4")
+    video_world["league"].write_text(json.dumps(league), encoding="utf-8")
+    out = tmp_path / "frames.jsonl"
+    assert stage_run(video_world, out, "frames") == 2
+    assert "stream file is missing" in capsys.readouterr().err
+    assert not out.exists()
+
+
+def _hide_ffmpeg(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """No ffmpeg anywhere: `shutil.which` finds nothing and PATH holds one empty folder."""
+    empty = tmp_path / "no-tools"
+    empty.mkdir(exist_ok=True)
+    monkeypatch.setenv("PATH", str(empty))
+    monkeypatch.setattr(shutil, "which", lambda *_a, **_k: None)
+
+
+@needs_ffmpeg
+def test_frames_replay_is_byte_identical_and_a_changed_frame_refuses(
+    video_world: dict[str, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    out = tmp_path / "frames.jsonl"
+    assert stage_run(video_world, out, "frames") == 0
+    _hide_ffmpeg(monkeypatch, tmp_path)
+    again = tmp_path / "replayed.jsonl"
+    assert run("replay", out, "--out", again) == 0
+    assert again.read_bytes() == out.read_bytes()
+    sha = by_id(out)["1"]["frames"][3]["sha256"]
+    (Path(f"{out}.frames") / f"{sha}.jpg").write_bytes(b"\xff\xd8changed\xff\xd9")
+    assert run("replay", out, "--out", tmp_path / "third.jsonl") == 2
+    assert "has changed" in capsys.readouterr().err
+
+
+@needs_ffmpeg
+def test_rule_stage_under_the_fake_model_twice_and_replay(
+    video_world: dict[str, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = _fake_model(monkeypatch)
+    one, two = tmp_path / "rule.jsonl", tmp_path / "rule2.jsonl"
+    args = ("--model", "fake", "--arm", "2")
+    assert stage_run(video_world, one, "rule", *args) == 0
+    assert len(calls) == 3  # one steward_review line, three runs
+    assert stage_run(video_world, two, "rule", *args) == 0
+    assert len(calls) == 3  # the second run came from the ledger alone
+    assert one.read_bytes() == two.read_bytes()
+    assert not (tmp_path / "ledger" / racing_cli.LOCK_NAME).exists()  # released
+
+    row = by_id(one)["1"]
+    assert row["verdict"] == "steward_review"
+    read = row["model_read"]
+    assert read["model"] == "fake" and read["runs"] == 3 and read["source"] == "fake"
+    assert set(read) == {
+        "model", "runs", "agreed", "verdict", "offender", "reason", "parse_failures",
+        "lint_hits", "source",
+    }  # fmt: skip
+    if not (read["agreed"] and read["verdict"] == "penalty"):
+        assert row["offender"] is None
+    inputs = record.read_bundle(one, row["record"])["inputs"]
+    assert len(inputs["ledger_keys"]) == 3
+    call = inputs["model_call"]
+    assert call["ref"] == "1-arm2" and call["json_mode"] is True and call["source"] == "fake"
+    assert call["schema_form"] == "enum"
+    assert call["frame_sha256"] == [f["sha256"] for f in row["frames"]]
+    for rid in ("3", "4"):
+        assert by_id(one)[rid]["model_read"] is None
+
+    # Replay with the client seam raising, the fake model off and no ffmpeg on the machine.
+    monkeypatch.delenv("FAULTLINE_FAKE_MODEL")
+    _no_client(monkeypatch)
+    _hide_ffmpeg(monkeypatch, tmp_path)
+    again = tmp_path / "replayed.jsonl"
+    assert run("replay", one, "--out", again) == 0
+    assert again.read_bytes() == one.read_bytes()
+
+
+@needs_ffmpeg
+def test_rule_replay_refuses_a_missing_ledger_entry(
+    video_world: dict[str, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    _fake_model(monkeypatch)
+    out = tmp_path / "rule.jsonl"
+    assert stage_run(video_world, out, "rule", "--model", "fake") == 0
+    keys = record.read_bundle(out, by_id(out)["1"]["record"])["inputs"]["ledger_keys"]
+    (tmp_path / "ledger" / f"{keys[1]}.json").unlink()
+    _no_client(monkeypatch)
+    assert run("replay", out, "--out", tmp_path / "again.jsonl") == 2
+    assert "never calls the model" in capsys.readouterr().err
+
+
+@needs_ffmpeg
+def test_the_fake_model_never_runs_under_a_real_name(
+    video_world: dict[str, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    _fake_model(monkeypatch)
+    out = tmp_path / "rule.jsonl"
+    assert stage_run(video_world, out, "rule", "--model", MODEL) == 2
+    assert "only --model fake" in capsys.readouterr().err
+    monkeypatch.delenv("FAULTLINE_FAKE_MODEL")
+    assert stage_run(video_world, out, "rule", "--model", "fake") == 2
+    assert "needs FAULTLINE_FAKE_MODEL=1" in capsys.readouterr().err
+    assert not out.exists()
+
+
+@needs_ffmpeg
+def test_a_held_ledger_lock_refuses_and_another_ledger_needs_a_cap(
+    video_world: dict[str, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    calls = _fake_model(monkeypatch)
+    out = tmp_path / "rule.jsonl"
+    (tmp_path / "ledger").mkdir()
+    lock = tmp_path / "ledger" / racing_cli.LOCK_NAME
+    lock.write_text("1234\n", encoding="utf-8")
+    assert stage_run(video_world, out, "rule", "--model", "fake") == 2
+    assert "ledger is locked" in capsys.readouterr().err
+    assert lock.exists() and calls == [] and not out.exists()
+    lock.unlink()
+
+    other = tmp_path / "elsewhere"
+    assert stage_run(video_world, out, "rule", "--model", "fake", "--ledger", other) == 2
+    assert "FAULTLINE_CAP_USD" in capsys.readouterr().err
+    monkeypatch.setenv("FAULTLINE_CAP_USD", "5.00")
+    assert stage_run(video_world, out, "rule", "--model", "fake", "--ledger", other) == 0
+    assert len(list(other.glob("*.json"))) == 3 and not (other / racing_cli.LOCK_NAME).exists()
+
+
+@needs_ffmpeg
+def test_the_lock_is_released_when_a_run_fails(
+    video_world: dict[str, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake = _Scripted(lambda _k: _reply("3"), cache="hit")
+    _real_model(monkeypatch, tmp_path, fake)
+    assert stage_run(video_world, tmp_path / "rule.jsonl", "rule", "--model", MODEL) == 2
+    assert not (tmp_path / "ledger" / racing_cli.LOCK_NAME).exists()
+
+
+@needs_ffmpeg
+def test_the_pattern_schema_form_is_sent_and_recorded(
+    video_world: dict[str, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake = _Scripted(lambda _k: _reply("3"))
+    _real_model(monkeypatch, tmp_path, fake)
+    out = tmp_path / "rule.jsonl"
+    extra = ("--model", MODEL, "--arm", "2", "--schema-form", "pattern")
+    assert stage_run(video_world, out, "rule", *extra) == 0
+    sent = fake.calls[0]["response_format"]["json_schema"]["schema"]
+    assert "pattern" in sent["properties"]["offender"]["anyOf"][0]
+    call = record.read_bundle(out, by_id(out)["1"]["record"])["inputs"]["model_call"]
+    assert call["schema_form"] == "pattern"
+
+
+class _Scripted:
+    """A fake transport: `answer(k)` gives the reply text of call k (from 0)."""
+
+    def __init__(self, answer: Any, cache: str | None = "miss") -> None:
+        self.answer = answer
+        self.cache = cache
+        self.calls: list[dict[str, Any]] = []
+        self._http = httpx.Client(transport=httpx.MockTransport(self._handle))
+
+    def _handle(self, request: httpx.Request) -> httpx.Response:
+        text = self.answer(len(self.calls) - 1)
+        body = {
+            "choices": [{"message": {"content": text}, "finish_reason": "stop"}],
+            "usage": {"prompt_tokens": 900, "completion_tokens": 120},
+        }
+        headers = {client.CACHE_HEADER: self.cache} if self.cache else None
+        return httpx.Response(200, json=body, headers=headers)
+
+    def __call__(self, url: str, headers: dict[str, str], payload: dict[str, Any]) -> Any:
+        self.calls.append(payload)
+        return self._http.post(url, headers=headers, json=payload)
+
+
+def _real_model(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, fake: _Scripted) -> None:
+    for name in ("MODEL_API_KEY", "MODEL_API_BASE", "FAULTLINE_FAKE_MODEL", "FAULTLINE_CAP_USD"):
+        monkeypatch.delenv(name, raising=False)
+    env_file = tmp_path / "test.env"
+    env_file.write_text("MODEL_API_KEY=test-key-not-real\nMODEL_API_BASE=http://127.0.0.1:9/v1\n")
+    monkeypatch.setenv("STEWARD_ENV_FILE", str(env_file))
+    monkeypatch.setattr(client, "CLIENT", fake)
+
+
+def _reply(offender: str | None, verdict: str = "penalty", reason: str = REASON) -> str:
+    return json.dumps(
+        {"offender": offender, "verdict": verdict, "reason": reason, "frames_used": ["frame 9"]}
+    )
+
+
+@needs_ffmpeg
+def test_an_agreed_penalty_sets_the_offender(
+    video_world: dict[str, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake = _Scripted(lambda _k: "```json\n" + _reply("3") + "\n```")
+    _real_model(monkeypatch, tmp_path, fake)
+    out = tmp_path / "rule.jsonl"
+    assert stage_run(video_world, out, "rule", "--model", MODEL) == 0
+    assert len(fake.calls) == 3 and all("response_format" not in c for c in fake.calls)
+    tails = [c["messages"][-1]["content"][1]["text"] for c in fake.calls]
+    assert tails == [f"Request reference: 1-run{k}" for k in (1, 2, 3)]
+    one = by_id(out)["1"]
+    assert "3" in one["candidates"]
+    assert one["model_read"]["agreed"] is True and one["model_read"]["verdict"] == "penalty"
+    assert one["model_read"]["source"] == "model"
+    assert one["offender"] == "3"
+    assert one["verdict"] == "steward_review"
+    images = [p for p in fake.calls[0]["messages"][-1]["content"] if p["type"] == "image_url"]
+    assert len(images) == 17
+
+
+@needs_ffmpeg
+def test_a_disagreement_leaves_the_offender_null(
+    video_world: dict[str, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake = _Scripted(lambda k: _reply("3" if k % 2 == 0 else "2"))
+    _real_model(monkeypatch, tmp_path, fake)
+    out = tmp_path / "rule.jsonl"
+    assert stage_run(video_world, out, "rule", "--model", MODEL, "--arm", "2") == 0
+    assert all(c["response_format"]["json_schema"]["strict"] for c in fake.calls)
+    one = by_id(out)["1"]
+    assert one["model_read"]["agreed"] is False and one["model_read"]["offender"] is None
+    assert one["offender"] is None
+
+
+@needs_ffmpeg
+def test_a_planted_name_in_a_reply_never_reaches_the_line(
+    video_world: dict[str, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    named = REASON[:-1] + ", and Fenwhistle braked late."
+    fake = _Scripted(lambda k: _reply("3", reason=named if k == 1 else REASON))
+    _real_model(monkeypatch, tmp_path, fake)
+    out = tmp_path / "rule.jsonl"
+    assert stage_run(video_world, out, "rule", "--model", MODEL) == 0
+    one = by_id(out)["1"]
+    assert one["model_read"]["lint_hits"] == 1 and one["model_read"]["agreed"] is False
+    assert one["offender"] is None
+    assert "fenwhistle" not in _written_text(out)
+    hits = sorted(
+        json.loads(p.read_text("utf-8"))["lint_hit"] for p in (tmp_path / "ledger").glob("*.json")
+    )
+    assert hits == [False, False, True]
+
+
+@needs_ffmpeg
+@pytest.mark.parametrize("word", ["hit", None])
+def test_a_reply_not_said_fresh_is_stored_then_stops_the_rule_stage(
+    video_world: dict[str, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    word: str | None,
+) -> None:
+    fake = _Scripted(lambda _k: _reply("3"), cache=word)
+    _real_model(monkeypatch, tmp_path, fake)
+    out = tmp_path / "rule.jsonl"
+    assert stage_run(video_world, out, "rule", "--model", MODEL) == 2
+    err = capsys.readouterr().err
+    assert "1-run1" in err and "fresh" in err
+    assert not out.exists()
+    (entry,) = [json.loads(p.read_text("utf-8")) for p in (tmp_path / "ledger").glob("*.json")]
+    assert entry["cached"] is (True if word == "hit" else None)  # kept, so its spend counts
+
+
+# ---------------------------------------------------------------- masks are mandatory
+
+
+@pytest.mark.parametrize(
+    ("change", "message"),
+    [
+        (lambda m: m.update(default=[]), "non-empty list"),
+        (lambda m: m.update(default=["drawbox=x=0:y=0:w=9:h=9:color=black"]), "filled drawbox"),
+        (lambda m: m.update(default=["scale=10:10"]), "filled drawbox"),
+        (lambda m: m.update(default=["drawbox=x=0:t=fill,drawtext=text=a:t=fill"]), "filled"),
+        (lambda m: m["sessions"]["9000100/RACE"].append("null"), "filled drawbox"),
+        (lambda m: m.pop("drop_layouts"), "drop_layouts is missing"),
+        (lambda m: m.update(drop_layouts={}), "not a list"),
+        (lambda m: m["drop_layouts"][0].update(probes=[]), "drop rule 0"),
+        (lambda m: m["drop_layouts"][1].update(rgb_max=[0, 0]), "drop rule 1"),
+    ],
+)
+def test_a_bad_masks_file_is_refused(
+    world: dict[str, Path],
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    change: Any,
+    message: str,
+) -> None:
+    masks = json.loads((CLI_FIXTURES / "masks.json").read_text(encoding="utf-8"))
+    change(masks)
+    path = world["base"] / "masks-bad.json"
+    path.write_text(json.dumps(masks), encoding="utf-8")
+    out = tmp_path / "frames.jsonl"
+    assert judge(world, out, "--masks", path, stage="frames") == 2
+    assert message in capsys.readouterr().err
+    assert not out.exists()
+
+
+def test_an_explicit_empty_drop_layouts_is_allowed(world: dict[str, Path]) -> None:
+    masks = json.loads((CLI_FIXTURES / "masks.json").read_text(encoding="utf-8"))
+    masks["drop_layouts"] = []
+    path = world["base"] / "masks-none.json"
+    path.write_text(json.dumps(masks), encoding="utf-8")
+    assert racing_cli._Masks(path).drop_layouts == []
+
+
 # ---------------------------------------------------------------- core boundary
 
+CORE_FILES = ("cli", "frames", "ruling", "client", "record", "ledger", "lint", "roster")
+DOMAIN_WORDS = ("racing", "pitbot", "steward", "protest", "broadcast")
+# Fixed names the core must keep: an env variable and a sibling repository's path.
+ALLOWED_NAMES = ("STEWARD_ENV_FILE", "ai-steward")
 
-def test_core_cli_imports_no_adapter_and_has_no_domain_words() -> None:
-    path = REPO / "src" / "faultline" / "cli.py"
+
+@pytest.mark.parametrize("name", CORE_FILES)
+def test_core_modules_import_no_adapter_and_have_no_domain_words(name: str) -> None:
+    path = REPO / "src" / "faultline" / f"{name}.py"
     text = path.read_text(encoding="utf-8")
     assert not _imports_adapter(ast.parse(text))
-    assert not CORE_WORDS.search(text)
-    assert "racing" not in text.casefold() and "pitbot" not in text.casefold()
+    assert not CORE_WORDS.search(text), CORE_WORDS.search(text)
+    for allowed in ALLOWED_NAMES:
+        text = text.replace(allowed, "")
+    for word in DOMAIN_WORDS:
+        assert word not in text.casefold(), f"{name}.py holds {word!r}"
 
 
 def test_the_domain_is_found_by_discovery() -> None:

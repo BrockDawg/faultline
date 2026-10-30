@@ -1,0 +1,12 @@
+{
+  "bundles": {
+    "22e1dcb8f6cb30e9601c3b3245f90836c88b85270c3004b41f3d13295de294cb.json": "a37f3f7ee6d58a670715e1dbc1d16e2f69feb6b3c333fa740a51e328b8c3fccb",
+    "44da658009a0b0154bdbb2104b9322f60ab4bec62582e5604588446dae2e14c5.json": "69fd0c353b7e09470726e949d6a82f5105691c1cd9a7de2258698c30b1efdd93",
+    "545f0b25d01c5c694bec70cc919d70bc838d40402af6f8450fef10cec3f483a3.json": "373362695f8488c7a93d431f45a31e3e06680af48c62206f682a0fb071117b5d",
+    "5a0fb70359f2f01bfe5a4cb55011cab9f8b86bbb488aff5c02dd3a48b610a5aa.json": "2d2d52c636a5457880ddd5a62063285bd4bd27f24e534fdea99660316d5c5612",
+    "ac050ea1c30d9036b7a43cc72a7b85dbd6566ec0a9d8981eab27256774d2d4c4.json": "0e4553f51c6190731a01eed7fb8469e5f5ff7ef96f48437ce50067bb952c931f",
+    "d880949efe1dd217bfb8e086d64fb0e938f5ffce037bf6d607a6b4ee69efd585.json": "fcbf968d2de0429a52370947c82101c26061ec7cd3779c6006fa5c14baefc9a6"
+  },
+  "note": "sha256 of a locate-stage run on the synthetic world, taken before the moments, masks, frames and rule options existed (30 Oct); without those options the output must stay byte-identical.",
+  "preds_sha256": "39161cb4db29ab2002176ce8323b92f1c1c607f9239487e71504eb4032667dd5"
+}

@@ -41,9 +41,15 @@ JPEG = b"\xff\xd8\xff\xe0fake-jpeg-bytes\xff\xd9"
 class Recorder:
     """A fake transport: records every request and answers through an httpx.MockTransport."""
 
-    def __init__(self, status: int = 200, body: dict[str, Any] | None = None) -> None:
+    def __init__(
+        self,
+        status: int = 200,
+        body: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> None:
         self.calls: list[dict[str, Any]] = []
         self.status = status
+        self.headers = headers or {}
         self.body = body or {
             "choices": [
                 {"message": {"content": '{"verdict": "breach"}'}, "finish_reason": "length"}
@@ -53,7 +59,7 @@ class Recorder:
         self._http = httpx.Client(transport=httpx.MockTransport(self._handle))
 
     def _handle(self, request: httpx.Request) -> httpx.Response:
-        return httpx.Response(self.status, json=self.body)
+        return httpx.Response(self.status, json=self.body, headers=self.headers)
 
     def __call__(self, url: str, headers: dict[str, str], payload: dict[str, Any]):
         self.calls.append({"url": url, "headers": headers, "payload": payload})
@@ -391,6 +397,36 @@ def test_entry_cost_refuses_non_int_usage(bad: Any) -> None:
 def test_fake_model_without_schema(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("FAULTLINE_FAKE_MODEL", "1")
     assert client.chat(MESSAGES, "muse-spark-1.3", spent_entries=[]).text == client.FAKE_TEXT
+
+
+@pytest.mark.parametrize(
+    ("header", "want"), [("hit", True), ("miss", False), ("HIT", True), (None, None)]
+)
+def test_the_proxy_cache_header_lands_on_the_reply(
+    env, monkeypatch: pytest.MonkeyPatch, header: str | None, want: bool | None
+) -> None:
+    rec = Recorder(headers={client.CACHE_HEADER: header} if header is not None else None)
+    monkeypatch.setattr(client, "CLIENT", rec)
+    assert client.chat(MESSAGES, "muse-spark-1.3", spent_entries=[]).cached is want
+
+
+def test_an_odd_cache_header_comes_back_raw_never_raising(
+    env, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    rec = Recorder(headers={client.CACHE_HEADER: "maybe"})
+    monkeypatch.setattr(client, "CLIENT", rec)
+    reply = client.chat(MESSAGES, "muse-spark-1.3", spent_entries=[])
+    assert reply.cached is None and reply.cache_header == "maybe"
+    assert reply.text == '{"verdict": "breach"}'
+
+
+def test_the_cap_is_per_ledger_folder_in_the_docstring() -> None:
+    assert "per ledger folder" in (client.__doc__ or "")
+
+
+def test_the_fake_model_has_no_cache_word(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("FAULTLINE_FAKE_MODEL", "1")
+    assert client.chat(MESSAGES, "muse-spark-1.3", spent_entries=[]).cached is None
 
 
 def test_core_module_stays_domain_neutral() -> None:

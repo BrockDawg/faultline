@@ -314,3 +314,46 @@ Oulton HEAT 1 shows no counter, so it is not ruled.
 - The locator still runs, its window is kept in each record, and its 2 of 7 stands as its own result.
 - Mark 4 is now a fair test of the model's read against the car-behind constant, because both are handed the same second.
 - Mark 4's rule, its n of 8 and its pass at 8 of 8 are unchanged.
+
+### Checkpoint 4, frames and the offline dry run (30 Oct, $0)
+
+- Each located protest gets 17 frames, 2 a second over 4 s either side of the steward's moment.
+- Two frame runs are byte-identical, and every frame file is named by its own hash.
+- JPEG bytes can differ between ffmpeg builds.
+  The record hashes the frames this machine produced, and the replay checks those hashes and never re-encodes.
+- A model run with a fixed fake reply, through the full rule stage, gives byte-identical output on two runs, and the second run sends nothing.
+- `faultline replay` rebuilt both fake runs byte-identically with the network blocked and the proxy ports closed; the guard logged 0 connection attempts.
+
+#### What the frames hide
+
+A look at one frame per stream, then at every frame of every located protest, found three things the first masks missed:
+
+- The league's logo sits top left on every stream, and is now covered with the timing strip beside it.
+- A fastest-lap banner at the top of the Spa stream names a driver, and is now covered.
+- Two other broadcast layouts appear: two stacked camera panes, and a picture-in-picture view.
+  Both carry driver name cards that move with the layout.
+
+Fixed masks cannot follow a moving layout, so a frame in either layout is dropped, with one frame either side to catch the cross-fade.
+The layout is found from the orange pane borders, by pixel probes on the picture before the masks are drawn.
+On these protests, only decision 16 lost frames: 2 of 17.
+No kept frame shows a driver name.
+One neighbour each side covers 0.5 s of cross-fade; a slower fade could leave a faint card in the next frame, so every frame set is still looked at before it is sent.
+The model's written reason passes the same name check as the prompt, so a name it read from a missed card counts as a failed run.
+
+#### The frame look, per protest
+
+This is a look, not a score.
+
+| Decision | What the frames show around the moment |
+|---|---|
+| 1 | A line of cars, then a car alongside; no clear contact |
+| 11 | Two cars close together through a bend |
+| 13 | A pack through the first corner; contact not clear at this camera |
+| 15 | A high wide shot of a group through the chicane; the cars are small |
+| 16 | The contact: debris and a spun car |
+| 18 | Heavy spray, then cars side by side after the pile-up; the contact itself is not clearly in frame |
+| 24 | A group at the hairpin, with smoke |
+| 46 | A pack, then smoke and a car off the track |
+
+- The camera shows the contact clearly on 1 of 8 scored protests, and the aftermath on 3 more.
+- The `not_visible` verdict exists for exactly this, and the model may use it.

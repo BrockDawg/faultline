@@ -1,0 +1,12 @@
+{
+  "default": ["drawbox=x=0:y=0:w=200:h=120:color=black:t=fill"],
+  "sessions": {
+    "9000100/RACE": ["drawbox=x=1080:y=600:w=200:h=120:color=black:t=fill"]
+  },
+  "drop_layouts": [
+    {"name": "stacked", "probes": [[304, 100], [304, 200], [304, 300]],
+     "rgb_min": [180, 0, 0], "rgb_max": [255, 80, 40]},
+    {"name": "picture-in-picture", "probes": [[290, 100], [290, 250], [290, 400]],
+     "rgb_min": [180, 0, 0], "rgb_max": [255, 80, 40]}
+  ]
+}

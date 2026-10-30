@@ -17,7 +17,9 @@ half-written entry (the temp name carries the process id and a random suffix, an
 
 - `model` (str), `params` (object), `prompt_sha` (64 lower-case hex of the prompt text),
   `image_shas` (list of 64 lower-case hex), `reply` (str);
-- `usage`: `{"prompt_tokens": int, "completion_tokens": int}`, both non-negative.
+- `usage`: `{"prompt_tokens": int | None, "completion_tokens": int | None}`, each a
+  non-negative whole number, or None when the API reported no count (the reply is still
+  stored, so its spend is counted: `client.entry_cost` prices it by its per-call fallback).
 
 Other keys are kept as given. `put` refuses to replace an entry with a different one; putting
 the same entry again does nothing. `require` is the replay read: a missing key raises
@@ -124,10 +126,15 @@ def _check_entry(key: str, entry: object) -> dict[str, Any]:
     if not isinstance(usage, Mapping):
         raise LedgerError(f"{where}: 'usage' must be a JSON object.")
     for field in _USAGE_FIELDS:
-        count = usage.get(field)
+        if field not in usage:
+            raise LedgerError(f"{where}: 'usage'.{field!r} is missing.")
+        count = usage[field]
+        if count is None:
+            continue
         if isinstance(count, bool) or not isinstance(count, int) or count < 0:
             raise LedgerError(
-                f"{where}: 'usage'.{field!r} must be a non-negative whole number, got {count!r}."
+                f"{where}: 'usage'.{field!r} must be a non-negative whole number or null, "
+                f"got {count!r}."
             )
     _check_keys(entry, where)
     _check_floats(entry, where)
