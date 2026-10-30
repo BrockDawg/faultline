@@ -8,8 +8,8 @@ incident-limit rulings (`limits.limits_for_league`), each with its `record` and 
 `faultline racing judge <reports.jsonl> [...] --league <league.json> --rules <packdir>
 --out <preds.jsonl> --stage locate|frames|rule [--known-names <file>] [--moments <json>]
 [--masks <json>] [--frames-dir <dir>] [--model <id> --arm 1|2 --schema-form enum|pattern
---ledger <dir> --runs N --max-tokens N]`: one `contact` ruling per protest line. Per report,
-in this order:
+--ledger <dir> --runs N --max-tokens N --images N]`: one `contact` ruling per protest line.
+Per report, in this order:
 
 1. no `session` on the report: `unable_to_rule`, `NO_SESSION`, window `{"session": null}`;
 2. a session absent from `league.json`, or one with no `feed`: `unable_to_rule`, `NO_FEED`,
@@ -40,7 +40,7 @@ Stage `frames` (needs `--masks`): for each `steward_review` line, centre `c` = t
 without one the window's contact second; `frames.cut(stream, c + offset_s, frames dir, masks,
 error_s=offset_error_s)`, where the masks are masks.json's `default` plus that session's
 extras, and the frames dir is `--frames-dir` or `<out>.frames`. The line's `frames` becomes
-`[{"stream_s", "sha256"}]`, kept frames only: masks.json's optional `drop_layouts` rules
+`[{"stream_s", "sha256"}]`, kept frames only: masks.json's `drop_layouts` rules
 go to `frames.cut` as `drop_rules`, so a second showing another broadcast layout (and its
 neighbours) is dropped. `NOT_COVERED` or `NO_STANDARD_VIEW` turns the line into
 `unable_to_rule` with that missing fact (session-only window, no candidates, no facts); any
@@ -49,10 +49,16 @@ other `FramesError` stops the run.
 Stage `rule` (needs `--model`): the frames stage, then for each `steward_review` line with
 frames, `ruling.read` over the prompt `ruling.build_prompt` makes (the pack rule's own text,
 the line's facts, the candidates, the normalised protest, the frame labels, subject noun
-`SUBJECT_NOUN`) and the frame files as images, through the ledger (`--ledger`, default
-`ledger/` beside `--out`). Arm 1 sends no `response_format` (reference `<id>`); arm 2 sends
-the strict schema (reference `<id>-arm2`). The line's `model_read` is the read's `as_dict()`;
-its `offender` is the read's offender only when the read agreed with a `penalty`, else null.
+`SUBJECT_NOUN`) and the chosen frame files as images, through the ledger (`--ledger`, default
+`ledger/` beside `--out`). The model is sent `--images N` frames at most (`DEFAULT_IMAGES`,
+8, because one host refuses more than 8 images a request), picked by `pick_model_frames`:
+one per whole second `c + k` for k from `-IMAGES_BEFORE_S` (-4) up, the unused cut frame
+nearest that second within `IMAGES_SLOT_S` (0.5 s), the earlier on a tie, a slot with none
+skipped; N at least the cut's size sends every frame. The frame labels (`frame 1..n`) name
+the chosen frames only; the line's `frames` keeps every cut frame. Arm 1 sends no
+`response_format` (reference `<id>`); arm 2 sends the strict schema (reference `<id>-arm2`).
+The line's `model_read` is the read's `as_dict()`; its `offender` is the read's offender only
+when the read agreed with a `penalty`, else null.
 The verdict stays `steward_review`: the steward decides, the read sits beside it.
 The verdict classes (`VERDICTS`, `penalty` the one naming a car) and the prompt's role and
 document words (`WORDING`) are supplied here, never by the core. `--schema-form` (`enum`, the
@@ -85,8 +91,9 @@ reached the frames step: `masks_sha256` (of the session's mask list), `drop_rule
 (of the `drop_layouts` list), `ffmpeg_version`, and
 `frame_sha256` (the frame hashes in time order) when frames were cut. In the rule stage:
 `ledger_keys` and `model_call` (model, arm, reference, runs, max tokens, JSON mode, schema
-form, schema, prompt text, candidates, frame labels and hashes, and the ledger key's
-`source`).
+form, schema, prompt text, candidates, `images` (the `--images` N), the sent frames' labels
+and hashes, and the ledger key's `source`); a bundle written before `images` existed sent
+every cut frame and replays unchanged, since replay reads only the call.
 `detail.locate` holds the window's contact second, its event (or the moment and the
 locator's own answer), the candidates with their gaps and the normalised (name-free) protest;
 `detail.frames` the centre second and the dropped seconds with their rule. Lines are sorted
@@ -111,7 +118,7 @@ import hashlib
 import json
 import os
 import re
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -156,9 +163,13 @@ __all__ = [
     "SUBJECT_NOUN",
     "VERDICTS",
     "WORDING",
+    "DEFAULT_IMAGES",
+    "IMAGES_BEFORE_S",
+    "IMAGES_SLOT_S",
     "RacingCliError",
     "judge",
     "limits",
+    "pick_model_frames",
     "read_moments",
     "register",
 ]
@@ -195,6 +206,9 @@ LOCK_NAME = ".judge.lock"
 MASK_PATTERN = re.compile(r"^drawbox=[^,]*:t=fill$")
 DEFAULT_RUNS = 3
 DEFAULT_MAX_TOKENS = 12000
+DEFAULT_IMAGES = 8
+IMAGES_BEFORE_S = 4
+IMAGES_SLOT_S = 0.5
 FRAMES_SUFFIX = ".frames"
 LEDGER_NAME = "ledger"
 FRAMES_DIR_ENV = "FAULTLINE_FRAMES_DIR"
@@ -412,8 +426,8 @@ def _strings(value: Any) -> bool:
 
 class _Masks:
     """masks.json: `{"default": [drawbox], "sessions": {"<session key>": [extra drawbox]},
-    "drop_layouts": [drop rule]}`; `drop_layouts` is optional (empty when absent) and each rule
-    is checked by `frames.cut`."""
+    "drop_layouts": [drop rule]}`; `drop_layouts` is required (an explicit `[]` for none) and
+    each rule is checked by `frames.check_drop_rules`."""
 
     def __init__(self, path: Path) -> None:
         data = _read_json(path, "masks")
@@ -799,6 +813,31 @@ def _frames_step(
 # ---------------------------------------------------------------- judge, rule stage
 
 
+def pick_model_frames(stream_seconds: Sequence[float], centre_s: float, n: int) -> list[int]:
+    """The indices (time order) of the cut frames the model is sent: `n` at most.
+
+    All of them when `n` is at least their number. Otherwise one slot per whole second
+    `centre_s + k`, k in `range(-IMAGES_BEFORE_S, n - IMAGES_BEFORE_S)`: the unused frame
+    whose second is nearest, within `IMAGES_SLOT_S`, earlier on a tie; a slot with none is
+    skipped, so a cut with dropped seconds may send fewer than `n`.
+    """
+    if n < 1:
+        raise RacingCliError(f"--images {n} must be at least 1.")
+    if n >= len(stream_seconds):
+        return list(range(len(stream_seconds)))
+    used: set[int] = set()
+    for k in range(-IMAGES_BEFORE_S, n - IMAGES_BEFORE_S):
+        target = centre_s + k
+        near = [
+            (round(abs(float(s) - target), 6), float(s), i)
+            for i, s in enumerate(stream_seconds)
+            if i not in used and round(abs(float(s) - target), 6) <= IMAGES_SLOT_S
+        ]
+        if near:
+            used.add(min(near)[2])
+    return sorted(used, key=lambda i: (float(stream_seconds[i]), i))
+
+
 def _rule_step(
     built: _Built,
     rule_text: str,
@@ -810,6 +849,7 @@ def _rule_step(
     runs: int,
     max_tokens: int,
     schema_form: str = "enum",
+    images: int = DEFAULT_IMAGES,
 ) -> None:
     """Ask the model through the ledger and put its read beside the steward's review."""
     ctx = built.ctx
@@ -818,8 +858,13 @@ def _rule_step(
         return
     rid = line["id"]
     cands = list(line["candidates"])
-    shas = [f["sha256"] for f in line["frames"]]
-    labels = modelread.label_frames([f["stream_s"] for f in line["frames"]])
+    centre_s = round(ctx["centre_te"] + ctx["offset_s"], 1)
+    chosen = [
+        line["frames"][i]
+        for i in pick_model_frames([f["stream_s"] for f in line["frames"]], centre_s, images)
+    ]
+    shas = [f["sha256"] for f in chosen]
+    labels = modelread.label_frames([f["stream_s"] for f in chosen])
     prompt = modelread.build_prompt(
         rule_text,
         line["facts"],
@@ -837,6 +882,7 @@ def _rule_step(
         "frame_labels": [label for label, _second in labels],
         "frame_sha256": shas,
         "id": rid,
+        "images": images,
         "json_mode": json_mode,
         "max_tokens": max_tokens,
         "model": model,
@@ -984,6 +1030,7 @@ def judge(
     runs: int = DEFAULT_RUNS,
     max_tokens: int = DEFAULT_MAX_TOKENS,
     schema_form: str = "enum",
+    images: int = DEFAULT_IMAGES,
 ) -> Path:
     """Write one contact ruling per report line, with records, to `out`, up to `stage`."""
     if stage not in STAGES:
@@ -999,6 +1046,11 @@ def judge(
             raise RacingCliError(f"arm {arm!r} is not one of {list(ARMS)}.")
         if runs < 1 or max_tokens < 1:
             raise RacingCliError("--runs and --max-tokens must be at least 1.")
+        if isinstance(images, bool) or not isinstance(images, int) or images < 1:
+            raise RacingCliError(
+                f"--images {images!r} must be a whole number of at least 1: the model is "
+                "sent at least one frame."
+            )
         if schema_form not in SCHEMA_FORMS:
             raise RacingCliError(f"schema form {schema_form!r} is not one of {SCHEMA_FORMS}.")
         fake = os.environ.get(FAKE_ENV) == "1"
@@ -1051,6 +1103,7 @@ def judge(
                         runs,
                         max_tokens,
                         schema_form,
+                        images,
                     )
     pairs = [cli.bundle_for(b.inputs, b.ruling, b.detail) for b in built]
     return cli.write_rulings(out, _sort_pairs(pairs))
@@ -1091,6 +1144,7 @@ def _cmd_judge(args: argparse.Namespace) -> int:
         runs=args.runs,
         max_tokens=args.max_tokens,
         schema_form=args.schema_form,
+        images=args.images,
     )
     print(f"faultline {DOMAIN} judge --stage {args.stage}: {_summary(path)}")
     return 0
@@ -1121,4 +1175,11 @@ def register(parser: argparse.ArgumentParser) -> None:
     )
     jp.add_argument("--runs", type=int, default=DEFAULT_RUNS, help="runs per read")
     jp.add_argument("--max-tokens", type=int, default=DEFAULT_MAX_TOKENS, help="per run")
+    jp.add_argument(
+        "--images",
+        type=int,
+        default=DEFAULT_IMAGES,
+        help=f"frames sent to the model per read, 1 a second from {IMAGES_BEFORE_S} s before "
+        f"the centre (rule stage; default {DEFAULT_IMAGES}; every cut frame stays on the line)",
+    )
     jp.set_defaults(func=_cmd_judge)

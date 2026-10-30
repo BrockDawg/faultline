@@ -943,7 +943,11 @@ def test_rule_stage_under_the_fake_model_twice_and_replay(
     call = inputs["model_call"]
     assert call["ref"] == "1-arm2" and call["json_mode"] is True and call["source"] == "fake"
     assert call["schema_form"] == "enum"
-    assert call["frame_sha256"] == [f["sha256"] for f in row["frames"]]
+    assert len(row["frames"]) == 17  # the line keeps every cut frame
+    assert call["images"] == 8
+    sent = [f for f in row["frames"] if float(f["stream_s"]).is_integer()][:8]
+    assert call["frame_sha256"] == [f["sha256"] for f in sent]
+    assert call["frame_labels"] == [f"frame {i}" for i in range(1, 9)]
     for rid in ("3", "4"):
         assert by_id(one)[rid]["model_read"] is None
 
@@ -954,6 +958,109 @@ def test_rule_stage_under_the_fake_model_twice_and_replay(
     again = tmp_path / "replayed.jsonl"
     assert run("replay", one, "--out", again) == 0
     assert again.read_bytes() == one.read_bytes()
+
+
+# ---------------------------------------------------------------- frames sent to the model
+
+
+def _cut_seconds(centre: float, drop: tuple[float, ...] = ()) -> list[float]:
+    """The cut's seconds: 2 a second over [centre-4, centre+4], less the dropped ones."""
+    every = [round(centre - 4 + i / 2, 1) for i in range(17)]
+    return [s for s in every if s not in drop]
+
+
+def test_pick_model_frames_sends_eight_whole_seconds_from_four_before() -> None:
+    seconds = _cut_seconds(104.0)
+    got = racing_cli.pick_model_frames(seconds, 104.0, 8)
+    assert got == [0, 2, 4, 6, 8, 10, 12, 14]
+    assert [seconds[i] for i in got] == [100.0, 101.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0]
+
+
+def test_pick_model_frames_with_dropped_seconds_fills_what_it_can() -> None:
+    # 102.0 and its neighbour 102.5 dropped: the 102 slot takes 101.5 (0.5 away, earlier on the
+    # tie with nothing later); 101.0's slot already took 101.0. 106.0 dropped: 105.5 and 106.5
+    # tie and the earlier one wins.
+    seconds = _cut_seconds(104.0, drop=(102.0, 102.5, 106.0))
+    assert len(seconds) == 14
+    got = [seconds[i] for i in racing_cli.pick_model_frames(seconds, 104.0, 8)]
+    assert got == [100.0, 101.0, 101.5, 103.0, 104.0, 105.0, 105.5, 107.0]
+    # A slot with no frame within half a second is skipped, so fewer than N are sent.
+    holes = _cut_seconds(104.0, drop=(101.5, 102.0, 102.5, 105.5, 106.0, 106.5))
+    got = [holes[i] for i in racing_cli.pick_model_frames(holes, 104.0, 8)]
+    assert got == [100.0, 101.0, 103.0, 104.0, 105.0, 107.0]
+
+
+def test_pick_model_frames_a_tie_goes_to_the_earlier_frame() -> None:
+    seconds = [99.5, 100.5, 101.5]
+    assert racing_cli.pick_model_frames(seconds, 104.0, 1) == [0]
+    assert racing_cli.pick_model_frames([100.5, 99.5, 101.5], 104.0, 1) == [1]
+
+
+def test_pick_model_frames_n_at_least_the_cut_sends_all_and_n_one_sends_one() -> None:
+    seconds = _cut_seconds(50.0)
+    assert racing_cli.pick_model_frames(seconds, 50.0, 17) == list(range(17))
+    assert racing_cli.pick_model_frames(seconds, 50.0, 40) == list(range(17))
+    assert racing_cli.pick_model_frames(seconds[:5], 50.0, 8) == list(range(5))
+    assert racing_cli.pick_model_frames(seconds, 50.0, 1) == [0]
+    with pytest.raises(racing_cli.RacingCliError, match="at least 1"):
+        racing_cli.pick_model_frames(seconds, 50.0, 0)
+
+
+@pytest.mark.parametrize("bad", ["0", "-3"])
+def test_images_below_one_is_refused(
+    world: dict[str, Path], tmp_path: Path, capsys: pytest.CaptureFixture[str], bad: str
+) -> None:
+    out = tmp_path / "rule.jsonl"
+    extra = ("--masks", CLI_FIXTURES / "masks.json", "--model", "fake", "--images", bad)
+    assert judge(world, out, *extra, stage="rule") == 2
+    assert f"--images {bad}" in capsys.readouterr().err and not out.exists()
+
+
+@needs_ffmpeg
+def test_rule_stage_sends_eight_images_and_replays(
+    video_world: dict[str, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _fake_model(monkeypatch)
+    out = tmp_path / "rule.jsonl"
+    assert stage_run(video_world, out, "rule", "--model", "fake") == 0
+    row = by_id(out)["1"]
+    call = record.read_bundle(out, row["record"])["inputs"]["model_call"]
+    assert call["images"] == 8 and len(call["frame_sha256"]) == 8
+    assert "frame 1: stream second" in call["prompt"] and "frame 9:" not in call["prompt"]
+    entries = [json.loads(p.read_text("utf-8")) for p in (tmp_path / "ledger").glob("*.json")]
+    assert len(entries) == 3
+    assert all(e["image_shas"] == call["frame_sha256"] for e in entries)
+    _no_client(monkeypatch)
+    monkeypatch.delenv("FAULTLINE_FAKE_MODEL")
+    again = tmp_path / "replayed.jsonl"
+    assert run("replay", out, "--out", again) == 0
+    assert again.read_bytes() == out.read_bytes()
+
+
+@needs_ffmpeg
+def test_an_old_bundle_without_images_still_replays(
+    video_world: dict[str, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _fake_model(monkeypatch)
+    out = tmp_path / "rule.jsonl"
+    assert stage_run(video_world, out, "rule", "--model", "fake", "--images", "17") == 0
+    rows = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines() if line]
+    for row in rows:
+        bundle = record.read_bundle(out, row["record"])
+        call = bundle["inputs"].get("model_call")
+        if call is None:
+            continue
+        assert call.pop("images") == 17 and len(call["frame_sha256"]) == 17
+        sha = record.record_hash(bundle)
+        record.write_bundle(out, sha, bundle)
+        row["record"] = sha
+    record.write_lines_atomic(out, rows)
+    old = out.read_bytes()
+    _no_client(monkeypatch)
+    monkeypatch.delenv("FAULTLINE_FAKE_MODEL")
+    again = tmp_path / "replayed.jsonl"
+    assert run("replay", out, "--out", again) == 0
+    assert again.read_bytes() == old
 
 
 @needs_ffmpeg
@@ -1074,7 +1181,7 @@ def _real_model(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, fake: _Scripted
 
 def _reply(offender: str | None, verdict: str = "penalty", reason: str = REASON) -> str:
     return json.dumps(
-        {"offender": offender, "verdict": verdict, "reason": reason, "frames_used": ["frame 9"]}
+        {"offender": offender, "verdict": verdict, "reason": reason, "frames_used": ["frame 5"]}
     )
 
 
@@ -1096,7 +1203,7 @@ def test_an_agreed_penalty_sets_the_offender(
     assert one["offender"] == "3"
     assert one["verdict"] == "steward_review"
     images = [p for p in fake.calls[0]["messages"][-1]["content"] if p["type"] == "image_url"]
-    assert len(images) == 17
+    assert len(images) == racing_cli.DEFAULT_IMAGES == 8
 
 
 @needs_ffmpeg
