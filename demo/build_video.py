@@ -35,7 +35,8 @@ def audio_seconds(path: Path) -> float:
 def plan(
     stills: list[Path], cue_times: list[float], end: float, lead: float
 ) -> list[tuple[Path, float]]:
-    """(still, seconds shown) per still, in order; the first still starts at 0 and the audio is delayed by `lead`."""
+    """(still, seconds shown) per still, in order. The first still starts at 0 and the audio
+    is delayed by `lead`."""
     if not stills:
         raise SystemExit("no stills found")
     times = [max(0.0, t) + lead for t in cue_times[: len(stills)]]
