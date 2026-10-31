@@ -71,3 +71,12 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `d070c76` | 2026-10-30T13:19:28-0500 | racing: the model's read, Spark Open and Spark 1.3, 4 of 8 each against a mark of 8 of 8; every agreed named car right | claude-opus-5-5 via Claude Code | meta-models/muse-spark-open-1026, muse-spark-1.3 |
 | `fb98add` | 2026-10-30T13:19:28-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
 | `a870a28` | 2026-10-30T13:51:25-0500 | racing: the public surface, a README racing section, provenance and the evidence cards | claude-opus-5-5 via Claude Code | none |
+| `362d20b` | 2026-10-30T13:51:26-0500 | docs: the build log, up to the commit before this one | claude-opus-5-5 via Claude Code | none |
+| `d3137de` | 2026-10-31T00:12:05-0500 | forklift: the video judge, its demo and the public drop | claude-opus-5-5 via Claude Code | sam-3.1, muse-wonder-1.0 (recorded replies; no call at replay) |
+| `6ee1fb0` | 2026-10-31T00:25:05-0500 | forklift: three public sentences corrected after a fresh read | claude-fable-5-1 via Claude Code | none |
+| `3a67c96` | 2026-10-31T00:25:16-0500 | merge drop/wave-5: the forklift video judge lands in the public repo | claude-fable-5-1 via Claude Code | none |
+| `d61bf42` | 2026-10-31T00:50:05-0500 | demo: the walk says how a shift runs on a real site and what the site must give for better rulings | claude-fable-5-1 via Claude Code | none |
+| `941ac8a` | 2026-10-31T08:02:55-0500 | demo: the third site piece is a better camera on the racking, or more than one | claude-fable-5-1 via Claude Code | none |
+| `6ad9c4c` | 2026-10-31T08:31:19-0500 | racing: the drift and rule A tests name their private sources by environment variable, and no league name or local path sits in the public tree | claude-fable-5-1 via Claude Code | none |
+| `2fcb373` | 2026-10-31T10:29:34-0500 | docs: public comments name public paths and the right command, the README plans a truck camera, and demo/build_video.py cuts the film from a voice take and its cues | claude-fable-5-1 via Claude Code | none |
+| `989bc93` | 2026-10-31T10:30:00-0500 | demo: build_video.py within the line length | claude-fable-5-1 via Claude Code | none |

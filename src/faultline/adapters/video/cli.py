@@ -1127,7 +1127,7 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 2
-    ap = argparse.ArgumentParser(prog="faultline")
+    ap = argparse.ArgumentParser(prog="faultline-video")
     sub = ap.add_subparsers(dest="cmd", required=True)
     j = sub.add_parser("judge")
     j.add_argument("items")
