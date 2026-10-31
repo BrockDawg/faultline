@@ -67,5 +67,5 @@ The trailers record the models the build session declared.
   The local judge in those experiments is Qwen 2.5 7B (`qwen2.5:7b`), which is not a Meta model and never answers a prompt.
 - At runtime in this repo: Meta models, listed here as each is first used.
   Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten) and Muse Spark 1.3 (`muse-spark-1.3`), called by the racing judge for the model's read, from 30 Oct.
-  SAM 3.1 (`sam-3.1`), for the masks and the empty-window read, and Muse Wonder 1.0 (`muse-wonder-1.0`), for the hi-vis vest read and the words beside a ruling, called by the forklift judge, from 30 Oct.
+  SAM 3.1 (`sam-3.1`), for the masks and the empty-window read, Muse Wonder 1.0 (`muse-wonder-1.0`), for the hi-vis vest read and the words beside a ruling, and Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten), for compiling the packs and the three-run checks, called by the forklift judge, from 30 Oct.
   Every reply is recorded, so a replay makes no call.

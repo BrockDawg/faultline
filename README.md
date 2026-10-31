@@ -235,7 +235,7 @@ A clip is read in seven steps:
 1. The clip gets its sha256 and an entry id before any model call.
 2. Gates refuse what the camera cannot show: a window shorter than a second, a shot cut, a camera that moved, a camera the site has not marked, a clip with no truck in it, or a rear path out of view.
 3. SAM 3.1 tracks the truck from a box on its first frame, and finds the people from text alone.
-4. The floor plane comes from four points I marked by hand for each camera, and every truck and person is placed on it.
+4. The floor plane comes from four floor points per camera, marked once in separate sessions before any scored run and kept fixed since, and every truck and person is placed on it.
 5. A fact sheet is measured on that plane: the truck's speed and which end is its forks, each person's distance from the truck, the rear cone, the hi-vis colour on the torso, a still spotter, the dock zone, and the strip in front of a rack base.
    Each speed and distance is a band from a fixed-seed ensemble of perturbed planes, not a single number.
 6. The pack is compiled to predicates over a closed list of fifteen fields, with a hand route key for every rule; Spark Open's compile ships a predicate only where three runs agree.
@@ -255,7 +255,7 @@ Each of these is what the code in this tree does today.
 - **Structure contact**: a touch on racking, an upright, a guard, a column or stacked stock is a breach of the site's rule, with or without a visible consequence.
   These cameras cannot show a touch from a strip in front of a rack base, so where the truck's front holds in the strip and no consequence follows within half a second, the judge rules unable, names `contact.consequence`, and says the touch is not provable from this camera.
   The consequence is the judge's standard of evidence, not the site's rule.
-- **The dock zone**: a dock zone is drawn from the trailer and dock: the trailer mouth plus two metres each side, never from where a guide stood.
+- **The dock zone**: a dock zone is a hand-marked polygon in the camera's marks file; the one in the data was drawn around the trailer mouth, about two metres each side, never from where a guide stood.
   A guide inside it is recorded, and the dock-guide exemption excuses a frame only where the truck's speed into the zone is read; on a frame where the bottom edge cuts the truck, that speed is not read.
 - **A reverse the frame cuts**: when the bottom edge of the frame cuts the truck's outline, its lowest point is the frame edge, not the floor, so no floor measurement proves a second of reverse.
   A spotter ruling that rests on such frames is unable to rule, naming `truck.reversing`.
