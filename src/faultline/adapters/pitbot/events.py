@@ -28,8 +28,8 @@ Every event carries the leader lap and each car's own lap (`Feed.lap_at`) at `te
 `all_events(feed)` is the three lists in one, from one `rises` pass, sorted the same way: the
 list the CLI, the locator and the facts read.
 
-The semantics are those of the 28 Oct Phoenix catalogue (ai-steward
-`experiments/2026-10-28-phoenix-catalogue/scripts/catalogue.py`), rewritten on faultline's
+The semantics are those of the 28 Oct league catalogue (a private script, read in place by the
+drift test, never copied here), rewritten on faultline's
 `Feed`. The departures, each checked on the 11 corpus sessions by the private drift test:
 - The collapse look-back is the frame seconds in the three seconds before, by time, as the
   pre-registered "within 3 s" says. The catalogue took the three previous frame lines, which on
@@ -74,8 +74,8 @@ __all__ = [
     "rises",
 ]
 
-# Thresholds pre-registered for the 28 Oct Phoenix catalogue (ai-steward
-# `experiments/2026-10-28-phoenix-catalogue/scripts/catalogue.py` lines 25-28, and its LOG).
+# Thresholds pre-registered for the 28 Oct league catalogue (the private script, lines 25-28,
+# and its LOG).
 # Copied unchanged; never tune them to a result.
 COLLAPSE_FROM_M = 8.0
 COLLAPSE_TO_M = 2.0

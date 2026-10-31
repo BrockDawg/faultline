@@ -2,7 +2,8 @@
 
 Unit tests run on the synthetic fixture and small hand-made feeds. The private score test runs
 on the real league data and reproduces rule A of the 29 Oct racing telemetry judge, read in
-place from ai-steward (never written into); it prints counts only.
+place from the private repo, named by environment variables (never written into); it prints
+counts only.
 """
 
 from __future__ import annotations
@@ -10,6 +11,7 @@ from __future__ import annotations
 import ast
 import importlib.util
 import json
+import os
 import re
 import sys
 from collections import defaultdict
@@ -31,14 +33,18 @@ from faultline.roster import numkey
 
 ROOT = Path(__file__).resolve().parents[2]
 LEAGUE = ROOT / "data" / "racing" / "league.json"
-AI_STEWARD = Path("C:/glitch/workspaces/ai-steward")
-JUDGE = AI_STEWARD / "experiments/2026-10-29-racing-telemetry-judge/scripts/judge.py"
-JUDGE_LOG = AI_STEWARD / "experiments/2026-10-29-racing-telemetry-judge/LOG.md"
-CATALOGUE_PY = AI_STEWARD / "experiments/2026-10-28-phoenix-catalogue/scripts/catalogue.py"
-CATALOGUE_JSON = (
-    AI_STEWARD / "kept-from-tasks/phoenix-catalogue/experiments/2026-10-28-phoenix-catalogue"
-    "/data/catalogue.json"
-)
+
+
+def _private(var: str) -> Path | None:
+    """A private file named by an environment variable, read in place; unset, the test skips."""
+    value = os.environ.get(var)
+    return Path(value) if value else None
+
+
+JUDGE = _private("FAULTLINE_RACING_JUDGE_PY")
+JUDGE_LOG = _private("FAULTLINE_RACING_JUDGE_LOG")
+CATALOGUE_PY = _private("FAULTLINE_DRIFT_CATALOGUE_PY")
+CATALOGUE_JSON = _private("FAULTLINE_DRIFT_CATALOGUE_JSON")
 
 FAULT_WORDS = ("fault", "caused", "blame", "dive", "careless")
 KEYS = {
@@ -232,6 +238,7 @@ def _literal(source: str, name: str) -> Any:
 
 def _judge_rule_a(decisions: dict[str, Any], session_keys: list[str]) -> dict[str, Any]:
     """judge.py's rule A, re-run read-only: its LIMIT and A_TRUTH read from its source."""
+    assert JUDGE is not None and CATALOGUE_PY is not None
     source = JUDGE.read_text(encoding="utf-8")
     limit_table: dict[str, int] = _literal(source, "LIMIT")
     a_truth: list[str] = _literal(source, "A_TRUTH")
@@ -277,6 +284,7 @@ def _judge_rule_a(decisions: dict[str, Any], session_keys: list[str]) -> dict[st
 
 def _log_unruled_counts() -> dict[str, int]:
     """The LOG's line "N breaching cars have no decision: Spa 2, ..., all 12 in Season 2"."""
+    assert JUDGE_LOG is not None
     text = JUDGE_LOG.read_text(encoding="utf-8")
     line = next(ln for ln in text.splitlines() if "breaching cars have no decision" in ln)
     total = int(re.search(r"(\d+) breaching cars have no decision", line).group(1))  # type: ignore[union-attr]
@@ -291,6 +299,7 @@ def _log_unruled_counts() -> dict[str, int]:
 
 def _log_table() -> dict[str, list[tuple[int, list[str]]]]:
     """Rule A's table in the LOG: decision -> [(stated total, cars on it)] per session part."""
+    assert JUDGE_LOG is not None
     text = JUDGE_LOG.read_text(encoding="utf-8")
     out: dict[str, list[tuple[int, list[str]]]] = {}
     for ln in text.splitlines():
@@ -309,8 +318,8 @@ def test_private_rule_a_reproduced(capsys: pytest.CaptureFixture[str]) -> None:
     if not LEAGUE.exists():
         pytest.skip("data/racing/league.json is absent")
     for need in (JUDGE, JUDGE_LOG, CATALOGUE_PY, CATALOGUE_JSON):
-        if not need.exists():
-            pytest.skip("rule A source is absent")
+        if need is None or not need.exists():
+            pytest.skip("the rule A sources are not named (FAULTLINE_RACING_JUDGE_PY and kin)")
 
     first = limits_for_league(LEAGUE)
     second = limits_for_league(LEAGUE)
@@ -318,6 +327,7 @@ def test_private_rule_a_reproduced(capsys: pytest.CaptureFixture[str]) -> None:
 
     league = json.loads(LEAGUE.read_text(encoding="utf-8"))
     session_keys = list(league["sessions"])
+    assert CATALOGUE_JSON is not None
     decisions = {d["id"]: d for d in json.loads(CATALOGUE_JSON.read_text("utf-8"))["decisions"]}
 
     mine: dict[str, dict[str, int]] = defaultdict(dict)

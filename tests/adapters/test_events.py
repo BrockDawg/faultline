@@ -6,6 +6,7 @@ from __future__ import annotations
 import dataclasses
 import importlib.util
 import json
+import os
 import sys
 from collections.abc import Callable
 from pathlib import Path
@@ -21,9 +22,10 @@ from faultline.roster import numkey
 
 REPO = Path(__file__).resolve().parents[2]
 LEAGUE = REPO / "data" / "racing" / "league.json"
-CATALOGUE = Path(
-    "C:/glitch/workspaces/ai-steward/experiments/2026-10-28-phoenix-catalogue/scripts/catalogue.py"
-)
+# The private catalogue script this module was rewritten from, read in place and never copied.
+# It is named by FAULTLINE_DRIFT_CATALOGUE_PY, so no local path or league name sits here.
+_CATALOGUE_ENV = os.environ.get("FAULTLINE_DRIFT_CATALOGUE_PY")
+CATALOGUE = Path(_CATALOGUE_ENV) if _CATALOGUE_ENV else None
 
 Writer = Callable[[list[dict], Path], Path]
 
@@ -208,7 +210,8 @@ def test_all_events_is_the_three_lists_in_one(small_feed: Feed) -> None:
 
 
 def _load_catalogue() -> ModuleType:
-    """The catalogue module, read-only from ai-steward: no bytecode written, sys.path restored."""
+    """The private catalogue module, read-only: no bytecode written, sys.path restored."""
+    assert CATALOGUE is not None
     path_before, bytecode_before = list(sys.path), sys.dont_write_bytecode
     sys.dont_write_bytecode = True
     try:
@@ -238,8 +241,8 @@ def _catalogue_lookback_max(fd: Any, pair: tuple[str, str], te: int) -> float | 
 def test_contract_drift_against_the_catalogue() -> None:
     if not LEAGUE.exists():
         pytest.skip("private corpus absent: data/racing/league.json is not on this machine")
-    if not CATALOGUE.exists():
-        pytest.skip("ai-steward catalogue.py absent: the drift reference is not on this machine")
+    if CATALOGUE is None or not CATALOGUE.exists():
+        pytest.skip("the private catalogue script is not named (FAULTLINE_DRIFT_CATALOGUE_PY)")
     cat = _load_catalogue()
     sessions = json.loads(LEAGUE.read_text(encoding="utf-8"))["sessions"]
     assert len(sessions) == 11
