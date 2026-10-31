@@ -1,0 +1,73 @@
+{
+ "rule": "a rule's read ships only where agreed reads beat the constant answer on the keyed and all26 cells (dev/wonder/floors.json)",
+ "rules": {
+  "hi_vis_in_truck_zone": {
+   "agree_3_of_3": 26,
+   "all26": {
+    "cells": 26,
+    "constant": "clear",
+    "constant_right": 23,
+    "read_right": 26
+   },
+   "keyed": {
+    "cells": 13,
+    "constant": "clear",
+    "constant_right": 10,
+    "read_right": 13
+   },
+   "rulings": 26,
+   "ships": true
+  },
+  "pedestrian_separation": {
+   "agree_3_of_3": 26,
+   "all26": {
+    "cells": 26,
+    "constant": "clear",
+    "constant_right": 22,
+    "read_right": 20
+   },
+   "keyed": {
+    "cells": 14,
+    "constant": "clear",
+    "constant_right": 10,
+    "read_right": 10
+   },
+   "rulings": 26,
+   "ships": false
+  },
+  "spotter_when_reversing": {
+   "agree_3_of_3": 22,
+   "all26": {
+    "cells": 26,
+    "constant": "clear",
+    "constant_right": 22,
+    "read_right": 20
+   },
+   "keyed": {
+    "cells": 14,
+    "constant": "clear",
+    "constant_right": 10,
+    "read_right": 12
+   },
+   "rulings": 26,
+   "ships": false
+  },
+  "structure_contact": {
+   "agree_3_of_3": 23,
+   "all26": {
+    "cells": 26,
+    "constant": "clear",
+    "constant_right": 22,
+    "read_right": 23
+   },
+   "keyed": {
+    "cells": 14,
+    "constant": "clear",
+    "constant_right": 10,
+    "read_right": 11
+   },
+   "rulings": 26,
+   "ships": true
+  }
+ }
+}

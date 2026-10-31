@@ -19,7 +19,10 @@ AGENTS.md
 
 # --- Never commit run output, data, corpus or video ---
 runs/
+/record/
 data/
+# the forklift judge's own data ships with its code (site values, marks, pinned reads)
+!src/faultline/adapters/video/data/
 corpus/
 kept-from-tasks/
 *.jsonl

@@ -1,0 +1,7 @@
+{
+  "name": "forklift-site-rules",
+  "version": "1.0.0",
+  "domain": "warehouse-forklift",
+  "source": "Site rules, set by each site",
+  "unique_ids_across_domain": true
+}

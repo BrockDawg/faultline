@@ -6,10 +6,12 @@ readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.12"
-dependencies = ["httpx>=0.27"]
+dependencies = ["httpx>=0.27", "numpy>=1.26", "meta-sam-parser>=0.1.0"]
 
 [project.scripts]
 faultline = "faultline.cli:main"
+faultline-video = "faultline.adapters.video.cli:main"
+steward = "faultline.adapters.video.steward_cli:main"
 
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.14"]

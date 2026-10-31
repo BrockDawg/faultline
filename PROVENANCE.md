@@ -55,6 +55,8 @@ The trailers record the models the build session declared.
   The paired +4 contact pairing (two cars each gaining 4 incident points or more within 8 m of each other) and the feed event thresholds came from private experiments on 27 and 28 Oct.
   The shape of the record and the reply ledger came from a tournament candidate on 28 Oct.
   The code was written new in this repo, and its log is `experiments/2026-10-29-racing-pipeline/LOG.md`.
+- The forklift judge, 31 Oct: the video adapter (`src/faultline/adapters/video/`), its copy of the site pack (`demo/pack/`), the demo in `demo/` and its tests in `tests/adapters/video/`.
+  It was built in the private tournament and landed here on 31 Oct, and its results, on the 26 graded fixed-camera clips against a key I reviewed by hand, are in the README's forklift judge section.
 
 ## Models used
 
@@ -65,3 +67,5 @@ The trailers record the models the build session declared.
   The local judge in those experiments is Qwen 2.5 7B (`qwen2.5:7b`), which is not a Meta model and never answers a prompt.
 - At runtime in this repo: Meta models, listed here as each is first used.
   Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten) and Muse Spark 1.3 (`muse-spark-1.3`), called by the racing judge for the model's read, from 30 Oct.
+  SAM 3.1 (`sam-3.1`), for the masks and the empty-window read, and Muse Wonder 1.0 (`muse-wonder-1.0`), for the hi-vis vest read and the words beside a ruling, called by the forklift judge, from 30 Oct.
+  Every reply is recorded, so a replay makes no call.

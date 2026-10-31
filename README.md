@@ -28,6 +28,7 @@ The car behind runs into the car ahead on the exit of a corner
 **Contents:**
 [Built during the hackathon, and what existed before](#built-during-the-hackathon-and-what-existed-before) ·
 [How it works](#how-it-works) ·
+[The forklift judge](#the-forklift-judge) ·
 [Scenes](#scenes) ·
 [What was measured](#what-was-measured) ·
 [Meta models used so far](#meta-models-used-so-far) ·
@@ -48,6 +49,7 @@ The car behind runs into the car ahead on the exit of a corner
 - Pack metadata edited to drop dates and internal file names; no rule text changed.
 - The `forklift-site-rules` pack, four rules a site sets for itself.
 - The racing judge: the core every data source shares, the PitBot adapter, the `faultline` command line, and the racing prep, score and evidence-card scripts.
+- The forklift judge: the video adapter (`src/faultline/adapters/video/`), the `faultline-video` and `steward` command lines, the demo in `demo/`, the span checker and the contract smoke, and their tests.
 - Thirty-seven measured experiments, logged under `experiments/`: twenty-two model experiments; eleven smoke tests of the scripted pieces, six of them with no paid call, three with SAM masks or tracks and two with Spark Open rulings; three scripted experiments with no model call; and one check of the tournament's code-only grader.
   Thirteen of the thirty-seven made no metered model call: nine cost nothing at all, and four used only GPU time on Modal.
 - The forklift scan route design note (`docs/forklift-scan-route.md`).
@@ -59,17 +61,17 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 66 |
+| Commits in this repo | 68 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 36 |
 | Experiment scripts in the working repo | 215 |
 | Experiment data files in the working repo | 669 |
-| Design notes published here | 1 |
+| Design notes published here | 2 |
 | Design notes in the working repo | 8 |
 | Build plans in the working repo | 5 |
 | Rules packs | 8 |
 | Rules | 110 |
-| Tests | 540 |
+| Tests | 687 |
 | Paid calls to Meta models | 4552 |
 | Dollars metered on Meta models | $78.61 |
 
@@ -214,8 +216,75 @@ uv run python scripts/racing_card.py
 ### Built, and still in design
 
 In this repo today: the pack format, the loader, the eight packs, the racing judge with its PitBot adapter, their tests and the provenance tooling.
-In design: the forklift adapter, from the [forklift scan route](docs/forklift-scan-route.md).
+The forklift adapter is in the repo now too, as the video judge in [The forklift judge](#the-forklift-judge); the [forklift scan route](docs/forklift-scan-route.md) for long footage with no report is still in design.
 The racing judge calls Spark Open and Spark 1.3 at runtime.
+
+---
+
+## The forklift judge
+
+The forklift judge reads video from fixed site cameras, where a site has no other feed, so it is the `video` adapter: [`src/faultline/adapters/video/`](src/faultline/adapters/video).
+A rules pack and a clip go in, and one ruling per rule comes out: the rule, the verdict, the frames and the evidence.
+The verdict is `breach`, `clear` or `unable to rule`, and an unable ruling names the one fact that was not measured.
+Scripts measure and decide.
+Meta's models see the frames, help compile the pack and write words beside a ruling, and a model's read counts only where three runs agree.
+`faultline-video replay` rebuilds every ruling from its record, with the network off, to the same bytes.
+
+A clip is read in seven steps:
+
+1. The clip gets its sha256 and an entry id before any model call.
+2. Gates refuse what the camera cannot show: a window shorter than a second, a shot cut, a camera that moved, a camera the site has not marked, a clip with no truck in it, or a rear path out of view.
+3. SAM 3.1 tracks the truck from a box on its first frame, and finds the people from text alone.
+4. The floor plane comes from four points I marked by hand for each camera, and every truck and person is placed on it.
+5. A fact sheet is measured on that plane: the truck's speed and which end is its forks, each person's distance from the truck, the rear cone, the hi-vis colour on the torso, a still spotter, the dock zone, and the strip in front of a rack base.
+   Each speed and distance is a band from a fixed-seed ensemble of perturbed planes, not a single number.
+6. The pack is compiled to predicates over a closed list of fifteen fields, with a hand route key for every rule; Spark Open's compile ships a predicate only where three runs agree.
+7. A script rules each predicate against the fact sheet; a band that straddles its line is not proven either way, so the ruling is unable and names that fact.
+
+The rule text stays as the site wrote it.
+Three values the site sets and the rule text does not hold (the moving line, the strip in front of a rack base and the hi-vis share) are declared in [`src/faultline/adapters/video/data/site_values.json`](src/faultline/adapters/video/data/site_values.json), and the span checker lists them as the site's own values.
+
+### How the judge applies the site's rules
+
+Each of these is what the code in this tree does today.
+
+- **Nobody in view**: when no truck is tracked in a window, a person rule (hi-vis, separation) is clear only if three person prompts each find nobody on any frame, each reply's own count of the frames it processed covers the window, no forklift box was found, the whole view is in frame and the camera held still.
+  An empty reply with no frame count, or a count short of the window, never clears.
+  The person track's run record is cited in the ruling where it covers the window, and is never a condition.
+  The rules that need a truck stay unable to rule, naming `truck.moving`.
+- **Structure contact**: a touch on racking, an upright, a guard, a column or stacked stock is a breach of the site's rule, with or without a visible consequence.
+  These cameras cannot show a touch from a strip in front of a rack base, so where the truck's front holds in the strip and no consequence follows within half a second, the judge rules unable, names `contact.consequence`, and says the touch is not provable from this camera.
+  The consequence is the judge's standard of evidence, not the site's rule.
+- **The dock zone**: a dock zone is drawn from the trailer and dock: the trailer mouth plus two metres each side, never from where a guide stood.
+  A guide inside it is recorded, and the dock-guide exemption excuses a frame only where the truck's speed into the zone is read; on a frame where the bottom edge cuts the truck, that speed is not read.
+- **A reverse the frame cuts**: when the bottom edge of the frame cuts the truck's outline, its lowest point is the frame edge, not the floor, so no floor measurement proves a second of reverse.
+  A spotter ruling that rests on such frames is unable to rule, naming `truck.reversing`.
+- **The truck includes its forks**: points beyond the truck's body at floor height are its own forks.
+- **Fixed cameras**: the judge reads fixed site cameras, because its floor plane comes from marks that assume the camera holds still.
+  A camera that moved is unable to rule, and the ruling says so: the camera moved, and this judge reads fixed site cameras.
+  A camera mounted on the truck is possible and is a separate mode I have not built.
+
+### What it scored
+
+On the 26 graded fixed-camera clips, against a key I reviewed by hand:
+
+| Mark | Result |
+|---|---|
+| Breach clips found | 12 of 14 |
+| False breaches on the compliant clips | 0 of 10 |
+| Unable to rule | 24 of 96 rulings on the 24 clips keyed on these four rules, each naming its missing fact; the two clips keyed on the speed rule, which these marks leave out, add one unable each (structure contact, naming `contact.consequence`), so the rulings file holds 26 |
+| Replay | byte-identical on Windows and in a Linux container with no network |
+| Gates | 26 of 27 cropped, hidden, empty or cut-short windows handled as labelled, each refusal naming the right field; the three empty-aisle windows clear their person rules; 0 of 10 controls refused |
+| Compile | 110 of 110 rules parsed, 0 invented fields, 0 bare numbers, 2 thresholds whose span does not hold its value |
+
+The empty aisle now clears its hi-vis and separation rules, and the reverse on the upright-bump clip, seen only through a cut outline, is now unable to rule; nothing else moved.
+The two breach clips not found are structure contact with no visible consequence, which the site's rule calls a breach and these cameras cannot prove.
+Forklift speeds and distances on these synthetic clips are a ranking, not metres: the walkers read too slow on every camera, so no value is quoted in metres here.
+The speed order holds: a faster truck reads faster.
+
+The forklift demo, `faultline-video shift`, stitches clips into a shift and builds a dashboard: every breach shows the number that decided it, and every unable ruling names its missing fact in plain words.
+`faultline-video demo` builds a one-file walk through it, and `demo/` holds that page, its twelve-line script and one still per line.
+The contract smoke, `scripts/contract_smoke.py`, runs `steward judge` on an items file with no model call and checks every line.
 
 ---
 
@@ -687,17 +756,23 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 | [`src/faultline/pack.py`](src/faultline/pack.py) | The rules-pack loader |
 | [`src/faultline/`](src/faultline) | The core every data source shares: the record (`record.py`), the reply ledger (`ledger.py`), the closed set (`roster.py`), the name lint (`lint.py`), the model client (`client.py`), the frame cutter (`frames.py`), the model's read (`ruling.py`) and the `faultline` command line (`cli.py`) |
 | [`src/faultline/adapters/pitbot/`](src/faultline/adapters/pitbot) | The racing adapter: the feed, its events, the protest normaliser, the locator, the facts, the incident limit and the `faultline racing` commands |
+| [`src/faultline/adapters/video/`](src/faultline/adapters/video) | The forklift judge: the gates, SAM masks and tracks, the floor plane, the fact sheet, the pack compiler, the rulings, the record and replay, the shift dashboard and the demo builder; its site values, camera marks and pinned reads sit in `data/` beside the code |
+| `faultline-video` | The forklift judge's command line: `judge`, `replay`, `roster`, `compile`, `scan`, `shift` (the demo shift and its dashboard), `demo` and `lifecycle` |
+| `steward` | The steward contract's command line: `steward judge` writes one contract line per item |
+| [`demo/`](demo) | The forklift demo: the one-file walk (`faultline-demo.html`), its twelve-line script (`SCRIPT.md`), one still per line (`STILLS/`) and the site pack it reads (`pack/`) |
 | [`packs/`](packs/README.md) | The eight rules packs, and the format in [`packs/README.md`](packs/README.md) |
 | [`experiments/`](experiments/README.md) | One log per measured experiment, with an index |
 | [`docs/`](docs/forklift-scan-route.md) | Design notes; [`docs/forklift-scan-route.md`](docs/forklift-scan-route.md) designs the forklift route for long footage with no report |
-| [`tests/`](tests) | Tests for the loader, the shipped packs, the racing judge and its adapter, the public-tree sweeps, the hook, the history check, the build log, the running count and the provenance text; `tests/fixtures/` holds two small packs |
+| [`tests/`](tests) | Tests for the loader, the shipped packs, the racing judge and its adapter, the forklift judge (`tests/adapters/video/`), the public-tree sweeps, the hook, the history check, the build log, the running count and the provenance text; `tests/fixtures/` holds two small packs |
 | [`scripts/`](scripts) | The hook installer, the history check, the build-log generator, the running-count renderer, and the racing prep, score and evidence-card scripts |
+| [`scripts/check_spans.py`](scripts/check_spans.py) | The span checker: every compiled threshold against the pack sentence that holds its value, and the site's own values listed apart |
+| [`scripts/contract_smoke.py`](scripts/contract_smoke.py) | The contract smoke: `steward judge` on an items file with the model host closed, every line checked |
 | [`.githooks/commit-msg`](.githooks/commit-msg) | The provenance hook |
 | [`PROVENANCE.md`](PROVENANCE.md) | What was built during the hackathon, what existed before it, and the models used |
 | [`PROVENANCE_START`](PROVENANCE_START) | The first hooked commit, where the history check starts |
 | [`BUILD_LOG.md`](BUILD_LOG.md) | The dated log of every commit |
 | [`tally.json`](tally.json) | The private tooling's count of the work kept out of this repo, read by `scripts/tally.py` into the running count |
-| [`pyproject.toml`](pyproject.toml), [`uv.lock`](uv.lock) | The project and its locked dev tools |
+| [`pyproject.toml`](pyproject.toml), [`uv.lock`](uv.lock) | The project, its commands and its locked dependencies and dev tools |
 | [`assets/`](assets/NOTICE.md) | The images, with their notice in [`assets/NOTICE.md`](assets/NOTICE.md) |
 | [`LICENSE`](LICENSE), [`NOTICE`](NOTICE) | The Apache License 2.0 and the copyright notice |
 
