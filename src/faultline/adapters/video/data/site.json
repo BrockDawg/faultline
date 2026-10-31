@@ -1,0 +1,20 @@
+{
+ "note": "Synthetic site values (28 Oct 2026) plus the still-spotter exemption Brock approved on 28 Oct: a vested person standing still in the rear cone of a reversing truck is its spotter, not a separation breach. The whole view is a truck zone; every reverse needs a spotter.",
+ "pedestrian_separation_m": 3.0,
+ "speed_limit_mps": 2.2,
+ "truck_m": {
+  "length": 3.0,
+  "width": 1.15
+ },
+ "moving_mps": 0.1,
+ "moving_window_s": 1.0,
+ "stopped_window_s": 2.0,
+ "dock_guide_max_mps": 0.5,
+ "rear_cone_half_angle_deg": 35.0,
+ "rear_cone_depth_truck_lengths": 2.0,
+ "structure_strip_m": 0.3,
+ "structure_run_frames": 3,
+ "consequence_window_s": 0.5,
+ "hivis_rule_share": 0.7,
+ "still_spotter_exempt": true
+}

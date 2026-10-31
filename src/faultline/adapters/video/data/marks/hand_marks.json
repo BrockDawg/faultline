@@ -1,0 +1,4453 @@
+{
+ "clips": {
+  "067d7736b5b971c28ac8108d3c689aa1aaebdd457cd6f6863c943b1491a2bbb3": {
+   "camera_of": "no_spotter_04",
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Truck enters from the bottom, load leading, and drives up the aisle; at t0 only the load is visible and the fork point is the load front. From t4 the forks are above the top edge. Camera shifts slightly between t4 and t5.",
+   "stem": "separation_close_cctv_39",
+   "structures": [
+    {
+     "a": [
+      450,
+      700
+     ],
+     "b": [
+      535,
+      0
+     ],
+     "what": "left rack base along aisle"
+    },
+    {
+     "a": [
+      850,
+      700
+     ],
+     "b": [
+      765,
+      0
+     ],
+     "what": "right rack base along aisle"
+    },
+    {
+     "a": [
+      400,
+      645
+     ],
+     "b": [
+      450,
+      655
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      460,
+      340
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      825,
+      495
+     ],
+     "b": [
+      880,
+      495
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      795,
+      245
+     ],
+     "b": [
+      840,
+      245
+     ],
+     "what": "right column guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       650,
+       525
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       650,
+       293
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       650,
+       130
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": [
+       650,
+       25
+      ],
+      "rear": [
+       665,
+       535
+      ]
+     },
+     "4": {
+      "fork": null,
+      "rear": [
+       660,
+       390
+      ]
+     },
+     "5": {
+      "fork": null,
+      "rear": [
+       660,
+       335
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "39a6549b1d5f182d2d7f0af1b49bf4c30cef921c356b98713bcc055d0a18f1f0": {
+   "camera_of": null,
+   "confidence": "high",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Truck drives away up the aisle with a load on the forks; at t0 only the load is in frame (truck body below the bottom edge), and the fork end leaves the top edge from t3.",
+   "stem": "no_spotter_04",
+   "structures": [
+    {
+     "a": [
+      525,
+      0
+     ],
+     "b": [
+      445,
+      700
+     ],
+     "what": "left rack face base (aisle edge)"
+    },
+    {
+     "a": [
+      770,
+      0
+     ],
+     "b": [
+      850,
+      700
+     ],
+     "what": "right rack face base (aisle edge)"
+    },
+    {
+     "a": [
+      465,
+      310
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left upright guard"
+    },
+    {
+     "a": [
+      415,
+      625
+     ],
+     "b": [
+      445,
+      655
+     ],
+     "what": "left upright guard"
+    },
+    {
+     "a": [
+      800,
+      225
+     ],
+     "b": [
+      820,
+      250
+     ],
+     "what": "right upright guard"
+    },
+    {
+     "a": [
+      825,
+      475
+     ],
+     "b": [
+      855,
+      500
+     ],
+     "what": "right upright guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       650,
+       520
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       650,
+       280
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       645,
+       85
+      ],
+      "rear": [
+       640,
+       680
+      ]
+     },
+     "3": {
+      "fork": null,
+      "rear": [
+       640,
+       385
+      ]
+     },
+     "4": {
+      "fork": null,
+      "rear": [
+       640,
+       185
+      ]
+     },
+     "5": {
+      "fork": null,
+      "rear": [
+       640,
+       40
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c": {
+   "camera_of": null,
+   "confidence": "high",
+   "dock_zones": [],
+   "floor_note": "(b) truck own floor footprint 3.0 x 1.15 m, rear->front incl. carried pallet tip",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      580,
+      706
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      692,
+      706
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      687,
+      400
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      597,
+      400
+     ]
+    }
+   ],
+   "notes": "Single truck drives up the aisle away from camera, pallet on the forks leading; two pedestrians ahead in the aisle. Clear view throughout.",
+   "stem": "spotter_ahead_01",
+   "structures": [
+    {
+     "a": [
+      515,
+      602
+     ],
+     "b": [
+      580,
+      0
+     ],
+     "what": "left_rack"
+    },
+    {
+     "a": [
+      780,
+      608
+     ],
+     "b": [
+      718,
+      0
+     ],
+     "what": "right_rack"
+    }
+   ],
+   "structures_source": "smoke-i",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       643,
+       400
+      ],
+      "rear": [
+       635,
+       705
+      ]
+     },
+     "1": {
+      "fork": [
+       643,
+       365
+      ],
+      "rear": [
+       640,
+       662
+      ]
+     },
+     "2": {
+      "fork": [
+       643,
+       328
+      ],
+      "rear": [
+       640,
+       600
+      ]
+     },
+     "3": {
+      "fork": [
+       643,
+       293
+      ],
+      "rear": [
+       640,
+       548
+      ]
+     },
+     "4": {
+      "fork": [
+       645,
+       260
+      ],
+      "rear": [
+       640,
+       497
+      ]
+     },
+     "5": {
+      "fork": [
+       645,
+       226
+      ],
+      "rear": [
+       642,
+       450
+      ]
+     }
+    }
+   },
+   "zones": {
+    "left_rack": [
+     [
+      0,
+      0
+     ],
+     [
+      520,
+      0
+     ],
+     [
+      530,
+      600
+     ],
+     [
+      0,
+      600
+     ]
+    ],
+    "right_rack": [
+     [
+      750,
+      0
+     ],
+     [
+      1280,
+      0
+     ],
+     [
+      1280,
+      620
+     ],
+     [
+      780,
+      610
+     ]
+    ]
+   }
+  },
+  "3e25afa2df9635350beef7a39a53d664775b122f36075131755e8e2bdd5b24aa": {
+   "camera_of": "no_spotter_04",
+   "confidence": "high",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Truck with a load drives away up the aisle; the fork point is the far edge of the load, and the rear is below the bottom edge until t4. A person walks at the top of the aisle t4-t5.",
+   "stem": "separation_far_cctv_37",
+   "structures": [
+    {
+     "a": [
+      525,
+      0
+     ],
+     "b": [
+      445,
+      700
+     ],
+     "what": "left rack face base (aisle edge)"
+    },
+    {
+     "a": [
+      770,
+      0
+     ],
+     "b": [
+      850,
+      700
+     ],
+     "what": "right rack face base (aisle edge)"
+    },
+    {
+     "a": [
+      465,
+      310
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left upright guard"
+    },
+    {
+     "a": [
+      415,
+      625
+     ],
+     "b": [
+      445,
+      655
+     ],
+     "what": "left upright guard"
+    },
+    {
+     "a": [
+      800,
+      225
+     ],
+     "b": [
+      820,
+      250
+     ],
+     "what": "right upright guard"
+    },
+    {
+     "a": [
+      825,
+      475
+     ],
+     "b": [
+      855,
+      500
+     ],
+     "what": "right upright guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       650,
+       520
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       650,
+       380
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       650,
+       265
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": [
+       645,
+       175
+      ],
+      "rear": null
+     },
+     "4": {
+      "fork": [
+       645,
+       105
+      ],
+      "rear": [
+       655,
+       660
+      ]
+     },
+     "5": {
+      "fork": [
+       645,
+       45
+      ],
+      "rear": [
+       650,
+       545
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "494cb885b39ca22fbeba2f5b88de7c339176cab49579ac609256196766a8649a": {
+   "camera_of": null,
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "(b) truck footprint 3.0m x 1.15m, rotated diagonally in the image",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      235,
+      708
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      150,
+      575
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      465,
+      367
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      550,
+      500
+     ]
+    }
+   ],
+   "notes": "Truck swings round and puts its forks into the bottom pallet bay of the rack; at t1 the forks are hidden under the overhead guard and at t3-t5 the fork tips are inside the rack, so those points are the visible fork ends. The rear is cut by the bottom edge at t0-t2.",
+   "stem": "bump_upright_cctv_25",
+   "structures": [
+    {
+     "a": [
+      488,
+      458
+     ],
+     "b": [
+      512,
+      468
+     ],
+     "what": "upright"
+    }
+   ],
+   "structures_source": "smoke-i",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       380,
+       540
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": null,
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       560,
+       480
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": [
+       600,
+       490
+      ],
+      "rear": [
+       140,
+       690
+      ]
+     },
+     "4": {
+      "fork": [
+       620,
+       500
+      ],
+      "rear": [
+       160,
+       650
+      ]
+     },
+     "5": {
+      "fork": [
+       615,
+       500
+      ],
+      "rear": [
+       155,
+       650
+      ]
+     }
+    }
+   },
+   "zones": {
+    "upright": [
+     [
+      480,
+      0
+     ],
+     [
+      590,
+      0
+     ],
+     [
+      590,
+      545
+     ],
+     [
+      490,
+      555
+     ]
+    ]
+   }
+  },
+  "4e943f1237a2e7b9f3466564c789014b6f7e181d0121a34ba15e0ccd63401ddd": {
+   "camera_of": null,
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "(b) truck own floor footprint 3.0 x 1.15 m",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      566,
+      648
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      696,
+      648
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      688,
+      360
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      580,
+      360
+     ]
+    }
+   ],
+   "notes": "Forks are raised and visible t0-t2 (tips marked, body cut by the bottom edge); t3-t5 the fork tips are hidden behind the mast, so the fork point is estimated about one fork length ahead of the mast base. A walking person appears at right from t4 (not a truck).",
+   "stem": "blind_corner_no_vest_07",
+   "structures": [
+    {
+     "a": [
+      470,
+      335
+     ],
+     "b": [
+      400,
+      635
+     ],
+     "what": "left rack end, hazard-taped base"
+    },
+    {
+     "a": [
+      805,
+      345
+     ],
+     "b": [
+      865,
+      640
+     ],
+     "what": "right rack end, hazard-taped base"
+    },
+    {
+     "a": [
+      0,
+      630
+     ],
+     "b": [
+      400,
+      635
+     ],
+     "what": "left rack front base along cross aisle"
+    },
+    {
+     "a": [
+      865,
+      640
+     ],
+     "b": [
+      1280,
+      640
+     ],
+     "what": "right rack front base along cross aisle"
+    },
+    {
+     "a": [
+      525,
+      185
+     ],
+     "b": [
+      515,
+      275
+     ],
+     "what": "left far rack end base"
+    },
+    {
+     "a": [
+      740,
+      185
+     ],
+     "b": [
+      750,
+      275
+     ],
+     "what": "right far rack end base"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       670,
+       630
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       685,
+       510
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       660,
+       390
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": [
+       635,
+       325
+      ],
+      "rear": [
+       630,
+       635
+      ]
+     },
+     "4": {
+      "fork": [
+       635,
+       265
+      ],
+      "rear": [
+       637,
+       530
+      ]
+     },
+     "5": {
+      "fork": [
+       638,
+       225
+      ],
+      "rear": [
+       640,
+       475
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25": {
+   "camera_of": "no_spotter_04",
+   "confidence": "low",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Only a carried load is visible, at the bottom edge in t0; the truck itself never appears. The load's far edge is marked as the fork point, and the load is gone from t1 on.",
+   "stem": "idle_empty_aisle_40",
+   "structures": [
+    {
+     "a": [
+      525,
+      0
+     ],
+     "b": [
+      445,
+      700
+     ],
+     "what": "left rack face base (aisle edge)"
+    },
+    {
+     "a": [
+      770,
+      0
+     ],
+     "b": [
+      850,
+      700
+     ],
+     "what": "right rack face base (aisle edge)"
+    },
+    {
+     "a": [
+      465,
+      310
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left upright guard"
+    },
+    {
+     "a": [
+      415,
+      625
+     ],
+     "b": [
+      445,
+      655
+     ],
+     "what": "left upright guard"
+    },
+    {
+     "a": [
+      800,
+      225
+     ],
+     "b": [
+      820,
+      250
+     ],
+     "what": "right upright guard"
+    },
+    {
+     "a": [
+      825,
+      475
+     ],
+     "b": [
+      855,
+      500
+     ],
+     "what": "right upright guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       650,
+       520
+      ],
+      "rear": null
+     },
+     "1": null,
+     "2": null,
+     "3": null,
+     "4": null,
+     "5": null
+    }
+   },
+   "zones": {}
+  },
+  "72a5e566f3fb0a58d40d075c35bc4873103c298b3e29cba5c64b4a2e54e99d73": {
+   "camera_of": null,
+   "confidence": "high",
+   "dock_zones": [
+    [
+     [
+      178,
+      -5
+     ],
+     [
+      1167,
+      -5
+     ],
+     [
+      1167,
+      681
+     ],
+     [
+      178,
+      681
+     ]
+    ]
+   ],
+   "floor_note": "(b) truck floor footprint 3.0 x 1.15 m at reference sample t=5 (truck rear counterweight at the bottom edge of the frame, fork tips under the carried load); the carried pallet is lifted so (a) was not used",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      560,
+      710
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      745,
+      710
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      745,
+      195
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      560,
+      195
+     ]
+    }
+   ],
+   "notes": "Truck carries a crate toward an open trailer, forks leading (up); rear is below the frame until t5. Fork point is the front of the carried crate; floor marking boxes the trailer threshold.",
+   "stem": "loading_dock_spotter_08",
+   "structures": [
+    {
+     "a": [
+      500,
+      338
+     ],
+     "b": [
+      845,
+      338
+     ],
+     "what": "trailer_rear"
+    }
+   ],
+   "structures_source": "smoke-i",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       650,
+       465
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       650,
+       395
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       650,
+       330
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": [
+       655,
+       265
+      ],
+      "rear": null
+     },
+     "4": {
+      "fork": [
+       655,
+       228
+      ],
+      "rear": null
+     },
+     "5": {
+      "fork": [
+       655,
+       200
+      ],
+      "rear": [
+       650,
+       708
+      ]
+     }
+    }
+   },
+   "zones": {
+    "trailer_rear": [
+     [
+      480,
+      0
+     ],
+     [
+      860,
+      0
+     ],
+     [
+      860,
+      340
+     ],
+     [
+      480,
+      340
+     ]
+    ]
+   },
+   "dock_zones_source": "ruling 3 (30 Oct 2026): the trailer mouth (the trailer_rear base mark) plus 2 m each side on the floor plane, projected to the image; the old zone [[485, 225], [830, 225], [845, 390], [480, 390]] was hand-drawn"
+  },
+  "72efc18bf42aa349f8198a06917256269775c9721054b48009b85f6f2e497eaa": {
+   "camera_of": "no_spotter_04",
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Fast truck, heavy motion blur at t1-t2; enters from the bottom load-first and leaves at the top by t4. Each frame shows only one end.",
+   "stem": "speed_fast_cctv_36",
+   "structures": [
+    {
+     "a": [
+      450,
+      700
+     ],
+     "b": [
+      535,
+      0
+     ],
+     "what": "left rack base along aisle"
+    },
+    {
+     "a": [
+      850,
+      700
+     ],
+     "b": [
+      765,
+      0
+     ],
+     "what": "right rack base along aisle"
+    },
+    {
+     "a": [
+      400,
+      645
+     ],
+     "b": [
+      450,
+      655
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      460,
+      340
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      825,
+      495
+     ],
+     "b": [
+      880,
+      495
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      795,
+      245
+     ],
+     "b": [
+      840,
+      245
+     ],
+     "what": "right column guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       650,
+       525
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       650,
+       195
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": null,
+      "rear": [
+       650,
+       505
+      ]
+     },
+     "3": {
+      "fork": null,
+      "rear": [
+       650,
+       140
+      ]
+     },
+     "4": null,
+     "5": null
+    }
+   },
+   "zones": {}
+  },
+  "758c4efafc1bcb469091d25ac64906395683d2f6c678d18a25aceebd90f5dd32": {
+   "camera_of": "no_spotter_04",
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Truck drives away from camera carrying a wrapped load, load end leading; at t0 only the load is in frame and by t3 the load is past the top edge. Heavy motion blur at t1-t2.",
+   "stem": "speed_normal_cctv_35",
+   "structures": [
+    {
+     "a": [
+      515,
+      30
+     ],
+     "b": [
+      420,
+      650
+     ],
+     "what": "left rack face base (aisle side)"
+    },
+    {
+     "a": [
+      780,
+      40
+     ],
+     "b": [
+      850,
+      700
+     ],
+     "what": "right rack face base (aisle side)"
+    },
+    {
+     "a": [
+      465,
+      320
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      415,
+      625
+     ],
+     "b": [
+      445,
+      650
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      508,
+      30
+     ],
+     "b": [
+      522,
+      55
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      795,
+      230
+     ],
+     "b": [
+      815,
+      250
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      825,
+      480
+     ],
+     "b": [
+      855,
+      500
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      770,
+      40
+     ],
+     "b": [
+      790,
+      55
+     ],
+     "what": "right column guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       650,
+       520
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       650,
+       270
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       650,
+       90
+      ],
+      "rear": [
+       655,
+       555
+      ]
+     },
+     "3": {
+      "fork": null,
+      "rear": [
+       655,
+       305
+      ]
+     },
+     "4": {
+      "fork": null,
+      "rear": [
+       650,
+       140
+      ]
+     },
+     "5": {
+      "fork": null,
+      "rear": [
+       650,
+       20
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "802c88b76237f16fc1ee6429467b4525e44e668d58d15da7d8153c7b5554583c": {
+   "camera_of": null,
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "(b) truck floor footprint 3.0 x 1.15 m at reference sample t=5 (whole truck in frame); corners are approximate: rear edge from rear-left counterweight corner to rear-right wheel, front corners are projected along the truck axis to the fork tips",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      443,
+      527
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      613,
+      607
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      867,
+      327
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      696,
+      247
+     ]
+    }
+   ],
+   "notes": "Truck drives forward up-right carrying a paper roll on a pallet; the fork point is the floor under the fork tips, which stick out past the load. The rear is cut by the bottom-left edge at t0-t2 and is estimated low at t3. Two pedestrians walk in the upper right (not marked).",
+   "stem": "no_vest_group_near_11",
+   "structures": [
+    {
+     "a": [
+      310,
+      510
+     ],
+     "b": [
+      1020,
+      15
+     ],
+     "what": "left rack face base (aisle side)"
+    },
+    {
+     "a": [
+      860,
+      700
+     ],
+     "b": [
+      1270,
+      140
+     ],
+     "what": "right rack face base, wrapped stock"
+    },
+    {
+     "a": [
+      500,
+      360
+     ],
+     "b": [
+      520,
+      380
+     ],
+     "what": "column guard"
+    },
+    {
+     "a": [
+      655,
+      255
+     ],
+     "b": [
+      675,
+      275
+     ],
+     "what": "column guard"
+    },
+    {
+     "a": [
+      775,
+      170
+     ],
+     "b": [
+      790,
+      190
+     ],
+     "what": "column guard"
+    },
+    {
+     "a": [
+      965,
+      500
+     ],
+     "b": [
+      985,
+      520
+     ],
+     "what": "column guard"
+    },
+    {
+     "a": [
+      1090,
+      335
+     ],
+     "b": [
+      1110,
+      355
+     ],
+     "what": "column guard"
+    },
+    {
+     "a": [
+      300,
+      500
+     ],
+     "b": [
+      320,
+      520
+     ],
+     "what": "column guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       630,
+       485
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       672,
+       440
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       712,
+       410
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": [
+       750,
+       375
+      ],
+      "rear": [
+       330,
+       690
+      ]
+     },
+     "4": {
+      "fork": [
+       785,
+       340
+      ],
+      "rear": [
+       420,
+       640
+      ]
+     },
+     "5": {
+      "fork": [
+       815,
+       310
+      ],
+      "rear": [
+       480,
+       600
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "836f0ef2c2a654b5f282bf4654557470fa3d4dc5d37621a36992a53bb75a449e": {
+   "camera_of": null,
+   "confidence": "high",
+   "dock_zones": [],
+   "floor_note": "(b) truck floor footprint 3.0 x 1.15 m at reference sample t=4 (whole truck in frame, forks pointing right)",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      384,
+      469
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      324,
+      349
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      989,
+      460
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      984,
+      549
+     ]
+    }
+   ],
+   "notes": "Empty-fork truck seen from the side, forks pointing right, drives toward a standing pedestrian and stops with fork tips close to him at t3-t5. Rear is cut by the left edge at t0; fork point is the midpoint between the two tips.",
+   "stem": "near_miss_person_stops_24",
+   "structures": [
+    {
+     "a": [
+      568,
+      163
+     ],
+     "b": [
+      868,
+      262
+     ],
+     "what": "column_guard"
+    },
+    {
+     "a": [
+      1195,
+      385
+     ],
+     "b": [
+      1045,
+      720
+     ],
+     "what": "right_rack_face"
+    }
+   ],
+   "structures_source": "smoke-i",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       505,
+       385
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       695,
+       440
+      ],
+      "rear": [
+       130,
+       330
+      ]
+     },
+     "2": {
+      "fork": [
+       885,
+       485
+      ],
+      "rear": [
+       255,
+       360
+      ]
+     },
+     "3": {
+      "fork": [
+       985,
+       505
+      ],
+      "rear": [
+       325,
+       395
+      ]
+     },
+     "4": {
+      "fork": [
+       980,
+       505
+      ],
+      "rear": [
+       320,
+       390
+      ]
+     },
+     "5": {
+      "fork": [
+       970,
+       505
+      ],
+      "rear": [
+       310,
+       390
+      ]
+     }
+    }
+   },
+   "zones": {
+    "column_guard": [
+     [
+      570,
+      110
+     ],
+     [
+      580,
+      140
+     ],
+     [
+      870,
+      260
+     ],
+     [
+      900,
+      200
+     ],
+     [
+      880,
+      0
+     ],
+     [
+      580,
+      0
+     ]
+    ],
+    "right_rack_face": [
+     [
+      1190,
+      100
+     ],
+     [
+      1280,
+      70
+     ],
+     [
+      1280,
+      720
+     ],
+     [
+      1040,
+      720
+     ],
+     [
+      1100,
+      520
+     ]
+    ]
+   }
+  },
+  "8392d095b2516ebaccd61c56e739f939c9eff61948ab569d2f346e37be5c563e": {
+   "camera_of": null,
+   "confidence": "high",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b), truck facing camera, forks toward camera",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      556,
+      130
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      756,
+      130
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      747,
+      636
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      567,
+      636
+     ]
+    }
+   ],
+   "notes": "Truck faces the camera with forks toward it and reverses away up the aisle; the rear (counterweight) is hidden behind the cab and mast in every frame. A yellow floor line runs across the bottom at y about 700; it is not marked as a dock.",
+   "stem": "reversing_no_spotter_14",
+   "structures": [
+    {
+     "a": [
+      260,
+      555
+     ],
+     "b": [
+      500,
+      30
+     ],
+     "what": "left rack face base (aisle side)"
+    },
+    {
+     "a": [
+      1015,
+      555
+     ],
+     "b": [
+      800,
+      40
+     ],
+     "what": "right rack face base (aisle side)"
+    },
+    {
+     "a": [
+      0,
+      545
+     ],
+     "b": [
+      260,
+      550
+     ],
+     "what": "left end-of-aisle barrier"
+    },
+    {
+     "a": [
+      1015,
+      545
+     ],
+     "b": [
+      1280,
+      545
+     ],
+     "what": "right end-of-aisle barrier"
+    },
+    {
+     "a": [
+      325,
+      360
+     ],
+     "b": [
+      345,
+      385
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      935,
+      365
+     ],
+     "b": [
+      955,
+      385
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      390,
+      235
+     ],
+     "b": [
+      405,
+      255
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      880,
+      235
+     ],
+     "b": [
+      895,
+      255
+     ],
+     "what": "right column guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       650,
+       630
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       648,
+       510
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       650,
+       405
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": [
+       652,
+       325
+      ],
+      "rear": null
+     },
+     "4": {
+      "fork": [
+       652,
+       265
+      ],
+      "rear": null
+     },
+     "5": {
+      "fork": [
+       650,
+       215
+      ],
+      "rear": null
+     }
+    }
+   },
+   "zones": {}
+  },
+  "84906e4a1c920016a5f4ca8f17b299594ca9c862815f2b9514ff69c82be32b5d": {
+   "camera_of": null,
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "(b) truck own floor footprint 3.0 x 1.15 m, truck turning and rotated about 25 deg from the image axes; no pallet lies on the floor",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      366,
+      668
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      514,
+      592
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      314,
+      207
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      166,
+      283
+     ]
+    }
+   ],
+   "notes": "Truck drives forward right to left across the frame and turns; the rear is cut by the right and bottom edges for most seconds, and at t5 the forks are hidden behind the mast. Boxes fall from the rack at t4 and lie on the floor at t5 (not marked as structures).",
+   "stem": "collision_racking_22",
+   "structures": [
+    {
+     "a": [
+      675,
+      482
+     ],
+     "b": [
+      1195,
+      10
+     ],
+     "what": "rack_face"
+    }
+   ],
+   "structures_source": "smoke-i",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       1065,
+       305
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       905,
+       480
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       595,
+       565
+      ],
+      "rear": [
+       1190,
+       500
+      ]
+     },
+     "3": {
+      "fork": [
+       420,
+       525
+      ],
+      "rear": null
+     },
+     "4": {
+      "fork": [
+       325,
+       410
+      ],
+      "rear": null
+     },
+     "5": {
+      "fork": null,
+      "rear": [
+       510,
+       690
+      ]
+     }
+    }
+   },
+   "zones": {
+    "rack_face": [
+     [
+      524,
+      0
+     ],
+     [
+      1080,
+      0
+     ],
+     [
+      940,
+      140
+     ],
+     [
+      680,
+      490
+     ],
+     [
+      524,
+      350
+     ]
+    ]
+   }
+  },
+  "869dbba2ce34efe554d5352d9b85f80dfb4d1d7e561cdd267425bc025ab93c5e": {
+   "camera_of": "no_spotter_04",
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Truck reverses toward camera and nearly stops by t4-t5; fork tips are hidden beyond the mast, so t3-t5 fork points are estimates and t0-t2 forks are off the top edge. A pedestrian in orange stands at the lower left of the aisle from t2 (not marked).",
+   "stem": "reversing_spotter_still_cctv_31",
+   "structures": [
+    {
+     "a": [
+      515,
+      30
+     ],
+     "b": [
+      420,
+      650
+     ],
+     "what": "left rack face base (aisle side)"
+    },
+    {
+     "a": [
+      780,
+      40
+     ],
+     "b": [
+      850,
+      700
+     ],
+     "what": "right rack face base (aisle side)"
+    },
+    {
+     "a": [
+      465,
+      320
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      415,
+      625
+     ],
+     "b": [
+      445,
+      650
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      508,
+      30
+     ],
+     "b": [
+      522,
+      55
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      795,
+      230
+     ],
+     "b": [
+      815,
+      250
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      825,
+      480
+     ],
+     "b": [
+      855,
+      500
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      770,
+      40
+     ],
+     "b": [
+      790,
+      55
+     ],
+     "what": "right column guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": null,
+      "rear": [
+       640,
+       45
+      ]
+     },
+     "1": {
+      "fork": null,
+      "rear": [
+       640,
+       180
+      ]
+     },
+     "2": {
+      "fork": null,
+      "rear": [
+       642,
+       340
+      ]
+     },
+     "3": {
+      "fork": [
+       645,
+       65
+      ],
+      "rear": [
+       645,
+       480
+      ]
+     },
+     "4": {
+      "fork": [
+       650,
+       115
+      ],
+      "rear": [
+       648,
+       550
+      ]
+     },
+     "5": {
+      "fork": [
+       650,
+       120
+      ],
+      "rear": [
+       648,
+       560
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "913a3a49b3c1b6ae04108183a134209e9e6527ce11b4e5a9cb28c535ad2faf97": {
+   "camera_of": null,
+   "confidence": "high",
+   "dock_zones": [],
+   "floor_note": "(b) truck footprint 3.0m x 1.15m",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      612,
+      655
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      736,
+      655
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      712,
+      300
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      618,
+      300
+     ]
+    }
+   ],
+   "notes": "Truck drives up the aisle away from camera, load leading, a pedestrian walking alongside on its right. Rear cut by the bottom edge at t0-t1.",
+   "stem": "no_vest_pedestrian_03",
+   "structures": [
+    {
+     "a": [
+      405,
+      720
+     ],
+     "b": [
+      570,
+      0
+     ],
+     "what": "left rack base along aisle"
+    },
+    {
+     "a": [
+      895,
+      720
+     ],
+     "b": [
+      740,
+      0
+     ],
+     "what": "right rack base along aisle"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       660,
+       410
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       660,
+       352
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       660,
+       295
+      ],
+      "rear": [
+       670,
+       650
+      ]
+     },
+     "3": {
+      "fork": [
+       660,
+       243
+      ],
+      "rear": [
+       672,
+       550
+      ]
+     },
+     "4": {
+      "fork": [
+       662,
+       200
+      ],
+      "rear": [
+       668,
+       470
+      ]
+     },
+     "5": {
+      "fork": [
+       662,
+       160
+      ],
+      "rear": [
+       668,
+       400
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "948d6fb875ae9f4b7d670d36fe3b6935dca89cad829a2cf3ab58e65be0f6e65f": {
+   "camera_of": null,
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "(b) truck footprint 3.0m x 1.15m",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      585,
+      658
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      735,
+      658
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      707,
+      300
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      603,
+      300
+     ]
+    }
+   ],
+   "notes": "Truck drives away from the camera, forks pointing up the image; the fork tips are hidden ahead of the mast in every frame, so the fork floor point is estimated just ahead of the overhead guard front. A walking person follows from t1 (not a truck).",
+   "stem": "reversing_spotter_05",
+   "structures": [
+    {
+     "a": [
+      500,
+      462
+     ],
+     "b": [
+      535,
+      5
+     ],
+     "what": "left_rack"
+    },
+    {
+     "a": [
+      843,
+      462
+     ],
+     "b": [
+      768,
+      5
+     ],
+     "what": "right_rack"
+    }
+   ],
+   "structures_source": "smoke-i",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       658,
+       305
+      ],
+      "rear": [
+       658,
+       665
+      ]
+     },
+     "1": {
+      "fork": [
+       658,
+       275
+      ],
+      "rear": [
+       655,
+       610
+      ]
+     },
+     "2": {
+      "fork": [
+       658,
+       240
+      ],
+      "rear": [
+       657,
+       555
+      ]
+     },
+     "3": {
+      "fork": [
+       658,
+       215
+      ],
+      "rear": [
+       658,
+       505
+      ]
+     },
+     "4": {
+      "fork": [
+       660,
+       185
+      ],
+      "rear": [
+       660,
+       460
+      ]
+     },
+     "5": {
+      "fork": [
+       662,
+       160
+      ],
+      "rear": [
+       662,
+       415
+      ]
+     }
+    }
+   },
+   "zones": {
+    "left_rack": [
+     [
+      0,
+      0
+     ],
+     [
+      530,
+      0
+     ],
+     [
+      500,
+      460
+     ],
+     [
+      160,
+      460
+     ],
+     [
+      0,
+      300
+     ]
+    ],
+    "right_rack": [
+     [
+      780,
+      0
+     ],
+     [
+      1280,
+      0
+     ],
+     [
+      1280,
+      280
+     ],
+     [
+      900,
+      360
+     ],
+     [
+      840,
+      250
+     ]
+    ]
+   }
+  },
+  "97e1f62cf8b0624ab12b6df99cb2d2c74257554024db138fa1c4b809620e9ddb": {
+   "camera_of": null,
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) of the large near truck, rotated, heading up-right",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      428,
+      556
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      502,
+      644
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      732,
+      449
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      658,
+      361
+     ]
+    }
+   ],
+   "notes": "Two trucks both appear at t0 (1 = lower left, 2 = upper right), driving toward each other forks first. Both rears are cut by the frame edges until t4; the t4-t5 rear of truck 2 is estimated behind its overhead guard. A pedestrian stands at the right rack (not marked).",
+   "stem": "two_forklifts_vests_09",
+   "structures": [
+    {
+     "a": [
+      365,
+      428
+     ],
+     "b": [
+      0,
+      600
+     ],
+     "what": "left_rack"
+    },
+    {
+     "a": [
+      1035,
+      520
+     ],
+     "b": [
+      1280,
+      705
+     ],
+     "what": "right_rack"
+    }
+   ],
+   "structures_source": "smoke-i",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       445,
+       610
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       525,
+       540
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       595,
+       475
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": [
+       655,
+       425
+      ],
+      "rear": null
+     },
+     "4": {
+      "fork": [
+       700,
+       380
+      ],
+      "rear": [
+       380,
+       680
+      ]
+     },
+     "5": {
+      "fork": [
+       730,
+       355
+      ],
+      "rear": [
+       430,
+       630
+      ]
+     }
+    },
+    "2": {
+     "0": {
+      "fork": [
+       1025,
+       115
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       980,
+       148
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       938,
+       185
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": [
+       890,
+       225
+      ],
+      "rear": null
+     },
+     "4": {
+      "fork": [
+       840,
+       270
+      ],
+      "rear": [
+       1030,
+       130
+      ]
+     },
+     "5": {
+      "fork": [
+       800,
+       308
+      ],
+      "rear": [
+       1010,
+       170
+      ]
+     }
+    }
+   },
+   "zones": {
+    "left_rack": [
+     [
+      0,
+      0
+     ],
+     [
+      360,
+      0
+     ],
+     [
+      340,
+      400
+     ],
+     [
+      0,
+      600
+     ]
+    ],
+    "right_rack": [
+     [
+      960,
+      120
+     ],
+     [
+      1280,
+      0
+     ],
+     [
+      1280,
+      720
+     ],
+     [
+      1040,
+      520
+     ]
+    ]
+   }
+  },
+  "b90d137e346cb2e8fd76a55cca48fe0dafe296299235452cb7b4d89c638bbe87": {
+   "camera_of": null,
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "(b) truck own floor footprint 3.0 x 1.15 m, rear is below the frame at every t so the rear edge is estimated",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      510,
+      760
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      738,
+      760
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      713,
+      340
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      558,
+      340
+     ]
+    }
+   ],
+   "notes": "Truck moves slowly up beside the right rack and nearly stops; the fork tips are mostly hidden under the mast (small white tips near the mast base), and the counterweight is cut by the bottom edge until about t4.",
+   "stem": "scrape_rack_cctv_26",
+   "structures": [
+    {
+     "a": [
+      765,
+      565
+     ],
+     "b": [
+      1280,
+      545
+     ],
+     "what": "right_rack_face"
+    }
+   ],
+   "structures_source": "smoke-i",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       645,
+       385
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       650,
+       355
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       655,
+       330
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": [
+       660,
+       310
+      ],
+      "rear": null
+     },
+     "4": {
+      "fork": [
+       665,
+       295
+      ],
+      "rear": [
+       600,
+       715
+      ]
+     },
+     "5": {
+      "fork": [
+       668,
+       290
+      ],
+      "rear": [
+       600,
+       715
+      ]
+     }
+    }
+   },
+   "zones": {
+    "right_rack_face": [
+     [
+      740,
+      0
+     ],
+     [
+      1280,
+      0
+     ],
+     [
+      1280,
+      520
+     ],
+     [
+      1000,
+      580
+     ],
+     [
+      760,
+      560
+     ]
+    ]
+   }
+  },
+  "c202f13220fa1c392fa34dfae7de74bc1e87a0b7103ecb037b5d591fd029d52c": {
+   "camera_of": "no_spotter_04",
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Truck reverses toward camera, counterweight leading, mast at the far end. Fork tips are never directly visible (hidden beyond the mast from this angle); t3-t5 fork points are estimated about 60 px beyond the mast base, t0-t2 forks are off the top edge.",
+   "stem": "reversing_no_spotter_cctv_33",
+   "structures": [
+    {
+     "a": [
+      515,
+      30
+     ],
+     "b": [
+      420,
+      650
+     ],
+     "what": "left rack face base (aisle side)"
+    },
+    {
+     "a": [
+      780,
+      40
+     ],
+     "b": [
+      850,
+      700
+     ],
+     "what": "right rack face base (aisle side)"
+    },
+    {
+     "a": [
+      465,
+      320
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      415,
+      625
+     ],
+     "b": [
+      445,
+      650
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      508,
+      30
+     ],
+     "b": [
+      522,
+      55
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      795,
+      230
+     ],
+     "b": [
+      815,
+      250
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      825,
+      480
+     ],
+     "b": [
+      855,
+      500
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      770,
+      40
+     ],
+     "b": [
+      790,
+      55
+     ],
+     "what": "right column guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": null,
+      "rear": [
+       640,
+       45
+      ]
+     },
+     "1": {
+      "fork": null,
+      "rear": [
+       640,
+       150
+      ]
+     },
+     "2": {
+      "fork": null,
+      "rear": [
+       645,
+       270
+      ]
+     },
+     "3": {
+      "fork": [
+       652,
+       35
+      ],
+      "rear": [
+       652,
+       415
+      ]
+     },
+     "4": {
+      "fork": [
+       655,
+       125
+      ],
+      "rear": [
+       657,
+       550
+      ]
+     },
+     "5": {
+      "fork": [
+       658,
+       190
+      ],
+      "rear": [
+       658,
+       630
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "ce7fcd66a870e846bdace3e244810a13ab53ac6d670300a9be18c428797e81eb": {
+   "camera_of": "no_spotter_04",
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Same aisle as b284d0e/b33d1bc; truck enters from the bottom load-first with motion blur. Rear cut by the bottom edge until t3 (blurred at t2); load above the top edge from t3.",
+   "stem": "speed_slow_cctv_34",
+   "structures": [
+    {
+     "a": [
+      450,
+      700
+     ],
+     "b": [
+      535,
+      0
+     ],
+     "what": "left rack base along aisle"
+    },
+    {
+     "a": [
+      850,
+      700
+     ],
+     "b": [
+      765,
+      0
+     ],
+     "what": "right rack base along aisle"
+    },
+    {
+     "a": [
+      400,
+      645
+     ],
+     "b": [
+      450,
+      655
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      460,
+      340
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      825,
+      495
+     ],
+     "b": [
+      880,
+      495
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      795,
+      245
+     ],
+     "b": [
+      840,
+      245
+     ],
+     "what": "right column guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       650,
+       520
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       648,
+       285
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       648,
+       105
+      ],
+      "rear": null
+     },
+     "3": {
+      "fork": null,
+      "rear": [
+       648,
+       465
+      ]
+     },
+     "4": {
+      "fork": null,
+      "rear": [
+       648,
+       275
+      ]
+     },
+     "5": {
+      "fork": null,
+      "rear": [
+       648,
+       135
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "d57afd2bc4a5a1abd188a965d436b8d987c63114c2614c401c660051c14d7242": {
+   "camera_of": "no_spotter_04",
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Truck reverses toward the camera, counterweight first, and stops by t4; the fork end is above the top edge t0-t2, and from t3 the fork tips are hidden ahead of the mast, so the fork point is estimated.",
+   "stem": "reversing_no_spotter_cctv_32",
+   "structures": [
+    {
+     "a": [
+      525,
+      0
+     ],
+     "b": [
+      445,
+      700
+     ],
+     "what": "left rack face base (aisle edge)"
+    },
+    {
+     "a": [
+      770,
+      0
+     ],
+     "b": [
+      850,
+      700
+     ],
+     "what": "right rack face base (aisle edge)"
+    },
+    {
+     "a": [
+      465,
+      310
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left upright guard"
+    },
+    {
+     "a": [
+      415,
+      625
+     ],
+     "b": [
+      445,
+      655
+     ],
+     "what": "left upright guard"
+    },
+    {
+     "a": [
+      800,
+      225
+     ],
+     "b": [
+      820,
+      250
+     ],
+     "what": "right upright guard"
+    },
+    {
+     "a": [
+      825,
+      475
+     ],
+     "b": [
+      855,
+      500
+     ],
+     "what": "right upright guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": null,
+      "rear": [
+       640,
+       40
+      ]
+     },
+     "1": {
+      "fork": null,
+      "rear": [
+       640,
+       170
+      ]
+     },
+     "2": {
+      "fork": null,
+      "rear": [
+       640,
+       320
+      ]
+     },
+     "3": {
+      "fork": [
+       650,
+       100
+      ],
+      "rear": [
+       648,
+       485
+      ]
+     },
+     "4": {
+      "fork": [
+       650,
+       175
+      ],
+      "rear": [
+       650,
+       580
+      ]
+     },
+     "5": {
+      "fork": [
+       650,
+       175
+      ],
+      "rear": [
+       650,
+       580
+      ]
+     }
+    }
+   },
+   "zones": {}
+  },
+  "de5b530587215cebe20fbd8a7df9da8f3133e00a78e7f0cd18462a4eb577aa20": {
+   "camera_of": null,
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "(c) crosswalk floor marking (white outline rectangle), metres set from truck scale; truck footprint not fully visible at any sample (rear cut by frame from t=0..3, floor under the truck hidden)",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      277,
+      437
+     ]
+    },
+    {
+     "floor": [
+      3.6,
+      0
+     ],
+     "img": [
+      998,
+      442
+     ]
+    },
+    {
+     "floor": [
+      3.6,
+      1.2
+     ],
+     "img": [
+      930,
+      230
+     ]
+    },
+    {
+     "floor": [
+      0,
+      1.2
+     ],
+     "img": [
+      355,
+      230
+     ]
+    }
+   ],
+   "notes": "Truck drives forward from under the camera, forks leading, toward a painted crossing where a group of pedestrians crosses; it stops by t4-t5. Fork tines are hidden under the carriage from t1 so the fork point is the carriage front; rear is cut by the bottom edge except roughly at t2.",
+   "stem": "vest_group_cross_10",
+   "structures": [
+    {
+     "a": [
+      255,
+      665
+     ],
+     "b": [
+      150,
+      720
+     ],
+     "what": "left_rack"
+    },
+    {
+     "a": [
+      1010,
+      655
+     ],
+     "b": [
+      1060,
+      720
+     ],
+     "what": "right_rack"
+    },
+    {
+     "a": [
+      378,
+      183
+     ],
+     "b": [
+      598,
+      183
+     ],
+     "what": "top_rack_left"
+    },
+    {
+     "a": [
+      822,
+      183
+     ],
+     "b": [
+      1040,
+      183
+     ],
+     "what": "top_rack_right"
+    }
+   ],
+   "structures_source": "smoke-i",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       630,
+       455
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       610,
+       378
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       610,
+       260
+      ],
+      "rear": [
+       605,
+       700
+      ]
+     },
+     "3": {
+      "fork": [
+       612,
+       195
+      ],
+      "rear": null
+     },
+     "4": {
+      "fork": [
+       612,
+       170
+      ],
+      "rear": null
+     },
+     "5": {
+      "fork": [
+       612,
+       170
+      ],
+      "rear": null
+     }
+    }
+   },
+   "zones": {
+    "left_rack": [
+     [
+      0,
+      430
+     ],
+     [
+      260,
+      660
+     ],
+     [
+      260,
+      720
+     ],
+     [
+      0,
+      720
+     ]
+    ],
+    "right_rack": [
+     [
+      1000,
+      640
+     ],
+     [
+      1280,
+      440
+     ],
+     [
+      1280,
+      720
+     ],
+     [
+      1000,
+      720
+     ]
+    ],
+    "top_rack_left": [
+     [
+      350,
+      0
+     ],
+     [
+      600,
+      0
+     ],
+     [
+      600,
+      180
+     ],
+     [
+      350,
+      180
+     ]
+    ],
+    "top_rack_right": [
+     [
+      790,
+      0
+     ],
+     [
+      1010,
+      0
+     ],
+     [
+      1010,
+      180
+     ],
+     [
+      790,
+      180
+     ]
+    ]
+   }
+  },
+  "f159a3ec337fa5f07d739aec409e1efd0a745e7da6b035d8d2ee8078fffe3dd8": {
+   "camera_of": null,
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "(c) aisle between the two yellow floor edge lines at rows y=60 and y=380; width 2.8 m set from truck wheel track 1.15 m at t=1 (125 px at y~340), length 4.0 m estimated from truck length 3.0 m ~ 360 px at t=1",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      492,
+      380
+     ]
+    },
+    {
+     "floor": [
+      2.8,
+      0
+     ],
+     "img": [
+      825,
+      380
+     ]
+    },
+    {
+     "floor": [
+      2.8,
+      4.0
+     ],
+     "img": [
+      750,
+      60
+     ]
+    },
+    {
+     "floor": [
+      0,
+      4.0
+     ],
+     "img": [
+      563,
+      60
+     ]
+    }
+   ],
+   "notes": "Truck drives away from the camera, forks leading. At t0 it is directly under the camera, rear cut by the bottom edge, so the fork floor point is a perspective guess; t2 only the counterweight is visible at the top edge; gone from t3.",
+   "stem": "speeding_forklift_06",
+   "structures": [
+    {
+     "a": [
+      490,
+      430
+     ],
+     "b": [
+      590,
+      0
+     ],
+     "what": "left rack face along aisle"
+    },
+    {
+     "a": [
+      835,
+      435
+     ],
+     "b": [
+      740,
+      0
+     ],
+     "what": "right rack face along aisle"
+    },
+    {
+     "a": [
+      0,
+      430
+     ],
+     "b": [
+      490,
+      430
+     ],
+     "what": "left rack end guard rail"
+    },
+    {
+     "a": [
+      840,
+      435
+     ],
+     "b": [
+      1280,
+      435
+     ],
+     "what": "right rack end guard rail"
+    },
+    {
+     "a": [
+      200,
+      690
+     ],
+     "b": [
+      430,
+      690
+     ],
+     "what": "bottom-left rack guard rail"
+    },
+    {
+     "a": [
+      880,
+      690
+     ],
+     "b": [
+      1100,
+      690
+     ],
+     "what": "bottom-right rack guard rail"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       670,
+       330
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       655,
+       60
+      ],
+      "rear": [
+       655,
+       345
+      ]
+     },
+     "2": {
+      "fork": null,
+      "rear": [
+       660,
+       75
+      ]
+     },
+     "3": null,
+     "4": null,
+     "5": null
+    }
+   },
+   "zones": {}
+  },
+  "f613d484f934e44701460e26626a792979e62636997245075122a5f8e7417ab8": {
+   "camera_of": null,
+   "confidence": "low",
+   "dock_zones": [],
+   "floor_note": "pallet on floor (a), empty wooden pallet at the base of the right rack, 1.2 x 1.0 m",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      865,
+      305
+     ]
+    },
+    {
+     "floor": [
+      1.2,
+      0
+     ],
+     "img": [
+      945,
+      258
+     ]
+    },
+    {
+     "floor": [
+      1.2,
+      1.0
+     ],
+     "img": [
+      1008,
+      310
+     ]
+    },
+    {
+     "floor": [
+      0,
+      1.0
+     ],
+     "img": [
+      918,
+      372
+     ]
+    }
+   ],
+   "notes": "Close oblique view; the truck enters from bottom-left, puts its forks in beside the column guard (t2-t3) and backs out. At t2-t3 the fork tips are hidden in the pallet/rack area right of the column (estimated) and the counterweight is cut by the bottom-left edge (rough estimate); rear is out of frame at t0, t1, t4, t5.",
+   "stem": "bump_guard_cctv_28",
+   "structures": [
+    {
+     "a": [
+      642,
+      377
+     ],
+     "b": [
+      758,
+      487
+     ],
+     "what": "column_and_guard"
+    }
+   ],
+   "structures_source": "smoke-i",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": [
+       610,
+       540
+      ],
+      "rear": null
+     },
+     "1": {
+      "fork": [
+       740,
+       440
+      ],
+      "rear": null
+     },
+     "2": {
+      "fork": [
+       850,
+       380
+      ],
+      "rear": [
+       220,
+       700
+      ]
+     },
+     "3": {
+      "fork": [
+       850,
+       380
+      ],
+      "rear": [
+       220,
+       700
+      ]
+     },
+     "4": {
+      "fork": [
+       730,
+       435
+      ],
+      "rear": null
+     },
+     "5": {
+      "fork": [
+       590,
+       560
+      ],
+      "rear": null
+     }
+    }
+   },
+   "zones": {
+    "column_and_guard": [
+     [
+      660,
+      0
+     ],
+     [
+      830,
+      0
+     ],
+     [
+      830,
+      380
+     ],
+     [
+      790,
+      490
+     ],
+     [
+      650,
+      300
+     ]
+    ]
+   }
+  },
+  "f6645e897153715780e8a1dffd3c5c4f40518e248352a98e83ec96a038b1d549": {
+   "camera_of": "no_spotter_04",
+   "confidence": "medium",
+   "dock_zones": [],
+   "floor_note": "truck footprint (b) with carried load, truck moving away up the aisle",
+   "floor_points": [
+    {
+     "floor": [
+      0,
+      0
+     ],
+     "img": [
+      543,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      0
+     ],
+     "img": [
+      747,
+      680
+     ]
+    },
+    {
+     "floor": [
+      1.15,
+      3.0
+     ],
+     "img": [
+      737,
+      84
+     ]
+    },
+    {
+     "floor": [
+      0,
+      3.0
+     ],
+     "img": [
+      553,
+      84
+     ]
+    }
+   ],
+   "notes": "Truck reverses toward camera, counterweight leading; the mast only reaches the top edge at t5, so the fork end is out of frame in every second. A pedestrian walks beside the truck on its left (not marked).",
+   "stem": "reversing_spotter_cctv_30",
+   "structures": [
+    {
+     "a": [
+      515,
+      30
+     ],
+     "b": [
+      420,
+      650
+     ],
+     "what": "left rack face base (aisle side)"
+    },
+    {
+     "a": [
+      780,
+      40
+     ],
+     "b": [
+      850,
+      700
+     ],
+     "what": "right rack face base (aisle side)"
+    },
+    {
+     "a": [
+      465,
+      320
+     ],
+     "b": [
+      485,
+      345
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      415,
+      625
+     ],
+     "b": [
+      445,
+      650
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      508,
+      30
+     ],
+     "b": [
+      522,
+      55
+     ],
+     "what": "left column guard"
+    },
+    {
+     "a": [
+      795,
+      230
+     ],
+     "b": [
+      815,
+      250
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      825,
+      480
+     ],
+     "b": [
+      855,
+      500
+     ],
+     "what": "right column guard"
+    },
+    {
+     "a": [
+      770,
+      40
+     ],
+     "b": [
+      790,
+      55
+     ],
+     "what": "right column guard"
+    }
+   ],
+   "structures_source": "hand",
+   "trucks": {
+    "1": {
+     "0": {
+      "fork": null,
+      "rear": [
+       640,
+       45
+      ]
+     },
+     "1": {
+      "fork": null,
+      "rear": [
+       640,
+       110
+      ]
+     },
+     "2": {
+      "fork": null,
+      "rear": [
+       642,
+       185
+      ]
+     },
+     "3": {
+      "fork": null,
+      "rear": [
+       642,
+       260
+      ]
+     },
+     "4": {
+      "fork": null,
+      "rear": [
+       643,
+       335
+      ]
+     },
+     "5": {
+      "fork": null,
+      "rear": [
+       645,
+       400
+      ]
+     }
+    }
+   },
+   "zones": {}
+  }
+ },
+ "note": "Hand marks, keyed by the clip's sha256. Floor points: four image points (1280x720) with floor metres, from smoke I's fresh-context markers; round-2 clips reuse their camera's points. Structures: base segments in image pixels (smoke I where drawn, hand marks otherwise). Trucks: fork and rear floor points per second, by hand. Never read by the model. Zones: smoke G's hand-drawn structure polygons (image px) where drawn; elsewhere a strip around each base segment stands in."
+}
