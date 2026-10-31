@@ -85,8 +85,9 @@ _LOOPBACK_HOSTS = ("127.0.0.1", "localhost")
 CACHE_HEADER = "X-Tourney-Cache"
 _CACHE_VALUES = {"hit": True, "miss": False}
 
-# Prices copied as data from the private working repo's price table (verified there 2026-10-25 from the Meta
-# Model API pricing page, Standard mode, and the Baseten library page; copied 2026-10-29).
+# Prices copied as data from the private working repo's price table (verified there 2026-10-25
+# from the Meta Model API pricing page, Standard mode, and the Baseten library page; copied
+# 2026-10-29).
 # "in" and "out" are USD per 1M tokens; "per_call_fallback" is charged for a reply with no usage.
 # sam-3.1 bills per unit: usage.images_processed at per_image and usage.video_frames_processed
 # at per_frame with a min_frames floor per video call.
