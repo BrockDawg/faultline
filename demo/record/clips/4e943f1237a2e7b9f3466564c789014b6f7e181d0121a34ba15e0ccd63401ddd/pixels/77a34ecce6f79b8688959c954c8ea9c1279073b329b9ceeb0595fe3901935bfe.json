@@ -1,0 +1,44 @@
+{
+ "camera": {
+  "held_frames": 60,
+  "offsets": null,
+  "shift_px": 0.07,
+  "static": true
+ },
+ "frames_sha256": "786f22fdb2ae3a8741ff3db8710d68d4feeebf4ca8aa780c758d45e414cc6737",
+ "frames_shape": [
+  60,
+  720,
+  1280,
+  3
+ ],
+ "n_frames": 60,
+ "onsets": [],
+ "shot_cuts": [],
+ "vest": {
+  "0": {
+   "38": "unvested",
+   "39": "unvested",
+   "40": "unvested",
+   "41": "unvested",
+   "42": "unvested",
+   "43": "unvested",
+   "44": "unvested",
+   "45": "unvested",
+   "46": "unvested",
+   "47": "unvested",
+   "48": "unvested",
+   "49": "unvested",
+   "50": "unvested",
+   "51": "unvested",
+   "52": "unvested",
+   "53": "unvested",
+   "54": "unvested",
+   "55": "unvested",
+   "56": "unvested",
+   "57": "unvested",
+   "58": "unvested",
+   "59": "unvested"
+  }
+ }
+}

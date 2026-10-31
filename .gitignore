@@ -32,6 +32,13 @@ kept-from-tasks/
 *.webm
 *.avi
 
+# the replay set a fresh clone checks: three clips' record (replies, masks, facts, blobs), never a
+# clip or a frame
+!/demo/record/
+!/demo/record/**
+/demo/record/**/*.mp4
+/demo/record/ledger.jsonl
+
 # --- Python build and test output ---
 .venv/
 __pycache__/
@@ -39,3 +46,6 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 dist/
+
+# the demo film segments and their contact sheets hold clip frames: local only
+/demo/VIDEO/

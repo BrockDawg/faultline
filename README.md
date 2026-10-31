@@ -229,6 +229,7 @@ The verdict is `breach`, `clear` or `unable to rule`, and an unable ruling names
 Scripts measure and decide.
 Meta's models see the frames, help compile the pack and write words beside a ruling, and a model's read counts only where three runs agree.
 `faultline-video replay` rebuilds every ruling from its record, with the network off, to the same bytes.
+The record of three clips ships in `demo/record/`, so the replay proof runs from a fresh clone (see [How to run](#how-to-run)).
 
 A clip is read in seven steps:
 
@@ -754,6 +755,15 @@ export BASETEN_API_KEY=...      # Baseten: Muse Spark Open, Meta's open-weight m
 uv run faultline-video judge items.jsonl --rules packs/warehouse-forklift --out preds.jsonl --words
 uv run faultline-video replay preds.jsonl --out preds2.jsonl   # network off, byte-identical
 ```
+
+The record of three clips ships in [`demo/record/`](demo/record), so a fresh clone can rebuild their rulings with no clip, no key and the network off:
+
+```sh
+uv run faultline-video replay demo/record/preds.jsonl --out replay.jsonl
+sha256sum demo/record/preds.jsonl replay.jsonl   # both d991b59e6768a1f6b77bdd0fd0c4c6fb45afbe9d837bdfc9abab0fbfaaff7010
+```
+
+`tests/adapters/video/test_replay_shipped.py` runs that replay on every test run and fails if a byte differs.
 
 `MODEL_API_BASE` overrides the Meta endpoint and `BASETEN_API_BASE` the Baseten one; without `BASETEN_API_KEY` every call goes to `MODEL_API_BASE`, which then has to route by model name.
 `FAULTLINE_CAP_USD` caps the spend of a run, and every call lands in the ledger first.

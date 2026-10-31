@@ -1,0 +1,217 @@
+{
+ "clip_sha256": "3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c",
+ "constants_blob": "56276223c7cd79618f239bfb9ef85d6c93fe002728cb17b97ab02e9c3a26e50c",
+ "entry": "fl-30a09bedbc28",
+ "fields": {
+  "camera.compensated": false,
+  "camera.held_frames": 60,
+  "camera.partial": false,
+  "camera.shift_px": 0.3,
+  "camera.static": true,
+  "contact.consequence": {
+   "dock_faces": [],
+   "onsets": [],
+   "pair_share": 0.0,
+   "pairs": []
+  },
+  "people": [
+   {
+    "distance_m": {
+     "band": "unmeasured",
+     "close_exempt_frames": 0,
+     "close_unknown_cut": 0,
+     "close_unknown_dock": 0,
+     "close_unknown_frames": 0,
+     "dock_frames": 0,
+     "frame_min": null,
+     "interval_moving": null,
+     "line": 3.0,
+     "min_any": null,
+     "min_moving": null
+    },
+    "frames": 0,
+    "frames_read": 60,
+    "id": "0",
+    "in_rear_cone_share": null,
+    "on_foot": true,
+    "operator_share": 0.0,
+    "span_m": null,
+    "still": false,
+    "vest_share": {
+     "unknown": 0.0,
+     "unvested": 0.0,
+     "vested": 1.0
+    },
+    "vested": "vested"
+   },
+   {
+    "distance_m": {
+     "band": "unmeasured",
+     "close_exempt_frames": 0,
+     "close_unknown_cut": 0,
+     "close_unknown_dock": 0,
+     "close_unknown_frames": 0,
+     "dock_frames": 0,
+     "frame_min": null,
+     "interval_moving": null,
+     "line": 3.0,
+     "min_any": null,
+     "min_moving": null
+    },
+    "frames": 0,
+    "frames_read": 60,
+    "id": "1",
+    "in_rear_cone_share": null,
+    "on_foot": true,
+    "operator_share": 0.0,
+    "span_m": null,
+    "still": false,
+    "vest_share": {
+     "unknown": 0.0,
+     "unvested": 0.0,
+     "vested": 1.0
+    },
+    "vested": "vested"
+   }
+  ],
+  "person.on_foot": [],
+  "rear_cone_visible": 1.0,
+  "truck.direction": {
+   "forward_frames": 36,
+   "known": true,
+   "reversing_frames": 0,
+   "unknown_moving_frames": 0
+  },
+  "truck.front_in_strip": {
+   "first_run_frame": null,
+   "longest_run": 0,
+   "marked": 2,
+   "min_front_dist": 0.6195,
+   "run_share": 0.18,
+   "structure": "left_rack",
+   "zone_source": "hand zones"
+  },
+  "truck.moving": {
+   "cut_frames": 0,
+   "cut_unread_frames": 0,
+   "moving_frames": 36,
+   "stopped_frames": 0,
+   "truck_frames": 60,
+   "unknown_frames": 24
+  },
+  "truck.present": true,
+  "truck.reversing": {
+   "band": "no",
+   "clean_share": 0.0,
+   "cut_frames": [],
+   "point": false,
+   "runs": [],
+   "share": 0.0
+  },
+  "truck.speed_mps": {
+   "band": "under",
+   "interval": [
+    0.49,
+    0.68
+   ],
+   "limit": 2.2,
+   "line_key": "speed_limit_mps",
+   "peak": 0.5306
+  },
+  "window.covers_second": true,
+  "window.one_shot": true
+ },
+ "gates": {
+  "camera": {
+   "held_frames": 60,
+   "shift_px": 0.3,
+   "static": true
+  },
+  "camera_match": {
+   "by": "clip bytes",
+   "matched": "3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c"
+  },
+  "cuts": [],
+  "frames": 60,
+  "rear_cone_visible": 1.0,
+  "truck_frames": 60,
+  "view_share": 1.0,
+  "window_s": 5.0
+ },
+ "host_paths": {
+  "clip": "clips/spotter_ahead_01.mp4",
+  "rules_dir": "packs/forklift-site-rules",
+  "site": "site.json"
+ },
+ "inputs": {
+  "clip": "3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/contact/load_run0.txt": "6528150abd6b3857aee2cfc4489c1729853e653ea46b4f2e9db39cc6310964df",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/contact/load_run1.txt": "ff0833f5dbad50433aabb63683b1d5d0ea9c4adccb47574724fa8ff006580f2a",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/contact/load_run2.txt": "a2d50b60fcc0ba5c63ee4720ad1575b86987a1bac28bae033207e08b3fab001c",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/encode.mp4.sha256": "f7e3d955030cb75c6a3dc320e6bf12ac00e78f4594a1c48873904f872166ed8b",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/gates/d9ce79c5249f4a761b8bacbb040e04181135a0ba03bf1921d774cfb6fc809041.json": "f8463313a7308e3f10aa5b12bb261e29f36f676a5d25dafb375605d5ed3d1f7f",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/masks/1f10829391c2f50dce1803d985ddb2cb556fae860784eaa2ce23f796d82fa5d6.npz": "05098395a7b3f64ff707c8961850df1615f90a9098be7cb21ae28adf68f6d3f9",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/masks/6528150abd6b3857aee2cfc4489c1729853e653ea46b4f2e9db39cc6310964df.npz": "c1615efc4c0f8fca46cdf4b5cc92b3e03fbea3f9e1971b596f3d6f80a8a63402",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/masks/828ea7a059eb8c80949ed5fce17e393b4d7f4967821e9ffc35481e675b2121d1.npz": "48ae659975111d2fb1ea56f71e4539e9b10fc3277ec90cfd2a22a4dccc46c7ce",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/masks/9051a7427d6e3be21311e82cf1bd2cd5153ebb7cda11f241b7da275d72b1357d.npz": "e495a96abb4e2941db8a2a15e6f7143df6e5047039ad68b22785c548e67c8f13",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/masks/a2d50b60fcc0ba5c63ee4720ad1575b86987a1bac28bae033207e08b3fab001c.npz": "bf0a75a9724a1b306b8372123472ebc8d8d8223a522bcb4512bd5ba53a001772",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/masks/ff0833f5dbad50433aabb63683b1d5d0ea9c4adccb47574724fa8ff006580f2a.npz": "d76361c27700f5355a0bb2555d513399e9b39ac4ae2aed94496672a410004710",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/person_run.json": "b47a5bdc8073c7bd1c36df38005c50591070f8eb6115af471180fa79b29af50c",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/person_track.txt": "1f10829391c2f50dce1803d985ddb2cb556fae860784eaa2ce23f796d82fa5d6",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/pixels/f1b2e04bb3cac0d6b0742abe491cb428fe43adbe0908d754089074dbd05f4632.json": "8d0971355111cf0a1aa408086a9a5eb0d84d6e4e98a2e25bdffcbfeb9a55e44e",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/truck_track.txt": "9051a7427d6e3be21311e82cf1bd2cd5153ebb7cda11f241b7da275d72b1357d",
+  "clips/3c73772c465de8e0d20a68e1ea8b2511260952f2c62dd250eeb8f9a3a349a93c/trucks_all.txt": "828ea7a059eb8c80949ed5fce17e393b4d7f4967821e9ffc35481e675b2121d1",
+  "constants": "56276223c7cd79618f239bfb9ef85d6c93fe002728cb17b97ab02e9c3a26e50c",
+  "frames": "11f6b170bcb3cb8c2ad0102a81ee4131284016e0645bdd8b9ebebbb401bf03eb",
+  "marks": "1a8e088ab86ed6bf4c22557f9e6074a1ed8cbc7373fcf7189181ada80d2e281d",
+  "pack/01-hi-vis-in-truck-zone.md": "2b622a2bbe4301527d21c4d3367161f98e0ce39a3eb345344bf85a693f7da997",
+  "pack/02-spotter-when-reversing.md": "319a2d9d4e1100d2137ab823c661b7448ef52697f12753581c2482a49a41294b",
+  "pack/03-pedestrian-separation.md": "f5881c1c0d42c9fb51d365ed532b7b9e83d861584393e9b1b457e1cc3dc5f70d",
+  "pack/04-structure-contact.md": "594e774b8f7638d6bb2f72451256ea2ef2c5ad15bd8903281ac6bc5dd3f44a63",
+  "pack/pack.json": "0a9aa3e306a7585edc06b188e342a6d7f431f998c5c6b07f3cd186ca0d6d3bf1",
+  "rule_constants": "dc6afabf1782654ddbe11d069686469ed535ffe9baf56b668dbe0309c39c79c1",
+  "site.json": "eec07cabc14e5ca5850c5494cbb55fd62aeb5364945e887ddd47c4b294ac89b6"
+ },
+ "item": {
+  "clip": "clips/spotter_ahead_01.mp4",
+  "end_s": 5.0,
+  "id": "spotter_ahead_01",
+  "site": "site.json",
+  "start_s": 0.0
+ },
+ "marks_blob": "1a8e088ab86ed6bf4c22557f9e6074a1ed8cbc7373fcf7189181ada80d2e281d",
+ "marks_direct": true,
+ "notes": [
+  "truck_track.txt: smoke G's recorded reply"
+ ],
+ "pack": {
+  "files": {
+   "01-hi-vis-in-truck-zone.md": "2b622a2bbe4301527d21c4d3367161f98e0ce39a3eb345344bf85a693f7da997",
+   "02-spotter-when-reversing.md": "319a2d9d4e1100d2137ab823c661b7448ef52697f12753581c2482a49a41294b",
+   "03-pedestrian-separation.md": "f5881c1c0d42c9fb51d365ed532b7b9e83d861584393e9b1b457e1cc3dc5f70d",
+   "04-structure-contact.md": "594e774b8f7638d6bb2f72451256ea2ef2c5ad15bd8903281ac6bc5dd3f44a63",
+   "pack.json": "0a9aa3e306a7585edc06b188e342a6d7f431f998c5c6b07f3cd186ca0d6d3bf1"
+  },
+  "kind": "dir"
+ },
+ "perception": {
+  "camera": {
+   "held_frames": 60,
+   "shift_px": 0.3,
+   "static": true
+  },
+  "drops": [],
+  "drops_by_prompt": {
+   "box": [],
+   "cardboard box": [],
+   "package": []
+  },
+  "onsets": [],
+  "people": 2,
+  "shot_cuts": [],
+  "truck_frames": 60,
+  "zone_source": "hand zones"
+ },
+ "site_blob": "eec07cabc14e5ca5850c5494cbb55fd62aeb5364945e887ddd47c4b294ac89b6",
+ "vest_reads": {}
+}
