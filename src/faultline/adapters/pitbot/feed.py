@@ -71,7 +71,7 @@ from faultline.roster import numkey
 __all__ = ["HOLD_S", "MAX_STEP_S", "TRACK_M", "Feed", "FeedError"]
 
 # Approximate lap lengths in metres, by the feed's `track` name. Copied as data from the
-# 27 Oct discovery-3 answer key (ai-steward `telem.py`); good to a few metres, not surveyed.
+# 27 Oct discovery-3 answer key (the private working repo's `telem.py`); good to a few metres, not surveyed.
 TRACK_M: dict[str, float] = {
     "Circuit de Spa-Francorchamps": 7004.0,
     "Oulton Park Circuit": 4307.0,

@@ -27,7 +27,7 @@ BASETEN_BASE = "https://inference.baseten.co/v1"
 OPEN_WEIGHT_PREFIX = "meta-models/"  # Meta's open-weight models, as Baseten names them
 # our own stop (the proxy's cap is $5.00 on this token), so the last call never 429s mid-ruling
 LOCAL_CAP_USD = 4.90
-# the merge's start: the stop counts only ledger rows from here (earlier waves paid on other tokens)
+# the build's start: the stop counts only ledger rows from here (earlier runs paid on other keys)
 WAVE_START_TS = 1793346000.0
 SAM_FRAME_USD, SAM_IMAGE_USD, SAM_MIN_FRAMES = 0.0002, 0.0025, 50
 TOKEN_USD = {  # USD per token, in / out (the per-token prices the estimate uses, Standard mode)

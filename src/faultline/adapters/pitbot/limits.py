@@ -17,7 +17,7 @@ a list of ruling dicts in the ruling-line shape (see the plan's "Ruling line"), 
   `"incident counter not shown for every car"`. No partial breaches are reported for it.
 - No breach and a counter for every car: an empty list.
 
-This reproduces rule A of the 29 Oct racing telemetry judge (ai-steward
+This reproduces rule A of the 29 Oct racing telemetry judge (the private working repo's
 `experiments/2026-10-29-racing-telemetry-judge`): the limits 20 for `HEAT 1` and `FEATURE`
 (format 2.1.1, clause 9.2.1) and 25 for `RACE` (format 2.1.2, clause 9.2.2) arrive through
 `league.json`, the "over" test is `total > limit`, and the skip is "a counter shown for fewer

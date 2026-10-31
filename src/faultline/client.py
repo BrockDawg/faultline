@@ -17,7 +17,7 @@ Contract:
   bytes (or paths to JPEG files) sent as base64 data URIs in the last message. A `schema` is
   sent as strict structured output: `response_format = {"type": "json_schema", "json_schema":
   {"name": ..., "strict": True, "schema": schema}}`, the shape that worked with images in
-  ai-steward batch 2, A5.
+  the private working repo's second batch.
 - `request_params(model, schema=None, max_tokens=8000)` is every field `chat` sends besides
   messages and images, plus `source` ("fake" or "model"). The caller passes it as the ledger
   key's params; `chat` builds its body from it, so the key always matches what was sent.
@@ -85,7 +85,7 @@ _LOOPBACK_HOSTS = ("127.0.0.1", "localhost")
 CACHE_HEADER = "X-Tourney-Cache"
 _CACHE_VALUES = {"hit": True, "miss": False}
 
-# Prices copied as data from ai-steward/prices.json (verified there 2026-10-25 from the Meta
+# Prices copied as data from the private working repo's price table (verified there 2026-10-25 from the Meta
 # Model API pricing page, Standard mode, and the Baseten library page; copied 2026-10-29).
 # "in" and "out" are USD per 1M tokens; "per_call_fallback" is charged for a reply with no usage.
 # sam-3.1 bills per unit: usage.images_processed at per_image and usage.video_frames_processed
