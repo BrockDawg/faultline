@@ -705,6 +705,14 @@ Built with Muse Spark Open.
 | DETR ResNet-50 | `facebook/detr-resnet-50` | Locally, pinned, and on Modal CPU | Person counts and tracks; car crops for OCR |
 
 The racing judge calls two of these at runtime: Spark Open as arm 1 and Spark 1.3 as arm 2.
+
+### The open-weight models
+
+Muse Spark Open is a Meta open-weight model, and it does two jobs in the shipped forklift judge, both served by Baseten (partner inference, model id `meta-models/muse-spark-open-1026`):
+it compiles each rule's text into predicates, three runs a rule, and a predicate ships only where the three agree ([`compile.py`](src/faultline/adapters/video/compile.py));
+and it reads each rule from the frames three times beside the script's ruling, so a person can check the measurement against a model's view ([`wonder.py`](src/faultline/adapters/video/wonder.py)).
+The forklift client sends every `meta-models/` call to Baseten when `BASETEN_API_KEY` is set and everything else to the Meta Model API, so the open-weight calls run on partner inference without a proxy ([`client.py`](src/faultline/adapters/video/client.py)).
+Muse Glimmer, the other open-weight model, ran on a Modal L40S and locally on Ollama as the router's first tier and as a clock and vest reader in the experiments; it is not in the shipped judge, because the vest read it gave was beaten by the script's colour rule.
 The task router sends each call to one of three tiers: Glimmer, then Spark Open, then Wonder.
 A classifier trained on the labelled prompts picks the tier, and Glimmer's labels were remeasured by asking it every prompt and judging the answer.
 The judge is Qwen 2.5 7B (`qwen2.5:7b`), run locally; it is not a Meta model and never answers a prompt.
@@ -737,6 +745,18 @@ for pack in load_packs("packs", domain="warehouse-forklift"):
 ```
 
 Run the racing judge with the commands in [Racing](#racing).
+
+Run the forklift judge on a clip, with a rules pack folder, a site file and the keys in the environment:
+
+```sh
+export MODEL_API_KEY=...        # Meta Model API: SAM 3.1 and Muse Wonder
+export BASETEN_API_KEY=...      # Baseten: Muse Spark Open, Meta's open-weight model
+uv run faultline-video judge items.jsonl --rules packs/warehouse-forklift --out preds.jsonl --words
+uv run faultline-video replay preds.jsonl --out preds2.jsonl   # network off, byte-identical
+```
+
+`MODEL_API_BASE` overrides the Meta endpoint and `BASETEN_API_BASE` the Baseten one; without `BASETEN_API_KEY` every call goes to `MODEL_API_BASE`, which then has to route by model name.
+`FAULTLINE_CAP_USD` caps the spend of a run, and every call lands in the ledger first.
 
 > [!TIP]
 > After cloning, run `uv run python scripts/install_hooks.py` once.

@@ -4,6 +4,12 @@ stops the run.
 MODEL_API_KEY and MODEL_API_BASE come from the environment first, then from the file
 STEWARD_ENV_FILE names (the same way the reference client does). The file's contents are never
 echoed, copied or written anywhere.
+
+Meta's open-weight models (ids under `meta-models/`, Muse Spark Open here) are served by Baseten:
+when BASETEN_API_KEY is set, every call to one of them goes to BASETEN_API_BASE (default
+https://inference.baseten.co/v1) with that key, and everything else (SAM 3.1, Muse Wonder) goes
+to MODEL_API_BASE. Without BASETEN_API_KEY every call goes to MODEL_API_BASE, which is then a
+router or proxy that knows the model names.
 """
 
 from __future__ import annotations
@@ -17,6 +23,8 @@ from pathlib import Path
 import httpx
 
 DEFAULT_BASE = "https://api.meta.ai/v1"
+BASETEN_BASE = "https://inference.baseten.co/v1"
+OPEN_WEIGHT_PREFIX = "meta-models/"  # Meta's open-weight models, as Baseten names them
 # our own stop (the proxy's cap is $5.00 on this token), so the last call never 429s mid-ruling
 LOCAL_CAP_USD = 4.90
 # the merge's start: the stop counts only ledger rows from here (earlier waves paid on other tokens)
@@ -73,6 +81,21 @@ def settings() -> tuple[str, str]:
     return key, (base or DEFAULT_BASE).rstrip("/")
 
 
+def route(model: str) -> tuple[str, str]:
+    """(key, base) for one model: an open-weight model goes to Baseten when a Baseten key is set."""
+    if model.startswith(OPEN_WEIGHT_PREFIX):
+        key = os.environ.get("BASETEN_API_KEY", "")
+        base = os.environ.get("BASETEN_API_BASE", "")
+        env_file = os.environ.get("STEWARD_ENV_FILE", "")
+        if (not key or not base) and env_file and Path(env_file).is_file():
+            values = _read_env_file(Path(env_file))
+            key = key or values.get("BASETEN_API_KEY", "")
+            base = base or values.get("BASETEN_API_BASE", "")
+        if key:
+            return key, (base or BASETEN_BASE).rstrip("/")
+    return settings()
+
+
 def spent(since: float = 0.0) -> float:
     if not LEDGER.exists():
         return 0.0
@@ -102,7 +125,7 @@ def _check_cap(worst: float) -> None:
 
 
 def _post(path: str, payload: dict, timeout: float = 600.0) -> httpx.Response:
-    key, base = settings()
+    key, base = route(str(payload.get("model") or ""))
     return httpx.post(
         f"{base}{path}", headers={"Authorization": f"Bearer {key}"}, json=payload, timeout=timeout
     )
