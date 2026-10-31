@@ -13,12 +13,13 @@ Two things are added to each ruling, and neither touches `verdict`, `missing_fac
               from the rule text and the frames alone (never the script's verdict, measurements or
               the clip's name).
               The three runs are always kept in the record; the read is written on the ruling only
-              where the three agree AND the rule passed the ship test in `assets/wonder/ship.json`
+              where the three agree AND the rule passed the ship test in `data/wonder/ship.json`
               (agreed reads beat the constant answer on the 26 clips against the reviewed key, rule
-              fixed in dev/wonder/floors.json before the scored run).
+              fixed in the private build notes before the scored run).
 
 Every reply is a file under record/clips/<clip sha>/wonder/<window>/ and is an input of the ruling's
-record hash, so `faultline replay` rebuilds the same bytes with no clip, no ffmpeg and no network.
+record hash, so `faultline-video replay` rebuilds the same bytes with no clip, no ffmpeg and no
+network.
 """
 
 from __future__ import annotations

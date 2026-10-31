@@ -1,14 +1,19 @@
-"""faultline: judge, replay, compile, scan.
+"""faultline-video: judge, replay, roster, compile, scan, shift, report, lifecycle, demo.
 
-faultline judge <items.jsonl> --rules <packdir> --out <preds.jsonl> [--words]   --words: Wonder's
-notes to <out>.words.jsonl faultline replay <preds.jsonl> --out <preds2.jsonl> [--words]   network
-off; byte-identical to the judged file(s) faultline roster <preds.jsonl> [--clips-root DIR]
-[--external-ok]   every input hash and its file; non-zero on a missing one faultline compile
-<pack.md|packdir> --out <predicates.json> [--model] faultline scan <video.mp4> --out <events.jsonl>
-[--start S --end S] faultline shift <manifest.json> --out <shift/> [--key key.json] [--words] |
---replay <shift/> --out <shift2/>   the forklift demo faultline report honesty|wonder|score|replay
-              racing report mode: the honesty card and Wonder's words faultline lifecycle
-<lifecycle.json> <window>/<rule> <to> --by insurer|site
+faultline-video judge <items.jsonl> --rules <packdir> --out <preds.jsonl> [--words]
+    --words also writes Wonder's notes to <out>.words.jsonl
+faultline-video replay <preds.jsonl> --out <preds2.jsonl> [--words]
+    network off; byte-identical to the judged file(s)
+faultline-video roster <preds.jsonl> [--clips-root DIR] [--external-ok]
+    every input hash and its file; non-zero on a missing one
+faultline-video compile <pack.md|packdir> --out <predicates.json> [--model]
+faultline-video scan <video.mp4> --out <events.jsonl> [--start S --end S]
+faultline-video shift <manifest.json> --out <shift/> [--key key.json] [--words]
+faultline-video shift --replay <shift/> --out <shift2/>
+    the forklift demo
+faultline-video report honesty|wonder|score|replay
+    racing report mode: the honesty card and Wonder's words
+faultline-video lifecycle <lifecycle.json> <window>/<rule> <to> --by insurer|site
 """
 
 from __future__ import annotations

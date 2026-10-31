@@ -55,7 +55,7 @@ def camera(Hm: np.ndarray, width: int, height: int) -> dict | None:
     footage, or a marker's guessed far corners: on the 26 Kling clips' planes and on the twin's m1
     marks none agrees, so nothing is lifted there). Then the pose, and the camera centre -R^T t:
     its floor point and height above the floor. None too when the camera sits on or under the floor.
-    On the twin's true plane this returns the scene camera to the millimetre (dev/twin/LOG.md).
+    On the twin's true plane this returns the scene camera to the millimetre (private twin notes).
     """
     Hf = np.linalg.inv(np.asarray(Hm, float))
     T = np.array([[1.0, 0.0, -width / 2.0], [0.0, 1.0, -height / 2.0], [0.0, 0.0, 1.0]])

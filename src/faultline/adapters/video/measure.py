@@ -43,27 +43,21 @@ EDGE_SPEED = (
     True  # a constant, never an environment variable: a stray variable cannot move a verdict
 )
 # Per-frame still-spotter exemption: a person close to the truck on frames whose moving state is
-# unread is not
-# "unable" when the ruling is the same both ways: stopped is exempt, and moving would continue a
-# proven reverse (an
-# unread stretch that touches it, velocity against the forks) with this still, vested person (the
-# script's colour read,
-# never a model read) in the rear cone, which the still-spotter exemption covers.
+# unread is not "unable" when the ruling is the same both ways: stopped is exempt, and moving would
+# continue a proven reverse (an unread stretch that touches it, velocity against the forks) with
+# this still, vested person (the script's colour read, never a model read) in the rear cone, which
+# the still-spotter exemption covers.
 UNKNOWN_BOTH_WAYS = True  # a constant, never an environment variable
 # A truck whose mask is cut by the frame's bottom edge has its lowest mask row on that edge, so its
 # footpoint is the frame edge, not where the truck meets the floor: it cannot move down the image
-# however the truck
-# moves, and on clips 08, 10 and 26 it read "stopped" on every frame while the truck drove in
-# (dev/unable/). On such a
-# frame a "stopped" read now also needs the mask's top point (the farthest point from the cut edge,
-# itself not on the
-# top edge) to stay under the moving line over the same window. The top point sits above the floor,
-# so its projected
-# motion is larger than the truck's floor motion: the check can only be stricter than the truth. It
-# never makes a frame
-# "moving" (a stopped read it refuses becomes "unknown"), and it applies to the moving state the
-# separation and spotter
-# rules read; the structure strip's centred state and the speed rule keep their own reads.
+# however the truck moves, and on clips 08, 10 and 26 it read "stopped" on every frame while the
+# truck drove in (the private study of the unable clips). On such a frame a "stopped" read now also
+# needs the mask's top point (the farthest point from the cut edge, itself not on the top edge) to
+# stay under the moving line over the same window. The top point sits above the floor, so its
+# projected motion is larger than the truck's floor motion: the check can only be stricter than the
+# truth. It never makes a frame "moving" (a stopped read it refuses becomes "unknown"), and it
+# applies to the moving state the separation and spotter rules read; the structure strip's centred
+# state and the speed rule keep their own reads.
 CUT_STOP_CHECK = True  # a constant, never an environment variable
 CUT_EDGE_PX = 2  # a footpoint within this many pixels of the bottom edge is the frame edge
 # The site owner's rulings of 30 Oct 2026, each a constant:

@@ -3,7 +3,7 @@ route per rule.
 
 Two seats.
 
-The script seat is the hand route key (`assets/route_key.json`), fixed before any model run: for
+The script seat is the hand route key (`data/route_key.json`), fixed before any model run: for
 every rule id in the eight packs it names the route (`window`: judged over a fixed-camera clip
 window; `scan`: a contact scan over a broadcast recording; `out`: nothing in the vocabulary measures
 it) and, for a window or scan rule, the predicates. A rule the key does not name falls to a keyword
@@ -60,7 +60,7 @@ BANDS = ("under", "over", "high", "low")
 # for small
 # numbers. A threshold's span must hold the site's number as written or one of these words; a
 # literal's span its number.
-# The same lists sit in dev/compile/check_spans.py, the checker written before this compiler was
+# The same lists sit in scripts/check_spans.py, the checker written before this compiler was
 # changed.
 QUANTITY_WORDS = {
     "pedestrian_separation_m": ["metres", "metre", "distance"],
@@ -90,14 +90,13 @@ NUMBER_WORDS = {
 # three.
 EXPLICIT_SITE = ("rear_cone_half_angle_deg", "structure_strip_m", "hivis_rule_share", "moving_mps")
 # (Rulings 2 and 6): the moving line joins them. The three the rulings name (moving_mps,
-# structure_strip_m,
-# hivis_rule_share) are declared in assets/site_values.json, which dev/compile/check_spans.py reads;
-# the rear cone is
-# allowed to ship in the explicit form but is not declared, so the checker still counts it weak.
+# structure_strip_m, hivis_rule_share) are declared in data/site_values.json, which
+# scripts/check_spans.py reads; the rear cone is allowed to ship in the explicit form but is not
+# declared, so the checker still counts it weak.
 
 
 def declared_site_values() -> dict[tuple[str, str], str]:
-    """(Rule id, site key) -> why, from assets/site_values.json."""
+    """(Rule id, site key) -> why, from data/site_values.json."""
     p = ASSETS / "site_values.json"
     if not p.exists():
         return {}
@@ -263,7 +262,7 @@ def problems(row: dict, rule: dict, sites) -> list[str]:
     threshold {site, span} names its quantity (the site's number as written, or a word from
     QUANTITY_WORDS); every number is the `value` of a dict with its own span that names it; a
     boolean site setting is a `switch`, never a threshold.
-    `sites` is the site.json dict (a set of keys is accepted and read against assets/site.json).
+    `sites` is the site.json dict (a set of keys is accepted and read against data/site.json).
     """
     site = sites if isinstance(sites, dict) else _site_values()
     out = []

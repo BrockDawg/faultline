@@ -283,7 +283,7 @@ Forklift speeds and distances on these synthetic clips are a ranking, not metres
 The speed order holds: a faster truck reads faster.
 
 The forklift demo, `faultline-video shift`, stitches clips into a shift and builds a dashboard: every breach shows the number that decided it, and every unable ruling names its missing fact in plain words.
-`faultline-video demo` builds a one-file walk through it, and `demo/` holds that page, its twelve-line script and one still per line.
+`faultline-video demo` builds a one-file walk through it, and `demo/` holds that page, its thirteen-line script and one still per line.
 The contract smoke, `scripts/contract_smoke.py`, runs `steward judge` on an items file with no model call and checks every line.
 
 ---
@@ -825,6 +825,13 @@ The judge keeps saying unable until that answer is written into the pack.
 
 The core is domain-neutral and every data source is an adapter.
 The next adapters are a second racing sim's feed and a second kind of site, so the same packs and the same judge run where the rules are written in plain words.
+
+### A camera on the truck
+
+Every forklift ruling today reads a fixed site camera, and the judge says "unable" the moment that camera moves.
+A camera mounted on the truck, facing forward and back, sees the spotter and the rack face the site camera cannot.
+It is a later mode, not a change to the rules: the pack text stays the site's rule, and the truck camera becomes one more source the same judge measures.
+The first step is a synthetic twin with a truck camera, so the floor metre and the rear cone can be checked against known truth before any real footage.
 
 ---
 

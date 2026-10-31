@@ -10,7 +10,7 @@ What ships, and why only one way: three agreeing "yes" reads complete the fact a
 read cited in the evidence). An agreeing "no" is recorded and cited but does not make the person
 unvested, so this read can clear a person and never puts a breach on anyone; a breach still needs
 the script's own colour read. The read was calibrated before use on the people the script itself
-reads (dev/vest/vest_calibrate.py, mark in dev/vest/PASS_MARKS.md).
+reads (the calibration script and its pass mark are in the private build notes).
 
 What every prompt carries: the crops (no frame of the wider scene), the words "warehouse CCTV" and
 the question.

@@ -37,8 +37,8 @@ from faultline.adapters.video.shift import TITLES, ruling_frames
 
 SRC_FPS = 24  # the shift's frame names count the clip's own 24 fps frames from the window start
 
-# the three clips of the walk: (kind, clip stem, rule). Fixed before the first build
-# (dev/demo/PASS_MARKS.md).
+# the three clips of the walk: (kind, clip stem, rule). Fixed before the first build, in the
+# private build notes.
 PICKS = [
     ("breach", "blind_corner_no_vest_07", "hi_vis_in_truck_zone"),
     ("clear", "spotter_ahead_01", "hi_vis_in_truck_zone"),
