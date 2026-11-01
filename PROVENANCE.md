@@ -32,7 +32,7 @@ The trailers record the models the build session declared.
   - a capability probe for vision models, including a contact detector built on SAM;
   - a metering proxy that holds the API key and enforces spend caps;
   - a corpus scraper for steward footage and comments.
-- The synthetic forklift clips the smoke tests ran against, 47 short AI-made videos generated on Higgsfield with Kling 3.0 Turbo, a few of them with Seedance; they stay out of this repo.
+- The synthetic forklift clips the smoke tests ran against, 47 short AI-made videos generated on Higgsfield with Kling 3.0 Turbo, a few of them with Seedance; frames of them appear in the demo page and the stills, and the clips themselves stay out of this repo.
 
 ## Built during the hackathon
 

@@ -36,6 +36,19 @@ INPUTS = Path(os.environ.get("FAULTLINE_INPUTS") or REPO / "data" / "racing" / "
 CORE_MODULES = ("record", "ledger", "lint", "client", "frames", "ruling", "cli", "roster")
 CORE_WORDS = re.compile(r"\b(car|lap|incident)\b", re.IGNORECASE)
 PRIVATE_SUFFIXES = (".mp4", ".jsonl", ".ndjson.gz", ".jpg")
+# The one feed-shaped file allowed outside assets/: the shipped replay set's ruling lines, which a
+# fresh clone replays to the byte. Exactly this path; any other .jsonl is still refused.
+SHIPPED_PREDS = "demo/record/preds.jsonl"
+
+# The shipped record stores each detected object as a box plus a run-length mask, and the mask's
+# `data=` payload is packed into printable characters, so a long payload holds letter runs that by
+# chance spell a short name token. Those runs are noise, not text. Only under this folder, and only
+# on a line that is wholly box-and-mask records, the payloads are blanked before the name sweep;
+# the rest of each line, and any line of another shape, is swept as usual.
+MASK_DATA_DIR = "demo/record/clips/"
+_OBJ = r"\d+<\|box;[^|]*\|><\|mask;[^|]*\|>"
+MASK_LINE = re.compile(rf"^<\d+f>{_OBJ}(?:,{_OBJ})*$")
+MASK_PAYLOAD = re.compile(r"(<\|mask;[^|]*?data=)[^|]*(\|>)")
 _EDGE_L = r"(?<![^\W_])"  # not preceded by a letter or digit
 _EDGE_R = r"(?![^\W_])"  # not followed by a letter or digit
 
@@ -75,6 +88,13 @@ def _commit_messages() -> list[tuple[str, str]]:
         if sha:
             out.append((sha, body))
     return out
+
+
+def _swept_text(name: str, line: str) -> str:
+    """The line as the name sweep reads it: mask payloads in the shipped record blanked."""
+    if name.startswith(MASK_DATA_DIR) and MASK_LINE.match(line):
+        return MASK_PAYLOAD.sub(r"\g<1>\g<2>", line)
+    return line
 
 
 def _text_lines(name: str) -> Iterator[tuple[int, str]]:
@@ -200,7 +220,8 @@ def test_no_driver_name_in_any_repo_file() -> None:
     full, surname = _name_patterns(names)
     hits: list[str] = []
     for name in _repo_files():
-        for no, line in _text_lines(name):
+        for no, raw in _text_lines(name):
+            line = _swept_text(name, raw)
             if full.search(line) or (surname is not None and surname.search(line)):
                 hits.append(f"{name}:{no}")
     for sha, body in _commit_messages():
@@ -238,7 +259,9 @@ def test_no_private_media_or_feed_outside_assets() -> None:
     bad = [
         n
         for n in _repo_files()
-        if n.lower().endswith(PRIVATE_SUFFIXES) and PurePosixPath(n).parts[0] != "assets"
+        if n.lower().endswith(PRIVATE_SUFFIXES)
+        and PurePosixPath(n).parts[0] != "assets"
+        and n != SHIPPED_PREDS
     ]
     assert not bad, f"video, feed, protest or frame files outside assets/: {bad}"
 
@@ -271,6 +294,17 @@ def _imports_adapter(tree: ast.AST) -> bool:
             ):
                 return True
     return False
+
+
+def test_mask_payload_blanking_is_narrow() -> None:
+    obj = "0<|box;x1=1;y1=2;x2=3;y2=4;w=9;h=9;c=0.5|><|mask;x=0;y=0;c=0.5;data=4,4,QwbATAname|>"
+    line = "<3f>" + obj + "," + obj.replace("0<", "1<", 1)
+    swept = _swept_text("demo/record/clips/abc/contact/load_run0.txt", line)
+    assert "name" not in swept and swept.count("data=|>") == 2
+    # outside the record folder, or on a line of any other shape, nothing is blanked
+    assert _swept_text("docs/notes.txt", line) == line
+    loose = line + " a stray name"
+    assert _swept_text("demo/record/clips/abc/person_track.txt", loose) == loose
 
 
 def test_core_never_imports_an_adapter() -> None:

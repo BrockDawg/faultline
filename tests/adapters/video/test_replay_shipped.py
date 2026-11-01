@@ -5,8 +5,11 @@ python -m unittest discover -s tests"""
 import hashlib
 import io
 import json
+import os
 import shutil
 import socket
+import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
@@ -101,6 +104,45 @@ class ShippedReplay(unittest.TestCase):
             self.assertTrue(b.isascii(), p.name)  # no raw JPEG or PNG bytes
             for embedded in (b"data:image/", b"base64,"):
                 self.assertNotIn(embedded, b, p.name)
+
+
+class ShippedReplayFromTheReadme(unittest.TestCase):
+    """The README's command, run as a member would: the real CLI in a fresh process, from the repo
+    root, with nothing patched. The record root comes from the preds file's own folder."""
+
+    def test_readme_command_rebuilds_the_shipped_hash(self):
+        td = Path(tempfile.mkdtemp(prefix="fl-readme-"))
+        self.addCleanup(shutil.rmtree, td, ignore_errors=True)
+        out = td / "replay.jsonl"
+        env = {k: v for k, v in os.environ.items() if k != "FAULTLINE_RECORD"}
+        # no key, and an endpoint nothing listens on: a replay that tried a call would fail
+        env.pop("MODEL_API_KEY", None)
+        env.pop("BASETEN_API_KEY", None)
+        env["MODEL_API_BASE"] = "http://127.0.0.1:9"
+        env["PYTHONIOENCODING"] = "utf-8"
+        before = sorted(p.as_posix() for p in SHIPPED.rglob("*"))
+        run = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "import sys; from faultline.adapters.video.cli import main; "
+                "sys.exit(main(sys.argv[1:]))",
+                "replay",
+                "demo/record/preds.jsonl",
+                "--out",
+                str(out),
+            ],
+            cwd=ROOT,
+            env=env,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=600,
+        )
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertEqual(hashlib.sha256(out.read_bytes()).hexdigest(), PREDS_SHA256)
+        self.assertIn(f"3 of 3 lines identical to preds.jsonl; sha256 {PREDS_SHA256}", run.stdout)
+        self.assertEqual(sorted(p.as_posix() for p in SHIPPED.rglob("*")), before)
 
 
 if __name__ == "__main__":

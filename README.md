@@ -61,7 +61,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 82 |
+| Commits in this repo | 84 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 40 |
 | Experiment scripts in the working repo | 227 |
@@ -71,7 +71,7 @@ The car behind runs into the car ahead on the exit of a corner
 | Build plans in the working repo | 9 |
 | Rules packs | 8 |
 | Rules | 110 |
-| Tests | 694 |
+| Tests | 696 |
 | Paid calls to Meta models | 9362 |
 | Dollars metered on Meta models | $139.51 |
 
@@ -284,6 +284,7 @@ Forklift speeds and distances on these synthetic clips are a ranking, not metres
 The speed order holds: a faster truck reads faster.
 
 The forklift demo, `faultline-video shift`, stitches clips into a shift and builds a dashboard: every breach shows the number that decided it, and every unable ruling names its missing fact in plain words.
+On the demo shift that is 48 windows and 240 rulings: 16 breaches to review, 84 clear and 140 unable, 110 of them because the camera moved.
 `faultline-video demo` builds a one-file walk through it, and `demo/` holds that page, its thirteen-line script and one still per line.
 The contract smoke, `scripts/contract_smoke.py`, runs `steward judge` on an items file with no model call and checks every line.
 
@@ -789,7 +790,7 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 | [`src/faultline/adapters/video/`](src/faultline/adapters/video) | The forklift judge: the gates, SAM masks and tracks, the floor plane, the fact sheet, the pack compiler, the rulings, the record and replay, the shift dashboard and the demo builder; its site values, camera marks and pinned reads sit in `data/` beside the code |
 | `faultline-video` | The forklift judge's command line: `judge`, `replay`, `roster`, `compile`, `scan`, `shift` (the demo shift and its dashboard), `demo` and `lifecycle` |
 | `steward` | The steward contract's command line: `steward judge` writes one contract line per item |
-| [`demo/`](demo) | The forklift demo: the one-file walk (`faultline-demo.html`), its twelve-line script (`SCRIPT.md`), one still per line (`STILLS/`) and the site pack it reads (`pack/`) |
+| [`demo/`](demo) | The forklift demo: the one-file walk (`faultline-demo.html`), its thirteen-line script (`SCRIPT.md`), one still per line (`STILLS/`) and the site pack it reads (`pack/`) |
 | [`packs/`](packs/README.md) | The eight rules packs, and the format in [`packs/README.md`](packs/README.md) |
 | [`experiments/`](experiments/README.md) | One log per measured experiment, with an index |
 | [`docs/`](docs/forklift-scan-route.md) | Design notes; [`docs/forklift-scan-route.md`](docs/forklift-scan-route.md) designs the forklift route for long footage with no report |

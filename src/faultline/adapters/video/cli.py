@@ -3,7 +3,9 @@
 faultline-video judge <items.jsonl> --rules <packdir> --out <preds.jsonl> [--words]
     --words also writes Wonder's notes to <out>.words.jsonl
 faultline-video replay <preds.jsonl> --out <preds2.jsonl> [--words]
-    network off; byte-identical to the judged file(s)
+    network off; byte-identical to the judged file(s). The record is read from FAULTLINE_RECORD
+    when it is set; otherwise from the preds file's own folder when that folder holds entries/
+    (so demo/record/preds.jsonl replays from demo/record); otherwise from <repo>/record
 faultline-video roster <preds.jsonl> [--clips-root DIR] [--external-ok]
     every input hash and its file; non-zero on a missing one
 faultline-video compile <pack.md|packdir> --out <predicates.json> [--model]
@@ -860,7 +862,26 @@ def replay_line(old: dict, cache: dict) -> tuple[str, list[str]]:
     return _dump(line), problems
 
 
+def replay_record_root(src: Path) -> Path:
+    """Where a replay of `src` reads its record: FAULTLINE_RECORD when set, else the preds file's
+    own folder when it holds entries/, else the default record root."""
+    if os.environ.get("FAULTLINE_RECORD"):
+        return perception.RECORD
+    here = Path(src).resolve().parent
+    return here if (here / "entries").is_dir() else perception.RECORD
+
+
 def cmd_replay(args) -> int:
+    root = replay_record_root(Path(args.src))
+    saved = perception.RECORD
+    perception.RECORD = root
+    try:
+        return _replay(args)
+    finally:
+        perception.RECORD = saved
+
+
+def _replay(args) -> int:
     src = Path(args.src)
     raw = src.read_bytes().replace(b"\r\n", b"\n")
     lines = [json.loads(s) for s in raw.decode("utf-8").splitlines() if s.strip()]
