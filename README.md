@@ -61,7 +61,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 86 |
+| Commits in this repo | 89 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 40 |
 | Experiment scripts in the working repo | 227 |
@@ -742,9 +742,11 @@ The racing judge calls two of these at runtime: Spark Open as arm 1 and Spark 1.
 
 ### The open-weight models
 
-Muse Spark Open is a Meta open-weight model, and it does two jobs in the shipped forklift judge, both served by Baseten (partner inference, model id `meta-models/muse-spark-open-1026`):
-it compiles each rule's text into predicates, three runs a rule, and a predicate ships only where the three agree ([`compile.py`](src/faultline/adapters/video/compile.py));
-and it reads each rule from the frames three times beside the script's ruling, so a person can check the measurement against a model's view ([`wonder.py`](src/faultline/adapters/video/wonder.py)).
+Muse Spark Open is a Meta open-weight model, served by Baseten (partner inference, model id `meta-models/muse-spark-open-1026`).
+During the build it compiled the packs, each rule's text into predicates, three runs a rule, and a predicate shipped only where the three agreed ([`compile.py`](src/faultline/adapters/video/compile.py)).
+The hand route key ([`route_key.json`](src/faultline/adapters/video/data/route_key.json)) was fixed before any model run, and it is what routes the shipped demo pack; no compile record ships.
+At run time, when `--words` is on, it reads each rule from the frames three times beside the script's ruling, so a person can check the measurement against a model's view ([`wonder.py`](src/faultline/adapters/video/wonder.py)).
+Those reads are not in the shipped record; a run with `--words` writes them to a `.words.jsonl` file beside its rulings.
 The forklift client sends every `meta-models/` call to Baseten when `BASETEN_API_KEY` is set and everything else to the Meta Model API, so the open-weight calls run on partner inference without a proxy ([`client.py`](src/faultline/adapters/video/client.py)).
 Muse Glimmer, the other open-weight model, ran on a Modal L40S and locally on Ollama as the router's first tier and as a clock and vest reader in the experiments; it is not in the shipped judge, because the vest read it gave was beaten by the script's colour rule.
 The task router sends each call to one of three tiers: Glimmer, then Spark Open, then Wonder.

@@ -251,6 +251,103 @@ def _badge(verdict: str) -> str:
     return _s("badge-" + VCLASS[verdict], "div", BADGE[verdict], cls="badge " + VCLASS[verdict])
 
 
+# The first real footage (README "First real footage"): fixed words, no frame of the clips (they
+# are not in this repo), and a drawing of a low camera against a raised one.
+REAL_ROWS = [
+    ("Hi-vis", "clear", "clear"),
+    ("Pedestrian separation", "clear", "unable, camera.height"),
+    ("Spotter when reversing", "unable, truck.direction", "unable, camera.height"),
+    ("Structure contact", "breach (false)", "unable, camera.height"),
+]
+
+# a raised camera (left) and one near the floor (right): the sight line to the truck's lowest
+# outline row, and where the floor plane puts the truck. Colours come from the page's theme.
+CAMERA_SVG = (
+    '<div class="diagrams">'
+    '<svg class="diagram" viewBox="0 0 480 300" role="img" aria-label="A camera above 1.5 m: the '
+    "sight line to the truck's lowest outline meets the floor where the truck stands.\">"
+    '<g class="d-floor"><line x1="20" y1="250" x2="460" y2="250"/></g>'
+    '<g class="d-truck"><rect x="250" y="170" width="110" height="70"/>'
+    '<circle cx="272" cy="243" r="7"/><circle cx="338" cy="243" r="7"/></g>'
+    '<g class="d-rack"><rect x="420" y="70" width="24" height="180"/></g>'
+    '<g class="d-cam"><rect x="40" y="56" width="34" height="22" rx="4"/>'
+    '<line x1="57" y1="78" x2="57" y2="250"/></g>'
+    '<g class="d-ray"><line x1="74" y1="70" x2="262" y2="250"/></g>'
+    '<g class="d-hit"><circle cx="262" cy="250" r="7"/></g>'
+    '<g class="d-words"><text x="20" y="32">Camera above 1.5 m</text>'
+    '<text x="90" y="284">the truck is placed where it stands</text></g></svg>'
+    '<svg class="diagram" viewBox="0 0 480 300" role="img" aria-label="A camera near the floor: '
+    "the sight line to the truck's lowest outline runs almost along the floor, so the floor plane "
+    'places the truck further on, over the rack base.">'
+    '<g class="d-floor"><line x1="20" y1="250" x2="460" y2="250"/></g>'
+    '<g class="d-truck"><rect x="250" y="170" width="110" height="70"/>'
+    '<circle cx="272" cy="243" r="7"/><circle cx="338" cy="243" r="7"/></g>'
+    '<g class="d-rack"><rect x="420" y="70" width="24" height="180"/></g>'
+    '<g class="d-cam"><rect x="40" y="219" width="34" height="22" rx="4"/></g>'
+    '<g class="d-ray"><line x1="74" y1="230" x2="432" y2="250"/></g>'
+    '<g class="d-miss"><circle cx="432" cy="250" r="7"/></g>'
+    '<g class="d-words"><text x="20" y="32">Camera near the floor</text>'
+    '<text x="70" y="284">the truck is placed over the rack base</text></g></svg>'
+    "</div>"
+)
+
+
+def _real_footage() -> str:
+    rows = []
+    for rule, before, after in REAL_ROWS:
+        txt = f"{rule}: before the gate, {before}; after, {after}"
+        rows.append(
+            f'<tr data-s="row" data-text="{_e(txt)}"><th>{_e(rule)}</th>'
+            f"<td>{_e(before)}</td><td>{_e(after)}</td></tr>"
+        )
+    return _panel(
+        "p13",
+        "real-footage",
+        "\n".join(
+            [
+                _s("kicker", "p", "First real footage", cls="kicker"),
+                _s("head", "h2", "Five free clips, four cameras, one that held still"),
+                _s(
+                    "text",
+                    "p",
+                    "Pass one, with no camera marked: all 20 rulings were unable to rule, each "
+                    "naming camera.static, before any model call. Three of the cameras moved.",
+                ),
+                _s(
+                    "text",
+                    "p",
+                    "Pass two marked the still camera's floor. Its two windows, before and after "
+                    "the camera-height gate:",
+                ),
+                '<table class="counts gate"><thead><tr><th>Rule</th><th>Before the gate</th>'
+                "<th>After the gate</th></tr></thead><tbody>" + "".join(rows) + "</tbody></table>",
+                _s(
+                    "text",
+                    "p",
+                    "Both structure-contact breaches were false: the truck crossed side-on, clear "
+                    "of both rack ends. The camera sat near the floor, and the floor plane assumed "
+                    "a raised one.",
+                ),
+                CAMERA_SVG,
+                _s(
+                    "text",
+                    "p",
+                    "Now the judge reads the camera's height from its four floor marks before any "
+                    "model call. Under 1.5 m, every rule that reads the truck on the floor is "
+                    "unable to rule and gives the height and the line; hi-vis reads the torso and "
+                    "is still ruled.",
+                ),
+                _s(
+                    "mono",
+                    "p",
+                    "Model calls for both passes: $1.38. The clips are not in this repo.",
+                    cls="evidence",
+                ),
+            ]
+        ),
+    )
+
+
 def panels(d: dict) -> list[str]:
     br, cl, un = d["picks"]
     out = []
@@ -529,6 +626,7 @@ def panels(d: dict) -> list[str]:
             ),
         )
     )
+    out.append(_real_footage())
     out.append(
         _panel(
             "p12",
@@ -609,6 +707,18 @@ var(--accent);background:var(--soft);border-radius:0 8px 8px 0}
 .counts td{width:110px;font-weight:600}.counts td.breach{color:var(--breach)}.counts \
 td.clear{color:var(--clear)}
 .counts td.unable{color:var(--unable)}
+.counts.gate td{width:auto;font-weight:500}
+.diagrams{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;\
+margin:4px 0 14px}
+.diagram{display:block;width:100%;height:auto}
+.diagram line,.diagram rect,.diagram circle{fill:none;stroke:var(--muted);stroke-width:3}
+.diagram .d-truck rect,.diagram .d-truck circle{fill:var(--soft);stroke:var(--ink)}
+.diagram .d-rack rect{fill:var(--soft)}
+.diagram .d-cam rect{fill:var(--accent);stroke:var(--accent)}
+.diagram .d-ray line{stroke:var(--accent);stroke-dasharray:8 7}
+.diagram .d-hit circle{fill:var(--clear);stroke:var(--clear)}
+.diagram .d-miss circle{fill:var(--breach);stroke:var(--breach)}
+.diagram text{fill:var(--muted);stroke:none;font-size:18px}
 @media (max-width:600px){.panel{padding:18px 16px}h1{font-size:38px}h2{font-size:22px}.counts \
 td{width:auto}}
 """

@@ -40,6 +40,17 @@ figcaption{font-size:13px;color:var(--muted);margin-top:4px}
 .counts th,.counts td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
 .counts td{width:110px;font-weight:600}.counts td.breach{color:var(--breach)}.counts td.clear{color:var(--clear)}
 .counts td.unable{color:var(--unable)}
+.counts.gate td{width:auto;font-weight:500}
+.diagrams{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:4px 0 14px}
+.diagram{display:block;width:100%;height:auto}
+.diagram line,.diagram rect,.diagram circle{fill:none;stroke:var(--muted);stroke-width:3}
+.diagram .d-truck rect,.diagram .d-truck circle{fill:var(--soft);stroke:var(--ink)}
+.diagram .d-rack rect{fill:var(--soft)}
+.diagram .d-cam rect{fill:var(--accent);stroke:var(--accent)}
+.diagram .d-ray line{stroke:var(--accent);stroke-dasharray:8 7}
+.diagram .d-hit circle{fill:var(--clear);stroke:var(--clear)}
+.diagram .d-miss circle{fill:var(--breach);stroke:var(--breach)}
+.diagram text{fill:var(--muted);stroke:none;font-size:18px}
 @media (max-width:600px){.panel{padding:18px 16px}h1{font-size:38px}h2{font-size:22px}.counts td{width:auto}}
 </style>
 </head>
@@ -119,6 +130,17 @@ figcaption{font-size:13px;color:var(--muted);margin-top:4px}
 <p data-s="text">Rebuilt from the records alone, network off, no footage:</p>
 <p class="hash big" data-s="mono">sha256 4b179f2958382af6f951479189189930c1f5379d5ab430f3bd6e8f45c7ce3e88</p>
 <p class="decided" data-s="decided">Byte-identical.</p>
+</section>
+<section class="panel" id="p13" data-name="real-footage">
+<p class="kicker" data-s="kicker">First real footage</p>
+<h2 data-s="head">Five free clips, four cameras, one that held still</h2>
+<p data-s="text">Pass one, with no camera marked: all 20 rulings were unable to rule, each naming camera.static, before any model call. Three of the cameras moved.</p>
+<p data-s="text">Pass two marked the still camera&#x27;s floor. Its two windows, before and after the camera-height gate:</p>
+<table class="counts gate"><thead><tr><th>Rule</th><th>Before the gate</th><th>After the gate</th></tr></thead><tbody><tr data-s="row" data-text="Hi-vis: before the gate, clear; after, clear"><th>Hi-vis</th><td>clear</td><td>clear</td></tr><tr data-s="row" data-text="Pedestrian separation: before the gate, clear; after, unable, camera.height"><th>Pedestrian separation</th><td>clear</td><td>unable, camera.height</td></tr><tr data-s="row" data-text="Spotter when reversing: before the gate, unable, truck.direction; after, unable, camera.height"><th>Spotter when reversing</th><td>unable, truck.direction</td><td>unable, camera.height</td></tr><tr data-s="row" data-text="Structure contact: before the gate, breach (false); after, unable, camera.height"><th>Structure contact</th><td>breach (false)</td><td>unable, camera.height</td></tr></tbody></table>
+<p data-s="text">Both structure-contact breaches were false: the truck crossed side-on, clear of both rack ends. The camera sat near the floor, and the floor plane assumed a raised one.</p>
+<div class="diagrams"><svg class="diagram" viewBox="0 0 480 300" role="img" aria-label="A camera above 1.5 m: the sight line to the truck's lowest outline meets the floor where the truck stands."><g class="d-floor"><line x1="20" y1="250" x2="460" y2="250"/></g><g class="d-truck"><rect x="250" y="170" width="110" height="70"/><circle cx="272" cy="243" r="7"/><circle cx="338" cy="243" r="7"/></g><g class="d-rack"><rect x="420" y="70" width="24" height="180"/></g><g class="d-cam"><rect x="40" y="56" width="34" height="22" rx="4"/><line x1="57" y1="78" x2="57" y2="250"/></g><g class="d-ray"><line x1="74" y1="70" x2="262" y2="250"/></g><g class="d-hit"><circle cx="262" cy="250" r="7"/></g><g class="d-words"><text x="20" y="32">Camera above 1.5 m</text><text x="90" y="284">the truck is placed where it stands</text></g></svg><svg class="diagram" viewBox="0 0 480 300" role="img" aria-label="A camera near the floor: the sight line to the truck's lowest outline runs almost along the floor, so the floor plane places the truck further on, over the rack base."><g class="d-floor"><line x1="20" y1="250" x2="460" y2="250"/></g><g class="d-truck"><rect x="250" y="170" width="110" height="70"/><circle cx="272" cy="243" r="7"/><circle cx="338" cy="243" r="7"/></g><g class="d-rack"><rect x="420" y="70" width="24" height="180"/></g><g class="d-cam"><rect x="40" y="219" width="34" height="22" rx="4"/></g><g class="d-ray"><line x1="74" y1="230" x2="432" y2="250"/></g><g class="d-miss"><circle cx="432" cy="250" r="7"/></g><g class="d-words"><text x="20" y="32">Camera near the floor</text><text x="70" y="284">the truck is placed over the rack base</text></g></svg></div>
+<p data-s="text">Now the judge reads the camera&#x27;s height from its four floor marks before any model call. Under 1.5 m, every rule that reads the truck on the floor is unable to rule and gives the height and the line; hi-vis reads the torso and is still ruled.</p>
+<p class="evidence" data-s="mono">Model calls for both passes: $1.38. The clips are not in this repo.</p>
 </section>
 <section class="panel" id="p12" data-name="close">
 <p class="kicker" data-s="kicker">faultline</p>

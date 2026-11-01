@@ -40,7 +40,7 @@ This build tests the pieces together, which no run has done yet.
 - A car is its sim number inside the feed, its sim customer id (`custId`), and its league number.
 - The league number of a `custId` is the number it ran in Season 1; a `custId` first seen in Season 2 keeps its first Season 2 number.
 - Numbers are reused by different drivers across sessions, so a written number resolves inside one session.
-- Decision 46 is the test: league #899 ran as sim #01 at Cadwell, the same `custId`.
+- Decision 46 is the test: the league ran as sim #01 in the session, the same `custId`.
 
 ### Truth
 
