@@ -57,9 +57,7 @@ def camera(Hm: np.ndarray, width: int, height: int) -> dict | None:
     its floor point and height above the floor. None too when the camera sits on or under the floor.
     On the twin's true plane this returns the scene camera to the millimetre (private twin notes).
     """
-    Hf = np.linalg.inv(np.asarray(Hm, float))
-    T = np.array([[1.0, 0.0, -width / 2.0], [0.0, 1.0, -height / 2.0], [0.0, 0.0, 1.0]])
-    A = T @ Hf
+    A = _centred(Hm, width, height)
     a, b = A[:, 0], A[:, 1]
     if abs(a[2] * b[2]) < 1e-12 or abs(a[2] ** 2 - b[2] ** 2) < 1e-12:
         return None
@@ -72,7 +70,19 @@ def camera(Hm: np.ndarray, width: int, height: int) -> dict | None:
     f1, f2 = math.sqrt(est[0]), math.sqrt(est[1])
     if max(f1, f2) > FOCAL_AGREE * min(f1, f2):
         return None
-    f = math.sqrt(float(np.mean(est)))
+    return _pose(A, math.sqrt(float(np.mean(est))))
+
+
+def _centred(Hm: np.ndarray, width: int, height: int) -> np.ndarray:
+    """The floor-to-image homography with the image centre moved to the origin."""
+    Hf = np.linalg.inv(np.asarray(Hm, float))
+    T = np.array([[1.0, 0.0, -width / 2.0], [0.0, 1.0, -height / 2.0], [0.0, 0.0, 1.0]])
+    return T @ Hf
+
+
+def _pose(A: np.ndarray, f: float) -> dict | None:
+    """The camera centre -R^T t for focal length f: its floor point and height above the floor;
+    None when the camera sits on or under the floor."""
     M = np.diag([1.0 / f, 1.0 / f, 1.0]) @ A
     lam = 1.0 / math.sqrt(float(np.linalg.norm(M[:, 0]) * np.linalg.norm(M[:, 1])))
     r1, r2, t = M[:, 0] * lam, M[:, 1] * lam, M[:, 2] * lam
@@ -84,6 +94,39 @@ def camera(Hm: np.ndarray, width: int, height: int) -> dict | None:
     if not math.isfinite(z) or z < 1e-3:
         return None
     return {"focal_px": f, "ground": np.array([float(C[0]), float(C[1])]), "height_m": z}
+
+
+# a lone focal estimate is trusted only where its horizontal field of view is one a fixed site lens
+# has, so a near-affine plane's runaway estimate never yields a height
+LONE_FOV_DEG = (20.0, 120.0)
+
+
+def camera_height(Hm: np.ndarray, width: int, height: int) -> float | None:
+    """The camera's height above the floor in the marks' own metres, for the low-camera gate only.
+
+    camera() when its two focal estimates agree. A marker who draws the floor's rows along the
+    image rows (two painted aisle lines crossed by two image rows) puts that floor axis's vanishing
+    point at infinity, and then the orthogonality estimate holds no focal length at all; the
+    equal-scale estimate alone is used, when its field of view lies within LONE_FOV_DEG. Nothing
+    else is read: a plane with no consistent camera has no height (None). Never used to lift a
+    point, so no measurement changes.
+    """
+    cam = camera(Hm, width, height)
+    if cam is not None:
+        return float(cam["height_m"])
+    A = _centred(Hm, width, height)
+    a, b = A[:, 0], A[:, 1]
+    if abs(a[2] * b[2]) >= 1e-12 or abs(a[2] ** 2 - b[2] ** 2) < 1e-12:
+        return None
+    est = -(a[0] ** 2 + a[1] ** 2 - b[0] ** 2 - b[1] ** 2) / (a[2] ** 2 - b[2] ** 2)
+    if not (est > 0 and math.isfinite(est)):
+        return None
+    f = math.sqrt(est)
+    fov = math.degrees(2.0 * math.atan(width / 2.0 / f))
+    if not LONE_FOV_DEG[0] <= fov <= LONE_FOV_DEG[1]:
+        return None
+    pose = _pose(A, f)
+    return None if pose is None else float(pose["height_m"])
 
 
 def lift(pts_floor: np.ndarray, cam: dict | None, h: float) -> np.ndarray:

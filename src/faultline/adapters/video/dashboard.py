@@ -27,6 +27,7 @@ from faultline.adapters.video.shift import TITLES, ruling_frames
 # the fact a ruling lacks, in plain words (used where the pack's own text does not name it)
 FACT_WORDS = {
     "camera.static": "a camera held still over a marked floor plane",
+    "camera.height": "a camera raised high enough that the truck's floor position can be read",
     "window.one_shot": "one unbroken shot through the window",
     "window.covers_second": "at least one full second of footage",
     "truck.moving": "whether the truck was moving",

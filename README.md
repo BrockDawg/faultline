@@ -61,7 +61,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 84 |
+| Commits in this repo | 85 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 40 |
 | Experiment scripts in the working repo | 227 |
@@ -71,7 +71,7 @@ The car behind runs into the car ahead on the exit of a corner
 | Build plans in the working repo | 9 |
 | Rules packs | 8 |
 | Rules | 110 |
-| Tests | 696 |
+| Tests | 706 |
 | Paid calls to Meta models | 9362 |
 | Dollars metered on Meta models | $139.51 |
 
@@ -287,6 +287,38 @@ The forklift demo, `faultline-video shift`, stitches clips into a shift and buil
 On the demo shift that is 48 windows and 240 rulings: 16 breaches to review, 84 clear and 140 unable, 110 of them because the camera moved.
 `faultline-video demo` builds a one-file walk through it, and `demo/` holds that page, its thirteen-line script and one still per line.
 The contract smoke, `scripts/contract_smoke.py`, runs `steward judge` on an items file with no model call and checks every line.
+
+### First real footage
+
+On 1 Nov 2026 the judge read its first real footage: five clips cut from four free-licence warehouse videos, three from Pexels under the Pexels License and one from Pixabay under the Pixabay Content License.
+Only one camera among them held still, an aisle camera seen in two of the clips.
+The source pages are [Pexels 31751344](https://www.pexels.com/video/warehouse-forklift-moving-through-storage-aisles-31751344/), [Pexels 32243651](https://www.pexels.com/video/industrial-warehouse-forklift-operations-32243651/), [Pexels 6079421](https://www.pexels.com/video/person-driving-forklift-6079421/) and [Pixabay 209883](https://pixabay.com/videos/forklift-machinery-loading-209883/).
+
+Pass one ran with no marks for any of these cameras, and all 20 rulings were unable to rule, each naming `camera.static`, before any model call.
+The two aisle clips matched no marked camera (best correlation 0.06 and 0.07, against a line of 0.90), and the other three cameras moved, by up to 67.3, 56.6 and 71.2 px.
+
+Pass two marked the aisle camera's floor from the aisle's two yellow painted lines, with no metre reference, so every speed and distance on it is a ranking.
+On the whole clips the truck search, which looks for a forklift box in the first 4 s of a window, found none, because the truck enters at about that moment; on two windows moved onto the truck:
+
+| Rule | Before the gate, both windows | After the gate, both windows |
+|---|---|---|
+| Hi-vis | clear (the one person seen is the seated driver) | clear |
+| Pedestrian separation | clear | unable, `camera.height` |
+| Spotter when reversing | unable, `truck.direction` (no fork-end marks for this camera) | unable, `camera.height` |
+| Structure contact | breach | unable, `camera.height` |
+
+Both structure-contact breaches were false: the frames show the truck crossing side-on in front of the camera, clear of both rack ends.
+The camera sits near the floor at the end of the aisle, and the floor plane assumed a raised camera.
+From that low, the truck's lowest outline row is not where it meets the floor, so its footprint was placed over the strip in front of each rack base, and its own body passing over that strip was read as the consequence.
+
+The judge now has a gate for this, `camera.height`.
+It reads the camera's height above the floor from the four floor marks alone, before any model call, and the line is 1.5 m, declared beside the other gates in [`gates.py`](src/faultline/adapters/video/gates.py).
+Under it, every rule that reads the truck's floor position (separation, spotter, structure contact and speed) is unable to rule, and the ruling gives the height and the line; the hi-vis rule reads the torso, not the floor, and is still ruled.
+The aisle camera's marks put it well under the line, and no camera marked on the 26 synthetic clips is under it, so their rulings and their replay are unchanged.
+
+The real footage showed three things the synthetic clips did not.
+The truck can enter after the first 4 s of a window, where the box search no longer looks; a camera can sit low enough that the floor plane misplaces the truck; and a three-run model read, in the optional words beside a ruling, took a person in a pink shirt for someone with no hi-vis, which changes no verdict but shows why a model's words never decide one.
+The model calls for both passes cost $1.38, and the clips are not in this repo.
 
 ---
 

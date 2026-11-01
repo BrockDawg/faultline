@@ -17,6 +17,10 @@ Order, cheapest and widest first; the first gate that fires refuses every rule, 
      marked camera's reference
                            stills (FP_MATCH correlation over the part of the frame in view); else no
                            floor plane holds
+  5b. camera.height        the marked camera sits at least LOW_CAMERA_M above the floor, read
+                           from its four floor marks alone (floor.camera_height); under it, every
+                           rule that reads the truck's floor position is refused before any model
+                           call, and the hi-vis rule, which reads the torso, is still ruled
 And one per-rule gate, after the fact sheet:
   6. person.in_rear_cone   the truck reversed with no spotter seen, but the rear cone the spotter
      would stand in is mostly out
@@ -24,7 +28,9 @@ And one per-rule gate, after the fact sheet:
                            proven
 
 Every threshold was fixed on 29 Oct before the second gate set was built, and is part of the
-record's constants.
+record's constants, except LOW_CAMERA_M (1 Nov, after the first real footage): it is kept out of
+KEYS so every recorded gate fact keeps its key, and it rides in a ruling's record as its own input
+whenever its gate fires.
 """
 
 from __future__ import annotations
@@ -35,6 +41,7 @@ from pathlib import Path
 
 import numpy as np
 
+from faultline.adapters.video import floor
 from faultline.adapters.video.video import FPS, H, W
 
 MIN_WINDOW_S = 1.0
@@ -52,6 +59,11 @@ FP_MATCH = 0.90  # mean correlation of time-aligned reference stills that matche
 # cropped to black)
 CONE_VISIBLE = 0.75
 CONE_RADII, CONE_ANGLES = 8, 9
+# under this camera height the truck's lowest outline row is not where it meets the floor and its
+# body covers the floor beyond it (first real footage, 1 Nov 2026), so no floor position holds
+LOW_CAMERA_M = 1.5
+# the measuring seats that read the truck's floor position; hi_vis reads the torso and is not here
+FLOOR_KINDS = ("spotter", "separation", "structure", "speed")
 
 KEYS = [
     "MIN_WINDOW_S",
@@ -87,11 +99,27 @@ FIELD_TEXT = {
     "camera's "
     "reference stills (best correlation {best:.2f}, the line is {line:.2f}), so no floor "
     "plane, metre or direction exists and no rule is ruled.",
+    "camera.height": "The marked floor plane puts this camera {height:.2f} m above the floor, "
+    "under the {line:.2f} m line for a low camera. From that low, the truck's lowest outline row "
+    "is not where it meets the floor and its body covers the floor beyond it, so no floor "
+    "position, distance, speed or travel direction is measured and this rule is not ruled.",
 }
 
 
 def constants() -> dict:
     return {k: globals()[k] for k in KEYS}
+
+
+# ---------------- 5b. a low camera
+def low_camera(marks: dict | None) -> float | None:
+    """The marked camera's height above the floor when it is under LOW_CAMERA_M, else None (no
+    marks, no consistent camera in them, or a camera at or over the line)."""
+    pts = (marks or {}).get("floor_points") or []
+    if len(pts) < 4:
+        return None
+    Hm = floor.solve([tuple(p["img"]) for p in pts], [tuple(p["floor"]) for p in pts])
+    h = floor.camera_height(Hm, W, H)
+    return h if h is not None and h < LOW_CAMERA_M else None
 
 
 def grey_of(rgb: np.ndarray) -> np.ndarray:

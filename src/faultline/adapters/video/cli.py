@@ -308,7 +308,18 @@ def judge_item(
         "gates": {},
     }
 
+    # gate 5b's floor-rule refusals (set only when the marked camera is low): applied to every line
+    # written after the gate, so a floor rule can never be ruled from a low camera
+    low: dict = {}
+
     def done(rl):
+        if low:
+            rl = [
+                gates.refusal("camera.height", [r["rule"]], low["why"])[0]
+                if r["rule"] in low["ids"]
+                else r
+                for r in rl
+            ]
         manifest["inputs"] = dict(sorted(inputs.items()))
         return {
             "id": item["id"],
@@ -437,6 +448,31 @@ def judge_item(
                 gates.text("camera.unmatched", best=cm["best"], line=gates.FP_MATCH),
             )
         )
+    # gate 5b: a low camera, read from the camera's four floor marks alone, before any model call.
+    # From under LOW_CAMERA_M the truck's lowest outline row is not where it meets the floor, so
+    # every rule that reads its floor position is refused; the hi-vis rule reads the torso, goes on
+    if replay is None and not direct:
+        gate_marks = _marks_for((G.get("camera_match") or {}).get("matched") or "")
+    else:
+        gate_marks = marks
+    low_h = gates.low_camera(gate_marks)
+    if low_h is not None and gate_marks is not None:
+        g["camera_height"] = {"height_m": round(low_h, 3), "line": gates.LOW_CAMERA_M}
+        inputs["camera_height"] = record.put_json_blob(g["camera_height"])
+        inputs["marks"] = manifest["marks_blob"] = record.put_json_blob(
+            json.loads(record.canon(gate_marks))
+        )
+        low["why"] = gates.text("camera.height", height=low_h, line=gates.LOW_CAMERA_M)
+        live = [r for r in pack_rules if r.get("route") != "out"]
+        low["ids"] = {
+            r["id"]
+            for r in live
+            if (r.get("kind") or rules.BY_ID.get(r["id"])) in gates.FLOOR_KINDS
+        }
+        if all(r["id"] in low["ids"] for r in live):
+            g["fired"] = "camera.height"
+            inputs.update(perc.inputs())
+            return done(_refuse(pack_rules, "camera.height", low["why"]))
     # gate 4: a truck track (the first model call)
     try:
         tm = perc.truck_masks()
