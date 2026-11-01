@@ -52,10 +52,9 @@ So I measure on my own held-out set instead of trusting the general scores.
 
 ## How it runs (technical)
 
-- Every paid call goes through the metering proxy, run `router`, on 127.0.0.1:8766, under the `tourney-router` token.
-  Port 8765 belongs to the `d0` probe proxy, so the router proxy moved to 8766.
-- Each call is a line in `runs/router/spend.jsonl` (the ledger), with a UTC timestamp.
-- Router cap: `TOURNEY_ROUTER_CAP_USD`, not set in `.env`, so the code default of $10 applies.
+- Every paid call goes through a second metering proxy on this machine, under the router's cap, apart from the probe's.
+- Each call is a line in the router proxy's ledger, with a UTC timestamp.
+- The router's cap was not set, so the code default of $10 applies.
 - The Baseten key sits in `.env` as `BASETEN_API_KEY`, which I put there.
   The proxy sends any `meta-models/...` model to `https://inference.baseten.co/v1` with that key.
 - The bench: `task-router bench --set heldout --confirm` (described in the "Bench" section of the router's guide).

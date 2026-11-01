@@ -31,13 +31,13 @@ Contract:
   offender named with any other verdict.
 - `read(prompt, images, model, ledger, ref, ..., verdicts)` runs the lint over every outgoing
   text first (a hit raises `LintError` before any call), then asks `runs` times. Run k adds a
-  last text part `Request reference: <ref>-run<k>`, so the metering proxy's cache never
+  last text part `Request reference: <ref>-run<k>`, so a caching API never
   serves one reply as three, and that line is part of the ledger key (`Ledger.key` over the
   full text with the reference, the image sha256 list, and `client.request_params(model,
   schema, max_tokens)`). A ledger hit sends nothing; a miss calls `client.chat(...,
   spent_entries=ledger.entries())` and always stores the reply first, whatever follows: its
   usage as reported (an absent count stays null and is priced by the per-call fallback), the
-  proxy's `cached` word and raw `X-Tourney-Cache` header, and `name_hit` (whether the reply's
+  API's `cached` word and raw `X-Faultline-Cache` header, and `name_hit` (whether the reply's
   reason failed the name check, never the matched text). Only then can it refuse: a real reply
   (ledger key `source` "model") whose stored `cached` is not False raises `RulingError`
   naming its reference, on the run that sent it and on any later run that reads it back.
@@ -438,7 +438,7 @@ def read(
             sent.append(run_ref)
         if params.get("source") != "fake" and entry.get("cached") is not False:
             raise RulingError(
-                f"{run_ref}: the metering proxy did not say this reply was fresh (cached "
+                f"{run_ref}: the model API did not say this reply was fresh (cached "
                 f"{entry.get('cached')!r}), so it cannot count as a run; the reply is kept in "
                 "the ledger, which counts its spend"
             )

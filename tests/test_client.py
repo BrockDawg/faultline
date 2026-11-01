@@ -108,19 +108,40 @@ def test_chat_returns_text_and_usage(env, fake: Recorder) -> None:
 
 @pytest.mark.parametrize(
     "base",
-    ["https://api.meta.ai/v1", "http://127.0.0.2:8765/v1", "http://localhost.evil.test/v1"],
+    ["https://api.meta.ai/v1", "http://127.0.0.2:9/v1", "http://localhost.evil.test/v1"],
 )
 def test_non_loopback_base_refused(env, fake: Recorder, base: str) -> None:
     write_env(env, base)
-    with pytest.raises(client.ClientError, match="metering proxy"):
+    with pytest.raises(client.ClientError, match="metering proxy") as info:
+        client.chat(MESSAGES, "muse-spark-1.3", spent_entries=[])
+    assert "FAULTLINE_CAP_USD" in str(info.value)
+    assert fake.calls == []
+
+
+def test_non_loopback_base_allowed_when_a_cap_is_set(
+    env, fake: Recorder, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_env(env, "https://api.meta.ai/v1")
+    monkeypatch.setenv("FAULTLINE_CAP_USD", "2.00")
+    assert client.settings() == ("test-key-not-real", "https://api.meta.ai/v1")
+    client.chat(MESSAGES, "muse-spark-1.3", spent_entries=[])
+    assert fake.calls[0]["url"] == "https://api.meta.ai/v1/chat/completions"
+
+
+def test_the_cap_still_guards_a_non_loopback_base(
+    env, fake: Recorder, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_env(env, "https://api.meta.ai/v1")
+    monkeypatch.setenv("FAULTLINE_CAP_USD", "0.0001")
+    with pytest.raises(client.ClientError, match="cost cap"):
         client.chat(MESSAGES, "muse-spark-1.3", spent_entries=[])
     assert fake.calls == []
 
 
 def test_localhost_base_allowed(env, fake: Recorder) -> None:
-    write_env(env, "http://localhost:8765/v1/")
+    write_env(env, "http://localhost:9/v1/")
     client.chat(MESSAGES, "muse-spark-1.3", spent_entries=[])
-    assert fake.calls[0]["url"] == "http://localhost:8765/v1/chat/completions"
+    assert fake.calls[0]["url"] == "http://localhost:9/v1/chat/completions"
 
 
 def test_error_messages_never_carry_the_key(env) -> None:
@@ -169,7 +190,7 @@ def test_post_ignores_outside_proxies(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_budget_429_stops_without_retry(env, monkeypatch: pytest.MonkeyPatch) -> None:
     rec = Recorder(
         status=429,
-        body={"error": {"type": "tourney_budget", "message": "token budget spent: $90.00"}},
+        body={"error": {"type": "budget_spent", "message": "token budget spent: $90.00"}},
     )
     monkeypatch.setattr(client, "CLIENT", rec)
     with pytest.raises(SystemExit) as info:
@@ -225,6 +246,11 @@ def test_unknown_model_in_spent_entries_refused(env, fake: Recorder) -> None:
     with pytest.raises(client.ClientError, match="no price row"):
         client.chat(MESSAGES, "muse-spark-1.3", spent_entries=spent)
     assert fake.calls == []
+
+
+def test_prices_hold_meta_models_only() -> None:
+    meta = ("muse-", "meta-models/", "sam-")
+    assert [m for m in client.PRICES if not m.startswith(meta)] == []
 
 
 def test_entry_cost_prices() -> None:
@@ -400,9 +426,9 @@ def test_fake_model_without_schema(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.mark.parametrize(
-    ("header", "want"), [("hit", True), ("miss", False), ("HIT", True), (None, None)]
+    ("header", "want"), [("hit", True), ("miss", False), ("HIT", True), (None, False)]
 )
-def test_the_proxy_cache_header_lands_on_the_reply(
+def test_the_cache_header_lands_on_the_reply_and_no_header_is_a_miss(
     env, monkeypatch: pytest.MonkeyPatch, header: str | None, want: bool | None
 ) -> None:
     rec = Recorder(headers={client.CACHE_HEADER: header} if header is not None else None)

@@ -34,7 +34,7 @@ And once it can, which of the 220 labelled prompts can Glimmer actually answer, 
 
 - Modal app `glimmer-ollama`: Ollama 0.40.11 (the same as this PC) on one L40S (48 GB), tag `muse-glimmer:30b` from a Modal Volume, `@app.cls` with `@modal.web_server` and `@modal.concurrent(max_inputs=4)`, `max_containers=1`, a 10-minute scaledown.
 - The lock: Modal proxy auth tokens, `requires_proxy_auth=True`, so a request without `Authorization: Bearer <id>.<secret>` is refused at Modal's edge before any container starts.
-- The route: the router proxy's existing `modal/` route on port 8766, priced at $0 in the ledger (GPU seconds bill on Modal's own account).
+- The route: the router proxy's existing `modal/` route, priced at $0 in the ledger (GPU seconds bill on Modal's own account).
 - The router: tier 1 is provider `modal`, model `modal/muse-glimmer:30b`, with local Ollama `muse-glimmer:30b` as the fallback.
 
 ## Process and findings, in order
@@ -51,7 +51,7 @@ And once it can, which of the 220 labelled prompts can Glimmer actually answer, 
 - 21:48 to 21:57 The pull, on a CPU container: Ollama `0.40.11` installed from the `.tar.zst` archive (the pin holds), `muse-glimmer:30b` pulled in 8 min 40 s, ID `de878ce33ad8`, 18 GB, the same ID as this PC's copy.
 - 22:00 `modal deploy` in 2 s: `Glimmer.serve -> <modal endpoint>`, proxy-auth locked. The lock check: no token `401`, a wrong Bearer `401`, and no container started.
 - 22:04 First calls through the proxy: `502 upstream unreachable: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired`. The proxy trusted the Windows certificate store, which on this PC builds an expired chain to Modal's Let's Encrypt (`YE2`) certificate. The same request with certifi's bundle got Modal's `401`. Fix: every upstream verifies against certifi (now a direct dependency), the proxy still starts without it on the OS store, and its start-up line names which (`upstream TLS trusts certifi 2026.10.23.`).
-- 22:08 The relock made `uv sync` fail on `tourney.exe`, held open by the running d0 proxy, after it had already removed `task-router.exe`, `cap-probe.exe` and `steward-eval.exe`. Moving the in-use launcher aside (`tourney.exe.in-use-by-d0`) let the sync finish with d0 untouched.
+- 22:08 The relock made `uv sync` fail on a launcher held open by the running probe proxy, after it had already removed three other launchers. Moving the in-use launcher aside let the sync finish with the probe proxy untouched.
 - 22:12 Modal's edge answered `401 missing credentials for proxy authorization`: the token in `.env` was a Modal API token (`ak-`), not a proxy auth token (`wk-` / `ws-`). I made a proxy auth token. With it, the Bearer form passes the edge, so the plan's header was right. Added: a token not shaped `<token-id>.<token-secret>` leaves the route off with a plain message, and a client's own `Modal-Key` / `Modal-Secret` headers are never forwarded.
 - 22:19 The first end-to-end call through the proxy: `200`, `Ready.`, cold call 30.9 s (the container was already starting), warm call 2.8 s. The activity entries read `provider: modal`, `family: muse`, `meta: true`, `qualifies: true`, `usd: 0.0`. `task-router proof`: `modal/muse-glimmer:30b` listed, `reconcile OK` (245 of 245).
 - 22:19 `reasoning_effort` on the Modal build: `"none"` gave 24 completion tokens, the default gave 100 for the same prompt, so `"none"` works on Modal as it does locally and stays.
@@ -134,5 +134,5 @@ And once it can, which of the 220 labelled prompts can Glimmer actually answer, 
 - Relabel timestamp: `router-data/tier1-verdicts.jsonl` runs from 2026-10-27T04:21:02Z to 2026-10-27T04:34:21Z (23:21:02 to 23:34:21 on 26 Oct). A later `retrain` can drop audit training rows older than that.
 - The Modal 303 behaviour (a request over 150 s turned into a redirect to a result URL) was never seen in this run: the longest relabel answer took 33.0 s, and the ledger's Modal statuses are 451 `200`, 4 `401` and 2 `502`, all at checkpoint 1.
 - The router cap also refuses Modal calls at the cap, so tier 1 would answer locally mid-run without a word.
-- Whether the router proxy on 8766 runs as a scheduled task is still my call.
+- Whether the router proxy restarts itself like the probe's is still my call.
 - The floor firing is not written to the audit record (it needs a column).

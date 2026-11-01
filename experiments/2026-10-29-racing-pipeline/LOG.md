@@ -75,7 +75,7 @@ It sends the window, the closed set, the facts and the frames to the steward, an
 4. Model's read, offender: n is the count of decisions with an offender I confirmed. The mark is fixed in this section after the two constants are computed in `racing_prep.py` and before any model call: an agreed read names the truth offender on more decisions than the better constant. If the better constant already scores n of n, mark 4 is "equal to it with every read agreed", and the LOG says the constant is hard to beat. No agreed read counts as not right.
 5. Model's read, verdict: reported only, no mark, because the constant "penalty" already scores most rows.
 6. Replay: `faultline replay` rebuilds preds byte-identical with the network blocked, on two runs.
-7. Spend: at most $5 on the d0 proxy for this build.
+7. Spend: at most $5 through the metering proxy for this build.
 
 ### Mark 4, made concrete
 

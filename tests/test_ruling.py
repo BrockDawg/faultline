@@ -401,16 +401,23 @@ def test_pattern_schema_can_be_sent(monkeypatch, env, tmp_path) -> None:
     assert sent["properties"]["offender"]["anyOf"][0]["pattern"] == ruling.OFFENDER_PATTERN
 
 
-# ------------------------------------------------------------------------------- the proxy cache
+# ------------------------------------------------------------------------------- the API cache
 
 
-@pytest.mark.parametrize("word", ["hit", None, "maybe"])
+def test_a_reply_with_no_cache_header_is_a_fresh_run(monkeypatch, env, tmp_path) -> None:
+    ledger = Ledger(tmp_path / "ledger")
+    install(monkeypatch, [reply()] * 3, cache=[None, None, None])
+    assert do_read(ledger).agreed is True
+    assert [e["cached"] for e in ledger.entries()] == [False, False, False]
+    assert [e["cache_header"] for e in ledger.entries()] == [None, None, None]
+
+
+@pytest.mark.parametrize("word", ["hit", "maybe"])
 def test_a_reply_not_said_fresh_is_stored_then_refused(
-    monkeypatch, env, tmp_path, word: str | None
+    monkeypatch, env, tmp_path, word: str
 ) -> None:
     ledger = Ledger(tmp_path / "ledger")
-    fake = install(monkeypatch, [reply()] * 3, cache=["miss", word, "miss"])
-    fake.cache = ["miss", word, "miss"]  # None here means: no header at all
+    install(monkeypatch, [reply()] * 3, cache=["miss", word, "miss"])
     with pytest.raises(ruling.RulingError, match="r15-run2") as err:
         do_read(ledger)
     assert "fresh" in str(err.value)

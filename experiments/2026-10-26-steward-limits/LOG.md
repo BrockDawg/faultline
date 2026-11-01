@@ -15,10 +15,10 @@ It may serve only as an answer key for grading.
 
 ## How it runs (technical)
 
-- Every Meta call goes through the metering proxy, run `d0`, on 127.0.0.1:8765, under the `tourney-probe` token.
-- The proxy runs from the scheduled task "ai-steward d0 proxy" (`runs/d0/proxy-loop.ps1`), which restarts it 60 s after any exit.
-- Each call is a line in `runs/d0/spend.jsonl` (the ledger).
-- Probe cap: `TOURNEY_PROBE_CAP_USD`, raised from $5 to $10 on my word on 26 Oct and to $20 at 19:35 Chicago, set in `proxy-loop.ps1`.
+- Every Meta call goes through the metering proxy on this machine, under the probe's cap.
+- The proxy restarts itself 60 s after any exit.
+- Each call is a line in the proxy's ledger.
+- The probe's cap was raised from $5 to $10 on my word on 26 Oct and to $20 at 19:35 Chicago.
 - Models:
   - `muse-spark-1.3`: chat completions with images, $1.25 in / $4.25 out per 1M tokens.
   - `muse-wonder-1.0`: same API, $4 in / $20 out per 1M tokens.
@@ -28,7 +28,7 @@ It may serve only as an answer key for grading.
 - Box prompts return one-bit masks only; soft (0-255 coverage) masks come only from noun-phrase prompts.
 - SAM replies are parsed with Meta's `meta-sam-parser` 0.1.0 (SAM License: use and modify allowed, acknowledge SAM in publications).
 - Code changes made for this work: `cced00d` (SAM probes call the Responses API), `acf2b30` (the proxy charges SAM for images and frames).
-- Scripts are in `scripts/`; they run with `.venv/Scripts/python.exe -I` because `uv run` cannot sync while the proxy holds `tourney.exe`.
+- Scripts are in `scripts/`; they run with the project's own Python directly, because `uv run` cannot sync while the running proxy holds its launcher open.
 
 ## Data
 

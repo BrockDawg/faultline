@@ -106,7 +106,7 @@ The corpus has no second clip with a 0.1 s truth sheet. What it holds, by use:
 
 ## Setup and models (for reuse)
 
-- **Model:** SAM 3.1 (`sam-3.1`) only, through the metering proxy on this machine, endpoint `/v1/responses`, the d0 proxy (the token is read from the probe's settings and never printed).
+- **Model:** SAM 3.1 (`sam-3.1`) only, through the metering proxy on this machine, endpoint `/v1/responses`, the probe's proxy (the token is read from the probe's settings and never printed).
   No language model was used anywhere in this task: the shot-cut gate and the rule are code.
 - **Calls:** a box call (`input_image`, prompt "race car", $0.0025) on the first frame of a clip, then a video call (`input_video`, box prompts `<0f>1<|box;x1=..;y1=..;x2=..;y2=..;w=W;h=H|>,2<|box;...|>`, metadata `include_confidence=true`, `propagation_direction=forward`, `store=false`). A video call bills $0.0002 a frame with a 50-frame minimum.
 - **Clip encoding:** ffmpeg 8.1.1 (full build) through `d3lib.encode_clip`, 30 fps, width 1280, crf 20; report 9 has its race-control chat box and driver-name panel blanked (`REPORT9_CHAT`, `REPORT9_NAME`).

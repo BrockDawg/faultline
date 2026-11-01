@@ -28,9 +28,9 @@ And one per-rule gate, after the fact sheet:
                            proven
 
 Every threshold was fixed on 29 Oct before the second gate set was built, and is part of the
-record's constants, except LOW_CAMERA_M (1 Nov, after the first real footage): it is kept out of
-KEYS so every recorded gate fact keeps its key, and it rides in a ruling's record as its own input
-whenever its gate fires.
+record's constants, except LOW_CAMERA_M (31 Oct 2026, after the first real footage): it is kept
+out of KEYS so every recorded gate fact keeps its key, and it rides in a ruling's record as its
+own input whenever its gate fires.
 """
 
 from __future__ import annotations
@@ -60,7 +60,7 @@ FP_MATCH = 0.90  # mean correlation of time-aligned reference stills that matche
 CONE_VISIBLE = 0.75
 CONE_RADII, CONE_ANGLES = 8, 9
 # under this camera height the truck's lowest outline row is not where it meets the floor and its
-# body covers the floor beyond it (first real footage, 1 Nov 2026), so no floor position holds
+# body covers the floor beyond it (first real footage, 31 Oct 2026), so no floor position holds
 LOW_CAMERA_M = 1.5
 # the measuring seats that read the truck's floor position; hi_vis reads the torso and is not here
 FLOOR_KINDS = ("spotter", "separation", "structure", "speed")

@@ -61,7 +61,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 89 |
+| Commits in this repo | 93 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 40 |
 | Experiment scripts in the working repo | 227 |
@@ -71,7 +71,7 @@ The car behind runs into the car ahead on the exit of a corner
 | Build plans in the working repo | 9 |
 | Rules packs | 8 |
 | Rules | 110 |
-| Tests | 706 |
+| Tests | 714 |
 | Paid calls to Meta models | 9362 |
 | Dollars metered on Meta models | $139.51 |
 
@@ -290,7 +290,7 @@ The contract smoke, `scripts/contract_smoke.py`, runs `steward judge` on an item
 
 ### First real footage
 
-On 1 Nov 2026 the judge read its first real footage: five clips cut from four free-licence warehouse videos, three from Pexels under the Pexels License and one from Pixabay under the Pixabay Content License.
+On 31 Oct 2026 the judge read its first real footage: five clips cut from four free-licence warehouse videos, three from Pexels under the Pexels License and one from Pixabay under the Pixabay Content License.
 Only one camera among them held still, an aisle camera seen in two of the clips.
 The source pages are [Pexels 31751344](https://www.pexels.com/video/warehouse-forklift-moving-through-storage-aisles-31751344/), [Pexels 32243651](https://www.pexels.com/video/industrial-warehouse-forklift-operations-32243651/), [Pexels 6079421](https://www.pexels.com/video/person-driving-forklift-6079421/) and [Pixabay 209883](https://pixabay.com/videos/forklift-machinery-loading-209883/).
 
@@ -781,6 +781,7 @@ for pack in load_packs("packs", domain="warehouse-forklift"):
 ```
 
 Run the racing judge with the commands in [Racing](#racing).
+Its model calls go only to a base on this machine (127.0.0.1 or localhost) unless `FAULTLINE_CAP_USD` is set, when the in-code spend cap guards the run against any base.
 
 Run the forklift judge on a clip, with a rules pack folder, a site file and the keys in the environment:
 

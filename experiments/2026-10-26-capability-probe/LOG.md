@@ -2,7 +2,7 @@
 
 What the capability probe measured on Meta's models, how the run went, what broke, what it cost and what went into the brief.
 Day 0 is kickoff day (26 Oct): the probe runner scores each candidate steward feature on Meta's models, and the best results are written into the design brief the build works from.
-A slot is a named model in the probe's config, and the d0 proxy is the metering proxy run for Day 0, which holds the API key and caps spend.
+A slot is a named model in the probe's config, and the metering proxy holds the API key and caps spend.
 All times are Central (CDT, UTC-5) on Monday 26 Oct 2026, from `probe-state/results.jsonl` and git, unless marked otherwise.
 The probe itself is described in the probe runner's own guide.
 
@@ -67,7 +67,7 @@ The SAM probes ran before the proxy priced SAM by images and frames (`acf2b30`, 
 ### 2. Meta slots named, proxy kept running (14:01 onwards)
 
 - `c637559` (14:01): slots named `muse-spark-1.3`, `sam-3.1`, `muse-voice-transcribe-1.0`, `muse-wonder-1.0`; the glimmer Meta slot stays null.
-- The `d0` proxy runs from the scheduled task "ai-steward d0 proxy" (`runs/d0/proxy-loop.ps1`), which restarts it 60 s after any exit, until 5 Nov.
+- The metering proxy restarts itself 60 s after any exit, until 5 Nov.
 
 ### 3. Reach, Spark and SAM probes (15:31 to 15:59, another run)
 
@@ -76,10 +76,10 @@ The SAM probes ran before the proxy priced SAM by images and frames (`acf2b30`, 
 ### 4. Cap raised to $20, the 9 remaining probes (19:35 to 19:38)
 
 - The 9 probes had status `not_configured` from runs before the slots were named.
-- `tourney-probe` had spent $6.94 of its $10 cap, shared with the steward-limits run, and the 9 probes' budgets added up to $3.30.
+- The probe's spend had reached $6.94 of its $10 cap, shared with the steward-limits run, and the 9 probes' budgets added up to $3.30.
 - `cap-probe` read its own cap as the $5 default, so it would have refused to run.
-- I said yes to $20 (about 19:33): `$env:TOURNEY_PROBE_CAP_USD = '20'` in `proxy-loop.ps1`, and the same cap in the local environment file so `cap-probe` reads the same.
-- The proxy task was ended and run again at 19:35, a gap of about a second for the other run.
+- I said yes to $20 (about 19:33): the probe's cap went to $20 on the metering proxy, and the same cap went into the local settings so the probe runner reads the same.
+- The proxy was restarted at 19:35, a gap of about a second for the other run.
 - Results: spark-05, spark-vision-contact, wonder-01 and cross-01 ran; five broke.
 
 ### 5. Two faults found and fixed (`a3724d8`, 19:49)
@@ -117,7 +117,7 @@ The SAM probes ran before the proxy priced SAM by images and frames (`acf2b30`, 
 | This run's paid probes (19:35 to 19:50) | $0.48 over 22 ledger lines (the two voice 502s cost $0) |
 | Earlier reach and Spark probes (15:31 to 15:33) | about $0.11 |
 | SAM probes (15:58 to 15:59) | not metered at the time |
-| `tourney-probe` total at 19:52, shared with the steward-limits batch | $8.23 of the $20 cap |
+| The probe's total at 19:52, shared with the steward-limits batch | $8.23 of the $20 cap |
 
 The steward-limits journal put this run at about $0.54 of "foreign" lines inside its batch window; the ledger gives $0.48, because the journal counted a $0.10 call at 19:31 that was not this run's and left out the three reruns at 19:50 ($0.04).
 

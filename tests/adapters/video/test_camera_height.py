@@ -2,7 +2,7 @@
 
 From near the floor, the truck's lowest outline row is not where it meets the floor and its body
 covers the floor beyond it, so a floor position read through the marked plane is wrong (the first
-real footage, 1 Nov 2026: two false structure-contact breaches from a camera at the aisle's end).
+real footage, 31 Oct 2026: two false structure-contact breaches from a camera at the aisle's end).
 The camera's height comes from its four floor marks alone, before any model call. Under
 gates.LOW_CAMERA_M every rule that reads the truck's floor position is unable, naming
 `camera.height`; the hi-vis rule reads the torso and is still ruled. No shipped mark set is low, so

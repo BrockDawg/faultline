@@ -1,4 +1,4 @@
-"""Model API client: one OpenAI-compatible chat call through the local metering proxy.
+"""Model API client: one OpenAI-compatible chat call, through a local metering proxy by default.
 
 Contract:
 
@@ -9,9 +9,10 @@ Contract:
   `/chat/completions` request and returns a `Reply` (the reply text, its `usage` holding
   `prompt_tokens` and `completion_tokens` with None for an absent count, and `finish_reason`).
   `spent_entries` is required, so the cap cannot be skipped by leaving it out.
-  `Reply.cached` is the metering proxy's own word on whether it served the reply from its
-  cache: the response header `X-Tourney-Cache` (`hit` is True, `miss` is False; absent or any
-  other value is None), and `Reply.cache_header` is the header as sent (None when absent).
+  `Reply.cached` is the API's own word on whether it served the reply from a cache: the
+  response header `X-Faultline-Cache` (`hit` is True; `miss` or no header at all is False, a
+  fresh reply; any other value is None), and `Reply.cache_header` is the header as sent (None
+  when absent).
   An odd header never raises: the call was paid, so the reply always comes back for the
   caller to store before it refuses. Images are JPEG
   bytes (or paths to JPEG files) sent as base64 data URIs in the last message. A `schema` is
@@ -24,8 +25,8 @@ Contract:
 
 It refuses (`ClientError`), before any request is sent:
 
-- a base whose host is not `127.0.0.1` or `localhost`, so every paid call passes the metering
-  proxy;
+- a base whose host is not `127.0.0.1` or `localhost` while `FAULTLINE_CAP_USD` is unset, so a
+  paid call reaches any other host only when a spend cap is named for the run;
 - a model with no row in `PRICES` (an unknown model is never priced at zero);
 - a call whose estimated cost, added to the priced cost of every entry in `spent_entries`
   (dicts holding `model` and `usage`, as the ledger stores them), would pass
@@ -34,7 +35,7 @@ It refuses (`ClientError`), before any request is sent:
   estimate counts prompt tokens from the text length and the image count, and `max_tokens`
   as completion tokens.
 
-A 429 from the proxy (its budget is spent) stops the run: `SystemExit` with the proxy's message.
+A 429 from the API (its budget is spent) stops the run: `SystemExit` with the API's message.
 It is never retried. Any other HTTP failure or an unexpected reply shape raises `ClientError`.
 
 Test-only seam: with `FAULTLINE_FAKE_MODEL=1`, `chat` sends nothing and needs no key. It returns
@@ -82,7 +83,7 @@ TIMEOUT_S = 900.0
 FAKE_REASON = "Fixed test reply from the fake model seam; no model was called."
 FAKE_TEXT = "fake model reply"
 _LOOPBACK_HOSTS = ("127.0.0.1", "localhost")
-CACHE_HEADER = "X-Tourney-Cache"
+CACHE_HEADER = "X-Faultline-Cache"
 _CACHE_VALUES = {"hit": True, "miss": False}
 
 # Prices copied as data from the private working repo's price table (verified there 2026-10-25
@@ -92,8 +93,6 @@ _CACHE_VALUES = {"hit": True, "miss": False}
 # sam-3.1 bills per unit: usage.images_processed at per_image and usage.video_frames_processed
 # at per_frame with a min_frames floor per video call.
 PRICES: dict[str, dict[str, float]] = {
-    "claude-haiku-5-5": {"in": 0.1, "out": 0.5, "per_call_fallback": 0.015},
-    "claude-haiku-5-5@long": {"in": 0.5, "out": 2.5, "per_call_fallback": 0.015},
     "meta-models/muse-spark-open": {"in": 1.25, "out": 4.25, "per_call_fallback": 0.05},
     "meta-models/muse-spark-open-1026": {"in": 1.25, "out": 4.25, "per_call_fallback": 0.05},
     "muse-spark-1.3": {"in": 1.25, "out": 4.25, "per_call_fallback": 0.05},
@@ -119,8 +118,8 @@ class ClientError(RuntimeError):
 @dataclass(frozen=True)
 class Reply:
     """One model reply: its text, the usage the API reported (None for an absent count), and
-    the finish reason (None when the API gave none), and `cached`, the proxy's cache header
-    (True for a reply served from its cache, False for a fresh one, None when absent or odd)
+    the finish reason (None when the API gave none), and `cached`, the API's cache header
+    (True for a reply served from a cache, False for a fresh one or no header, None when odd)
     with `cache_header`, the header's raw value (None when absent)."""
 
     text: str
@@ -155,19 +154,22 @@ def _read_env_file(path: Path) -> dict[str, str]:
 
 
 def _check_loopback(base: str) -> None:
+    """Refuse a non-loopback base unless `FAULTLINE_CAP_USD` is set; the in-code cap guards it."""
     host = (urlsplit(base).hostname or "").lower()
-    if host not in _LOOPBACK_HOSTS:
-        raise ClientError(
-            f"the model API base must be the local metering proxy (127.0.0.1 or localhost), "
-            f"not host {host or '(none)'!r}"
-        )
+    if host in _LOOPBACK_HOSTS or os.environ.get("FAULTLINE_CAP_USD", ""):
+        return
+    raise ClientError(
+        f"the model API base must be the local metering proxy (127.0.0.1 or localhost), "
+        f"not host {host or '(none)'!r}, unless FAULTLINE_CAP_USD is set for the run"
+    )
 
 
 def settings() -> tuple[str, str]:
     """Return (api_key, api_base).
 
     When `STEWARD_ENV_FILE` is set, only that file is read: a key in the shell environment never
-    goes to the proxy. Without it, the shell's `MODEL_API_KEY` and `MODEL_API_BASE` are used.
+    goes to the API. Without it, the shell's `MODEL_API_KEY` and `MODEL_API_BASE` are used. A
+    base off this machine is refused unless `FAULTLINE_CAP_USD` is set.
     """
     env_file = os.environ.get("STEWARD_ENV_FILE", "")
     if env_file:
@@ -336,10 +338,13 @@ def _stop_on_budget(resp: httpx.Response) -> None:
 
 
 def _cached(resp: httpx.Response) -> tuple[bool | None, str | None]:
-    """(cached, raw header): never raises, since the call has already been paid for."""
+    """(cached, raw header): never raises, since the call has already been paid for.
+
+    No header at all is a miss (False): an API without a cache sends none.
+    """
     raw = resp.headers.get(CACHE_HEADER)
     if raw is None:
-        return None, None
+        return False, None
     return _CACHE_VALUES.get(raw.strip().lower()), raw[:80]
 
 
@@ -443,7 +448,7 @@ def chat(
     *,
     spent_entries: Iterable[Mapping[str, Any]],
 ) -> Reply:
-    """One chat completion through the metering proxy; see the module docstring for refusals.
+    """One chat completion; see the module docstring for refusals.
 
     `spent_entries` is required: pass the ledger's `entries()` (an empty ledger passes `[]`).
     """

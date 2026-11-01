@@ -38,10 +38,10 @@ def test_baseten_base_can_be_overridden(plain_env: None, monkeypatch: pytest.Mon
 def test_without_a_baseten_key_everything_uses_the_model_api_base(
     plain_env: None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("MODEL_API_BASE", "http://127.0.0.1:8765/v1")
+    monkeypatch.setenv("MODEL_API_BASE", "http://127.0.0.1:9/v1")
     assert client.route("meta-models/muse-spark-open-1026") == (
         "meta-test-key",
-        "http://127.0.0.1:8765/v1",
+        "http://127.0.0.1:9/v1",
     )
 
 

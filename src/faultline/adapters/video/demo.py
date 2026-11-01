@@ -348,6 +348,99 @@ def _real_footage() -> str:
     )
 
 
+# My own world (README "Racing"): public words only, no league frame, name, car number or protest
+# number. The drawing is two clocks, the sim's feed and the broadcast, before and after the
+# stream's measured offset lines them up at the steward's moment.
+def _clock_svg(title: str, label: str, shift: int, caption: str, aligned: bool) -> str:
+    feed_ticks = "".join(
+        f'<line x1="{x}" y1="102" x2="{x}" y2="118"/>' for x in (80, 160, 240, 320, 400)
+    )
+    cast_ticks = "".join(
+        f'<line x1="{x + shift}" y1="192" x2="{x + shift}" y2="208"/>'
+        for x in (80, 160, 240, 320, 400)
+    )
+    mark = "d-hit" if aligned else "d-miss"
+    slide = (
+        '<g class="d-ray"><line x1="240" y1="70" x2="240" y2="230"/></g>'
+        if aligned
+        else '<g class="d-ray"><line x1="336" y1="236" x2="252" y2="236"/></g>'
+        '<g class="d-floor"><line x1="246" y1="236" x2="258" y2="228"/>'
+        '<line x1="246" y1="236" x2="258" y2="244"/></g>'
+    )
+    return (
+        f'<svg class="diagram" viewBox="0 0 480 300" role="img" aria-label="{_e(label)}">'
+        '<g class="d-floor"><line x1="40" y1="110" x2="440" y2="110"/>'
+        f'<line x1="40" y1="200" x2="440" y2="200"/>{feed_ticks}{cast_ticks}</g>'
+        f"{slide}"
+        f'<g class="d-hit"><circle cx="240" cy="110" r="7"/></g>'
+        f'<g class="{mark}"><circle cx="{240 + shift}" cy="200" r="7"/></g>'
+        f'<g class="d-words"><text x="20" y="32">{_e(title)}</text>'
+        '<text x="40" y="90">sim feed</text><text x="40" y="180">broadcast</text>'
+        f'<text x="20" y="284">{_e(caption)}</text></g></svg>'
+    )
+
+
+RACING_SVG = (
+    '<div class="diagrams">'
+    + _clock_svg(
+        "Two clocks",
+        "Two clocks: the steward's moment sits at one time on the sim's feed and at a later time "
+        "on the broadcast.",
+        40,
+        "the same moment, at two times",
+        aligned=False,
+    )
+    + _clock_svg(
+        "Lined up by the offset",
+        "The broadcast slides back by the stream's measured offset, so the steward's moment sits "
+        "at the same time on both clocks.",
+        0,
+        "frames cut at the steward's moment",
+        aligned=True,
+    )
+    + "</div>"
+)
+
+
+def _racing() -> str:
+    return _panel(
+        "p14",
+        "racing",
+        "\n".join(
+            [
+                _s("kicker", "p", "My own world", cls="kicker"),
+                _s("head", "h2", "Sim racing on PitBot"),
+                _s(
+                    "text",
+                    "p",
+                    "A steward's protest and the sim's own feed go in. The stream's measured "
+                    "offset lines the broadcast up with the feed.",
+                ),
+                RACING_SVG,
+                _s(
+                    "text",
+                    "p",
+                    "At the steward's moment the broadcast gives 17 frames, with names masked. "
+                    "Beside them sit blame-neutral facts from the feed.",
+                ),
+                _s(
+                    "text",
+                    "p",
+                    "Each protest gets an evidence card: the rule, the cars in the closed set, "
+                    "the facts, the frames and a record hash.",
+                ),
+                _s("decided", "p", "The human steward rules.", cls="decided"),
+                _s(
+                    "text",
+                    "p",
+                    "The model's read sits beside the evidence only where three runs agree and "
+                    "beat the constant answer, and never as a ruling.",
+                ),
+            ]
+        ),
+    )
+
+
 def panels(d: dict) -> list[str]:
     br, cl, un = d["picks"]
     out = []
@@ -626,6 +719,7 @@ def panels(d: dict) -> list[str]:
             ),
         )
     )
+    out.append(_racing())
     out.append(_real_footage())
     out.append(
         _panel(

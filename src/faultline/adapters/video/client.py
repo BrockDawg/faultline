@@ -25,6 +25,8 @@ import httpx
 DEFAULT_BASE = "https://api.meta.ai/v1"
 BASETEN_BASE = "https://inference.baseten.co/v1"
 OPEN_WEIGHT_PREFIX = "meta-models/"  # Meta's open-weight models, as Baseten names them
+# a cache's own word on a reply: absent means a miss, so the spend is counted
+CACHE_HEADER = "x-faultline-cache"
 # our own stop (the proxy's cap is $5.00 on this token), so the last call never 429s mid-ruling
 LOCAL_CAP_USD = 4.90
 # the build's start: the stop counts only ledger rows from here (earlier runs paid on other keys)
@@ -135,7 +137,7 @@ POST = _post  # the seam for tests
 
 
 def _stop_on_budget(resp: httpx.Response) -> None:
-    if resp.status_code == 429 and "tourney_budget" in resp.text:
+    if resp.status_code == 429 and "budget" in resp.text:
         try:
             err = resp.json().get("error") or {}
         except ValueError:
@@ -206,7 +208,7 @@ def chat(
         float(u.get("prompt_tokens") or 0) * rate_in
         + float(u.get("completion_tokens") or 0) * rate_out
     )
-    cache = resp.headers.get("x-tourney-cache")
+    cache = resp.headers.get(CACHE_HEADER)
     if cache and "hit" in cache.lower():
         est = 0.0
     _ledger(
@@ -256,7 +258,7 @@ def _sam(content: list[dict], worst: float, tag: str, meta: dict | None = None) 
         if frames or "input_video" in json.dumps(content)[:200000]
         else SAM_IMAGE_USD
     )
-    cache = resp.headers.get("x-tourney-cache")
+    cache = resp.headers.get(CACHE_HEADER)
     if cache and "hit" in cache.lower():
         est = 0.0
     _ledger(

@@ -1240,13 +1240,13 @@ def test_a_planted_name_in_a_reply_never_reaches_the_line(
 
 
 @needs_ffmpeg
-@pytest.mark.parametrize("word", ["hit", None])
+@pytest.mark.parametrize("word", ["hit", "maybe"])
 def test_a_reply_not_said_fresh_is_stored_then_stops_the_rule_stage(
     video_world: dict[str, Path],
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
-    word: str | None,
+    word: str,
 ) -> None:
     fake = _Scripted(lambda _k: _reply("3"), cache=word)
     _real_model(monkeypatch, tmp_path, fake)
@@ -1305,8 +1305,8 @@ def test_an_explicit_empty_drop_layouts_is_allowed(world: dict[str, Path]) -> No
 
 CORE_FILES = ("cli", "frames", "ruling", "client", "record", "ledger", "lint", "roster")
 DOMAIN_WORDS = ("racing", "pitbot", "steward", "protest", "broadcast")
-# Fixed names the core must keep: an env variable and a sibling repository's path.
-ALLOWED_NAMES = ("STEWARD_ENV_FILE", "ai-steward")
+# Fixed names the core must keep: an env variable that names the settings file.
+ALLOWED_NAMES = ("STEWARD_ENV_FILE",)
 
 
 @pytest.mark.parametrize("name", CORE_FILES)
