@@ -1,0 +1,127 @@
+{
+ "schema": 1,
+ "id": "idle_empty_aisle_40",
+ "entry": "fl-70b3b4842589",
+ "record": "0ee61eb14dfb4e4662ae96597ccc311a559ff53342229264cfa835895b03bc90",
+ "root": "shipped",
+ "kind": "synthetic",
+ "live": true,
+ "rulings": [
+  {
+   "rule": "hi_vis_in_truck_zone",
+   "title": "Hi-vis in the truck zone",
+   "verdict": "clear",
+   "decided_by": null,
+   "measurement": "Nobody was in view on any frame of the window: three person reads ('person', 'pedestrian', 'worker') over all 60 frames (5.0 s) (the person track's own run record shows 60 frames processed), with the camera still and the whole view in frame, found no one, so no one on foot went without hi-vis.",
+   "missing_fact": null,
+   "lacks": null,
+   "pack_words": null,
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/idle_empty_aisle_40/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/idle_empty_aisle_40/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/idle_empty_aisle_40/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": null
+  },
+  {
+   "rule": "spotter_when_reversing",
+   "title": "Spotter when reversing",
+   "verdict": "unable_to_rule",
+   "decided_by": null,
+   "measurement": "No truck track exists in this window: the vision model found no forklift on the frames it was shown (one a second, up to 5). With no truck there is no motion, direction, distance or contact to measure, so no rule is ruled.",
+   "missing_fact": "truck.moving",
+   "lacks": "the truck moving in the window",
+   "pack_words": "A truck that is not moving cannot reverse or make contact.",
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/idle_empty_aisle_40/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/idle_empty_aisle_40/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/idle_empty_aisle_40/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": null
+  },
+  {
+   "rule": "pedestrian_separation",
+   "title": "Pedestrian separation",
+   "verdict": "clear",
+   "decided_by": null,
+   "measurement": "Nobody was in view on any frame of the window: three person reads ('person', 'pedestrian', 'worker') over all 60 frames (5.0 s) (the person track's own run record shows 60 frames processed), with the camera still and the whole view in frame, found no one, so no person on foot came near a truck.",
+   "missing_fact": null,
+   "lacks": null,
+   "pack_words": null,
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/idle_empty_aisle_40/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/idle_empty_aisle_40/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/idle_empty_aisle_40/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": null
+  },
+  {
+   "rule": "structure_contact",
+   "title": "Structure contact",
+   "verdict": "unable_to_rule",
+   "decided_by": null,
+   "measurement": "No truck track exists in this window: the vision model found no forklift on the frames it was shown (one a second, up to 5). With no truck there is no motion, direction, distance or contact to measure, so no rule is ruled.",
+   "missing_fact": "truck.moving",
+   "lacks": "the truck moving in the window",
+   "pack_words": "A truck that is not moving cannot reverse or make contact.",
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/idle_empty_aisle_40/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/idle_empty_aisle_40/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/idle_empty_aisle_40/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": null
+  }
+ ]
+}

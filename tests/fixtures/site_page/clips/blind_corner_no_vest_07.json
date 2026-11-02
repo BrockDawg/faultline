@@ -1,0 +1,139 @@
+{
+ "schema": 1,
+ "id": "blind_corner_no_vest_07",
+ "entry": "fl-526b1ef1a792",
+ "record": "c82ca137cb2c1b8b9415e7a0bd6befa344554dea8fbb30c44fef7c22d08c5044",
+ "root": "shipped",
+ "kind": "synthetic",
+ "live": true,
+ "rulings": [
+  {
+   "rule": "hi_vis_in_truck_zone",
+   "title": "Hi-vis in the truck zone",
+   "verdict": "breach",
+   "decided_by": "100% of 22 read frames \u00b7 the site line is 70%",
+   "measurement": "person 0 on foot reads no hi-vis band on the torso on 100% of 22 read frames (vested 0%, unreadable 0%); the site line is 70%.",
+   "missing_fact": null,
+   "lacks": null,
+   "pack_words": null,
+   "frames": [
+    {
+     "n": 76,
+     "t_s": 3.167,
+     "src": "frames/blind_corner_no_vest_07/76.jpg"
+    },
+    {
+     "n": 88,
+     "t_s": 3.667,
+     "src": "frames/blind_corner_no_vest_07/88.jpg"
+    },
+    {
+     "n": 100,
+     "t_s": 4.167,
+     "src": "frames/blind_corner_no_vest_07/100.jpg"
+    }
+   ],
+   "frames_source": "ruling",
+   "words": {
+    "note": {
+     "model": "Muse Wonder 1.0",
+     "where": "Meta Model API",
+     "text": "A person in a dark jacket walks beside the truck with no reflective band visible. The truck keeps moving as they pass the corner."
+    },
+    "reads": {
+     "model": "Muse Spark Open",
+     "where": "Baseten",
+     "runs": 3,
+     "agreed": "breach"
+    }
+   }
+  },
+  {
+   "rule": "spotter_when_reversing",
+   "title": "Spotter when reversing",
+   "verdict": "clear",
+   "decided_by": null,
+   "measurement": "The truck never reversed for a second: forward 2.0 s, reversing 0.0 s, moving 2.0 s of 4.0 s in frame.",
+   "missing_fact": null,
+   "lacks": null,
+   "pack_words": null,
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/blind_corner_no_vest_07/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/blind_corner_no_vest_07/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/blind_corner_no_vest_07/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": null
+  },
+  {
+   "rule": "pedestrian_separation",
+   "title": "Pedestrian separation",
+   "verdict": "clear",
+   "decided_by": null,
+   "measurement": "No one on foot was near the truck: 1 person track(s), 1 set aside as operator or too short.",
+   "missing_fact": null,
+   "lacks": null,
+   "pack_words": null,
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/blind_corner_no_vest_07/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/blind_corner_no_vest_07/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/blind_corner_no_vest_07/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": null
+  },
+  {
+   "rule": "structure_contact",
+   "title": "Structure contact",
+   "verdict": "clear",
+   "decided_by": null,
+   "measurement": "The truck's footprint never held within 0.30 m of a marked structure base for 3 frames: closest 0.38 m to the left rack end, hazard-taped base base, longest run 0 frame(s); 0 consequence event(s) seen.",
+   "missing_fact": null,
+   "lacks": null,
+   "pack_words": null,
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/blind_corner_no_vest_07/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/blind_corner_no_vest_07/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/blind_corner_no_vest_07/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": null
+  }
+ ]
+}

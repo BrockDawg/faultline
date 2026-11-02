@@ -10,14 +10,24 @@ when BASETEN_API_KEY is set, every call to one of them goes to BASETEN_API_BASE 
 https://inference.baseten.co/v1) with that key, and everything else (SAM 3.1, Muse Wonder) goes
 to MODEL_API_BASE. Without BASETEN_API_KEY every call goes to MODEL_API_BASE, which is then a
 router or proxy that knows the model names.
+
+The spend cap is FAULTLINE_CAP_USD (default LOCAL_CAP_USD). Before each paid call the worst case
+is reserved in the ledger under an exclusive `<ledger>.lock`, so two processes sharing a ledger
+cannot both pass the check; the call's real row then settles the reserve, and a failed call
+releases it. A refused call writes nothing.
 """
 
 from __future__ import annotations
 
 import base64
+import contextlib
 import json
+import math
 import os
+import sys
 import time
+import uuid
+from collections.abc import Iterator
 from pathlib import Path
 
 import httpx
@@ -27,8 +37,10 @@ BASETEN_BASE = "https://inference.baseten.co/v1"
 OPEN_WEIGHT_PREFIX = "meta-models/"  # Meta's open-weight models, as Baseten names them
 # a cache's own word on a reply: absent means a miss, so the spend is counted
 CACHE_HEADER = "x-faultline-cache"
-# our own stop (the proxy's cap is $5.00 on this token), so the last call never 429s mid-ruling
+# our own stop (the proxy's cap is $5.00 on this token), so the last call never 429s mid-ruling;
+# FAULTLINE_CAP_USD overrides it
 LOCAL_CAP_USD = 4.90
+LOCK_WAIT_S = 60.0  # how long a call waits on another process's check-then-reserve
 # the build's start: the stop counts only ledger rows from here (earlier runs paid on other keys)
 WAVE_START_TS = 1793346000.0
 SAM_FRAME_USD, SAM_IMAGE_USD, SAM_MIN_FRAMES = 0.0002, 0.0025, 50
@@ -98,13 +110,43 @@ def route(model: str) -> tuple[str, str]:
     return settings()
 
 
+def cap_usd() -> float:
+    """FAULTLINE_CAP_USD in dollars, or LOCAL_CAP_USD when it is unset."""
+    raw = os.environ.get("FAULTLINE_CAP_USD", "").strip()
+    if not raw:
+        return LOCAL_CAP_USD
+    try:
+        cap = float(raw)
+    except ValueError as exc:
+        raise ApiError(f"FAULTLINE_CAP_USD is not a number: {raw!r}") from exc
+    if not math.isfinite(cap) or cap < 0:
+        raise ApiError(f"FAULTLINE_CAP_USD must be a finite number of dollars, not {raw!r}")
+    return cap
+
+
 def spent(since: float = 0.0) -> float:
+    """Dollars in the ledger from `since`: every paid row, plus each reserve not yet settled or
+    released (a settled reserve counts once, as its real row).
+    """
     if not LEDGER.exists():
         return 0.0
-    total = 0.0
+    rows: list[dict] = []
+    closed: set[str] = set()
     for line in LEDGER.read_text(encoding="utf-8").splitlines():
         try:
             row = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(row, dict):
+            continue
+        rows.append(row)
+        if row.get("settles"):
+            closed.add(str(row["settles"]))
+    total = 0.0
+    for row in rows:
+        if row.get("kind") == "reserve" and str(row.get("id")) in closed:
+            continue
+        try:
             if float(row.get("ts") or 0.0) >= since:
                 total += float(row.get("est_usd") or 0.0)
         except (ValueError, TypeError):
@@ -112,18 +154,87 @@ def spent(since: float = 0.0) -> float:
     return total
 
 
-def _ledger(row: dict) -> None:
+def _write_row(row: dict) -> None:
     LEDGER.parent.mkdir(parents=True, exist_ok=True)
     with LEDGER.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(row, sort_keys=True) + "\n")
 
 
-def _check_cap(worst: float) -> None:
-    if spent(WAVE_START_TS) + worst > LOCAL_CAP_USD:
-        raise BudgetSpent(
-            f"faultline's local spend cap (${LOCAL_CAP_USD:.2f}) would be passed; no new "
-            "model call is made"
+def _lock_failed(lock_path: Path, deadline: float, exc: OSError) -> None:
+    if time.monotonic() > deadline:
+        raise ApiError(f"the spend ledger stayed locked ({lock_path.name})") from exc
+    time.sleep(0.01)
+
+
+@contextlib.contextmanager
+def _locked() -> Iterator[None]:
+    """Hold the exclusive `<ledger>.lock` (msvcrt on Windows, flock elsewhere; stdlib only)."""
+    LEDGER.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = LEDGER.with_name(LEDGER.name + ".lock")
+    deadline = time.monotonic() + LOCK_WAIT_S
+    with open(lock_path, "a+b") as fh:
+        if sys.platform == "win32":
+            import msvcrt
+
+            while True:
+                try:
+                    fh.seek(0)
+                    msvcrt.locking(fh.fileno(), msvcrt.LK_NBLCK, 1)
+                    break
+                except OSError as exc:
+                    _lock_failed(lock_path, deadline, exc)
+            try:
+                yield
+            finally:
+                fh.seek(0)
+                msvcrt.locking(fh.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+
+            while True:
+                try:
+                    fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    break
+                except OSError as exc:
+                    _lock_failed(lock_path, deadline, exc)
+            try:
+                yield
+            finally:
+                fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+
+
+def _ledger(row: dict) -> None:
+    with _locked():
+        _write_row(row)
+
+
+def _reserve(worst: float, tag: str) -> str:
+    """Check the cap and reserve `worst` in one locked step; returns the reserve's id. A refusal
+    writes nothing and raises BudgetSpent.
+    """
+    cap = cap_usd()
+    with _locked():
+        if spent(WAVE_START_TS) + worst > cap:
+            raise BudgetSpent(
+                f"faultline's local spend cap (${cap:.2f}) would be passed; no new "
+                "model call is made"
+            )
+        rid = uuid.uuid4().hex
+        _write_row(
+            {
+                "ts": time.time(),
+                "kind": "reserve",
+                "id": rid,
+                "tag": tag,
+                "est_usd": round(worst, 6),
+            }
         )
+    return rid
+
+
+def _release(rid: str) -> None:
+    """Close the reserve of a call that failed: nothing was paid, so it stops counting."""
+    _ledger({"ts": time.time(), "kind": "release", "settles": rid, "est_usd": 0.0})
 
 
 def _post(path: str, payload: dict, timeout: float = 600.0) -> httpx.Response:
@@ -165,7 +276,26 @@ def chat(
     """
     rate_in, rate_out = TOKEN_USD.get(model, (1.25e-6, 4.25e-6))
     worst = worst_usd if worst_usd is not None else 6000 * rate_in + max_tokens * rate_out
-    _check_cap(worst)
+    rid = _reserve(worst, tag)
+    try:
+        return _chat_call(messages, model, max_tokens, temperature, images, tag, extra, rid)
+    except BaseException:
+        _release(rid)
+        raise
+
+
+def _chat_call(
+    messages: list[dict],
+    model: str,
+    max_tokens: int,
+    temperature: float,
+    images: list[bytes] | tuple[bytes, ...],
+    tag: str,
+    extra: dict | None,
+    rid: str,
+) -> dict:
+    """The paid part of `chat`, run under reserve `rid`; its ledger row settles that reserve."""
+    rate_in, rate_out = TOKEN_USD.get(model, (1.25e-6, 4.25e-6))
     body_msgs = messages
     if images:
         last = dict(messages[-1])
@@ -217,6 +347,7 @@ def chat(
             "kind": "chat",
             "model": model,
             "tag": tag,
+            "settles": rid,
             "est_usd": round(est, 6),
             "cache": cache,
             "prompt_tokens": u.get("prompt_tokens"),
@@ -229,7 +360,16 @@ def chat(
 
 
 def _sam(content: list[dict], worst: float, tag: str, meta: dict | None = None) -> dict:
-    _check_cap(worst)
+    rid = _reserve(worst, tag)
+    try:
+        return _sam_call(content, tag, meta, rid)
+    except BaseException:
+        _release(rid)
+        raise
+
+
+def _sam_call(content: list[dict], tag: str, meta: dict | None, rid: str) -> dict:
+    """The paid part of `_sam`, run under reserve `rid`; its ledger row settles that reserve."""
     body = {
         "model": "sam-3.1",
         "stream": False,
@@ -266,6 +406,7 @@ def _sam(content: list[dict], worst: float, tag: str, meta: dict | None = None) 
             "ts": time.time(),
             "kind": "sam",
             "tag": tag,
+            "settles": rid,
             "est_usd": round(est, 6),
             "cache": cache,
             "frames": frames,

@@ -49,3 +49,4 @@ dist/
 
 # the demo film segments and their contact sheets hold clip frames: local only
 /demo/VIDEO/
+/site/data/

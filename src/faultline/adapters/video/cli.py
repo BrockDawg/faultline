@@ -1292,6 +1292,14 @@ def main(argv: list[str] | None = None) -> int:
     dm.set_defaults(
         fn=lambda a: __import__("faultline.adapters.video.demo", fromlist=["cmd"]).cmd(a)
     )
+    bd = sub.add_parser(
+        "bundle", help="the live page's data: index, one file per clip and the shift, as JSON"
+    )
+    bd.add_argument("--sources", required=True, help="the sources.json naming every record root")
+    bd.add_argument("--out", required=True, help="the bundle folder (site/data)")
+    bd.set_defaults(
+        fn=lambda a: __import__("faultline.adapters.video.bundle", fromlist=["cmd"]).cmd(a)
+    )
     c = sub.add_parser("compile")
     c.add_argument("pack")
     c.add_argument("--out", required=True)

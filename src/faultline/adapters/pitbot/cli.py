@@ -1183,3 +1183,21 @@ def register(parser: argparse.ArgumentParser) -> None:
         f"the centre (rule stage; default {DEFAULT_IMAGES}; every cut frame stays on the line)",
     )
     jp.set_defaults(func=_cmd_judge)
+    bp = sub.add_parser("bundle", help="the demo page's racing.json and the server's session map")
+    bp.add_argument("--racing", type=Path, required=True, help="the server copy of the record")
+    bp.add_argument("--out", type=Path, required=True, help="where racing.json goes")
+    bp.add_argument(
+        "--source", type=Path, help="the private folder it was built from (default --racing)"
+    )
+    bp.add_argument("--limits", type=Path, help="the limits lines in --source")
+    bp.add_argument("--readme", type=Path, help="the README the numbers come from")
+    bp.set_defaults(func=_cmd_bundle)
+
+
+def _cmd_bundle(args: argparse.Namespace) -> int:
+    from faultline.adapters.pitbot import bundle  # the page's builder, only when asked
+
+    readme = args.readme or bundle.REPO / "README.md"
+    sha = bundle.build_racing(args.racing, readme, args.out, args.source, args.limits)
+    print(f"faultline {DOMAIN} bundle: wrote racing.json ({sha[:12]})")
+    return 0
