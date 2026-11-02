@@ -1,21 +1,21 @@
 # The three-minute walk
 
-One line per still.
+One line per still, spoken the way I would say it to a friend.
 Each line names the panel on screen as `(on screen: pNN)`, and `demo/STILLS/` holds one picture per line, named `NN-pNN-<panel>.png`.
-Read at an easy pace, each line takes about twelve seconds; fifteen lines make about three minutes.
+Fifteen lines, about three minutes at an easy pace.
 
-1. I built faultline, a rules judge for video. A site gives it rules in plain words and camera footage, and gets back rulings: the rule, the frames, and the number that decided it. (on screen: p01, the title)
-2. The rules pack, exactly as the site wrote it: hi-vis in the truck zone, a spotter when reversing, distance from people on foot, no touching the racking. (on screen: p02, the rules pack)
-3. Every rule gets one of three answers: breach, clear, or unable to rule. It never guesses: when a fact was not measured, the ruling names that fact. (on screen: p03, the three verdicts)
-4. Here is a breach: a person walks along the racking near a working truck. SAM 3.1 tracked the truck and found the person; these are the frames the ruling names. (on screen: p04, the breach frames)
-5. The ruling shows the number that decided it: no hi-vis band on the torso on every frame it could read, against the site's line, hash underneath. (on screen: p05, the breach ruling)
-6. Meta's Muse Wonder wrote these words from the same frames, and Muse Spark Open read the rule three times. Words beside the ruling, never the ruling. (on screen: p06, the words beside the ruling)
-7. Here is a clear: two people ahead of the truck, both in vests, by the colour read, with Wonder asked only where it fails. The other rules clear too. (on screen: p07, the clear)
-8. And the honest one: a group crosses in front of the truck, but the frame cuts the truck off, so you never see where it meets the floor. (on screen: p08, the unable frames)
-9. So it does not guess whether the truck was moving. It rules unable, names the missing fact, and shows the measurement. (on screen: p09, the unable ruling)
-10. On a real site this runs over a whole shift, every rule on every window, and every incident goes to a person with its frames and number. On the demo shift, 48 five-second windows: 16 incidents, 84 clears, 140 unable, most because the camera moved. (on screen: p10, the shift)
-11. Every ruling rebuilds from its own record, network off, no footage, to the same hash. Three clips' records ship in the repo, so you can run it yourself. (on screen: p11, the replay proof)
-12. My own world: sim racing leagues on PitBot. A protest names a lap; the judge lines the broadcast up with the telemetry feed through the stream's measured offset, cuts the frames at the steward's moment, and lays the feed's facts beside them. A steward rules from evidence, not memory. (on screen: p14, the racing panel)
-13. First real footage: five free clips, four cameras, one still. Three moved, so their clips ruled unable. The still one called a touch that never happened, because the camera sat at floor level, so it now refuses a camera that low. (on screen: p13, the real footage)
-14. Three things from the site make it better: the camera's height and lens, the truck's clearance, and a better camera on the racking, because a touch without consequence cannot be seen from one angle. (on screen: p12, the close)
-15. That is faultline: rules in, rulings out, a number behind every breach, and an honest "I can't tell" that names what it could not see. Built for safety leads, insurers, and my own stewards. (on screen: p12, the close)
+1. Hi, I'm Brock. I run PitBot, a platform for sim-racing leagues, and every week my stewards argue over protest footage. So I built faultline. You give it a rulebook in plain words and some camera footage, and it tells you which rule was broken, shows you the frames, and the number that decided it. (on screen: p01, the title)
+2. Take a warehouse. It writes its safety rules the way it already does, one rule per file: wear hi-vis near the trucks, use a spotter when reversing, keep your distance from people on foot, and don't hit the racking. (on screen: p02, the rules pack)
+3. For every rule, on every clip, it gives one of three answers: breach, clear, or "I can't tell". That last one matters. It never guesses. If it couldn't measure something, it tells you exactly what was missing. (on screen: p03, the three verdicts)
+4. So here's a breach. A guy walks along the racking while a truck is working right next to him. Meta's SAM 3.1 tracks the truck and finds the person, and these are the exact frames the ruling points at. (on screen: p04, the breach frames)
+5. And this is the ruling. No hi-vis on his torso in every frame it could read, against the site's own line of seventy percent. Underneath is the record hash. Hold that thought. (on screen: p05, the breach ruling)
+6. I don't let a model make the call. But Meta's Muse Wonder looked at the same frames and wrote this, and Muse Spark Open read the rule three times. Those words sit next to the ruling so a person can check it faster. They never change the verdict. (on screen: p06, the words beside the ruling)
+7. Here's a clear. Two people ahead of the truck, both in vests, every frame. The colour check says so, and Wonder only gets asked when that check isn't sure. Every other rule on this clip comes back clear too. (on screen: p07, the clear)
+8. And here's the honest one. A group walks across in front of the truck, but the camera cuts the truck off at the bottom of the frame. You cannot see where it meets the floor. (on screen: p08, the unable frames)
+9. So it doesn't guess whether the truck was moving. It says "I can't tell", names the one thing it couldn't measure, and shows you the measurement that left it open. (on screen: p09, the unable ruling)
+10. On a real site this runs on a whole shift of footage. It cuts it into windows, checks every rule on every window, and hands a person a short list of what's worth a look. On my test shift, forty-eight windows: sixteen to review, eighty-four clear, and a hundred and forty "can't tell", mostly because the camera moved. (on screen: p10, the shift)
+11. That record hash? Every ruling rebuilds from its own record, with the network off and no footage, to the exact same bytes. Three clips' records ship in the repo, so you can clone it and run it yourself. (on screen: p11, the replay proof)
+12. And this is where it started: my own leagues. A driver files a protest and names a lap. faultline lines the broadcast up with the telemetry feed, cuts the frames at the steward's moment, and lays the facts beside them. The steward still makes the call, but from evidence, not memory. (on screen: p14, the racing panel)
+13. This week I pointed it at real warehouse footage for the first time: five free clips, one still camera. Three of them it refused, because the camera moved. The still one caught it making a mistake, a touch that never happened, because the camera sat on the floor. So now it refuses a camera that low, and tells you why. (on screen: p13, the real footage)
+14. To do better on a real site it needs three things from the site, not from a model: the camera's height and lens, the truck's clearance, and a better camera on the racking. Some things you just can't see from one angle. (on screen: p12, the close)
+15. That's faultline. Rules in, rulings out, a number behind every breach, and an honest "I can't tell" that says what it couldn't see. Built for safety leads, insurers, and my own stewards. Thanks for watching. (on screen: p12, the close)
