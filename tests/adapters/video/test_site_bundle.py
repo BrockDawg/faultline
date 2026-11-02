@@ -88,7 +88,7 @@ def test_shipped_three_from_demo_record_alone(tmp_path):
     assert {c["group"] for c in index["clips"]} == {"shipped"}
     assert [g["id"] for g in index["groups"]] == ["shipped"]
     assert index["graded_replay"] is None
-    assert index["shipped_replay"] == {"lines": 3, "sha256": SHIPPED_SHA, "readme_line": 800}
+    assert index["shipped_replay"] == {"lines": 3, "sha256": SHIPPED_SHA, "readme_line": 813}
     assert index["numbers"]["breach_found"] == {"text": "12 of 14", "readme_line": 275}
     assert index["numbers"]["shift_rulings"]["text"] == "240"
     assert "meta-models/muse-spark-open-1026" in index["open_weight_line"]
@@ -114,7 +114,9 @@ def test_shipped_three_from_demo_record_alone(tmp_path):
             assert r["frames_source"] in ("ruling", "model", "window")
             assert (r["decided_by"] is not None) == (r["verdict"] == "breach")
             assert (r["lacks"] is not None) == (r["verdict"] == "unable_to_rule")
-            assert r["words"] is None  # no words side file in demo/record yet
+            # demo/record ships its words: every ruling carries Wonder's note, labelled
+            assert r["words"]["note"]["model"] == "Muse Wonder 1.0"
+            assert r["words"]["note"]["text"]
     # the breach names its own frames: t_s = start_s + n / 24, three at most
     b = json.loads((out / "clips" / "blind_corner_no_vest_07.json").read_text(encoding="utf-8"))
     hv = next(r for r in b["rulings"] if r["rule"] == "hi_vis_in_truck_zone")
@@ -123,8 +125,8 @@ def test_shipped_three_from_demo_record_alone(tmp_path):
     assert hv["frames"][0]["t_s"] == round(76 / 24, 3)
     assert "100%" in hv["decided_by"]
     clear = next(r for r in b["rulings"] if r["rule"] == "spotter_when_reversing")
-    assert clear["frames_source"] == "window"
-    assert [f["n"] for f in clear["frames"]] == [12, 60, 108]
+    assert clear["frames_source"] == "model"  # the frames shown to the model for that window
+    assert [f["n"] for f in clear["frames"]] == [12, 100, 112]
 
 
 def test_real_footage_numbers_on_their_lines(tmp_path):
@@ -272,7 +274,7 @@ def test_words_beside_their_own_ruling_and_linted(tmp_path):
     words = {
         "entry": p0["entry"],
         "id": p0["id"],
-        "record": p0["record"],
+        "record": "0" * 64,  # a words line holds its own manifest's hash, never the ruling's
         "rulings": [
             {
                 "rule": rl[0]["rule"],
@@ -346,9 +348,14 @@ def _private_sources(tmp: Path) -> Path:
 
 @pytest.mark.private
 @pytest.mark.skipif(not SOURCES.is_file(), reason="data/site/sources.json is not in this tree")
-def test_private_real_sources_fail_on_readme_line_zero(tmp_path):
-    with pytest.raises(bundle.BundleError, match="readme_line 0"):
-        bundle.build_bundle(SOURCES, tmp_path / "data")
+def test_private_real_sources_cite_the_graded_hash_line():
+    s = json.loads(SOURCES.read_text(encoding="utf-8"))
+    graded = s["roots"]["graded"]
+    line = graded["readme_line"]
+    assert line, "the graded set hash has no README line in sources.json"
+    readme = README.read_text(encoding="utf-8")
+    root = {"src": graded}
+    assert bundle._replay(readme, root, line, 26, "graded")["sha256"] == graded["set_sha256"]
 
 
 @pytest.mark.private
@@ -376,3 +383,31 @@ def test_private_full_bundle(tmp_path):
         for h in host:
             assert h not in text, (name, h)
         assert not re.search(r"[A-Za-z]:[\\/]", text), name
+
+
+def test_words_for_another_entry_are_dropped(tmp_path):
+    d = _copy_record(tmp_path, "shipped")
+    preds = [json.loads(x) for x in (d / "preds.jsonl").read_text(encoding="utf-8").splitlines()]
+    p0 = preds[0]
+    rl = p0["rulings"]
+    words = {
+        "entry": "fl-000000000000",  # another entry of the same clip id
+        "id": p0["id"],
+        "record": "0" * 64,
+        "rulings": [
+            {
+                "rule": rl[0]["rule"],
+                "verdict": rl[0]["verdict"],
+                "note": "A worker on foot walks near the truck; Hi-vis in the truck zone.",
+            }
+        ],
+    }
+    (d / "preds.words.jsonl").write_text(json.dumps(words) + "\n", encoding="utf-8")
+    src = _sources(tmp_path)
+    s = json.loads(src.read_text(encoding="utf-8"))
+    s["roots"]["shipped"]["preds"] = str(d / "preds.jsonl")
+    src.write_text(json.dumps(s), encoding="utf-8")
+    out = tmp_path / "data"
+    bundle.build_bundle(src, out)
+    b = json.loads((out / "clips" / "blind_corner_no_vest_07.json").read_text(encoding="utf-8"))
+    assert all(r["words"] is None for r in b["rulings"])

@@ -80,3 +80,33 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `6ad9c4c` | 2026-10-31T08:31:19-0500 | racing: the drift and rule A tests name their private sources by environment variable, and no league name or local path sits in the public tree | claude-fable-5-1 via Claude Code | none |
 | `2fcb373` | 2026-10-31T10:29:34-0500 | docs: public comments name public paths and the right command, the README plans a truck camera, and demo/build_video.py cuts the film from a voice take and its cues | claude-fable-5-1 via Claude Code | none |
 | `989bc93` | 2026-10-31T10:30:00-0500 | demo: build_video.py within the line length | claude-fable-5-1 via Claude Code | none |
+| `9c84371` | 2026-10-31T10:38:45-0500 | docs: the walk names SAM 3.1, Muse Wonder and Muse Spark Open and says who reviews the shift; the build log and the running count are current; the video command names itself | claude-fable-5-1 via Claude Code | none |
+| `88a01be` | 2026-10-31T11:03:36-0500 | forklift: Muse Spark Open, Meta's open-weight model, runs on Baseten directly when BASETEN_API_KEY is set, and the README says what it does and how to run the judge | claude-fable-5-1 via Claude Code | none |
+| `7c02138` | 2026-10-31T11:05:16-0500 | docs: the running count carries the four routing tests | claude-fable-5-1 via Claude Code | none |
+| `fed7204` | 2026-10-31T11:19:11-0500 | docs: public comments say the private working repo, never its name | claude-fable-5-1 via Claude Code | none |
+| `38b46dd` | 2026-10-31T11:19:31-0500 | docs: two comments within the line length | claude-fable-5-1 via Claude Code | none |
+| `b204647` | 2026-10-31T11:35:52-0500 | forklift: the record of three clips ships, and a fresh clone replays it to the byte; the film cuts from moving segments | claude-fable-5-1 via Claude Code | none |
+| `2254ef6` | 2026-10-31T11:36:07-0500 | docs: the running count carries the shipped replay test | claude-fable-5-1 via Claude Code | none |
+| `bb06077` | 2026-10-31T19:59:52-0500 | demo: the walk fits three minutes, 450 words, the same thirteen stills | claude-fable-5-1 via Claude Code | none |
+| `26b8b15` | 2026-10-31T20:24:54-0500 | forklift: the README replay command runs from a fresh clone (the record root follows the preds file), the public-tree sweeps read the shipped record rightly, and the README carries the demo shift's numbers | claude-fable-5-1 via Claude Code | none |
+| `8a87f67` | 2026-10-31T21:35:32-0500 | forklift: the first real footage, and the gate it taught: a camera under 1.5 m rules every floor rule unable and names its height | claude-fable-5-1 via Claude Code | none |
+| `76edb0a` | 2026-10-31T21:35:32-0500 | docs: the running count carries the camera-height tests | claude-fable-5-1 via Claude Code | none |
+| `0e767fc` | 2026-10-31T21:36:54-0500 | demo: the walk tells the first real footage, fourteen lines, 474 words | claude-fable-5-1 via Claude Code | none |
+| `845c3ae` | 2026-10-31T21:49:15-0500 | demo: line 12 counts the cameras rightly, four cameras, one still | claude-fable-5-1 via Claude Code | none |
+| `63eb116` | 2026-10-31T22:04:17-0500 | demo: the page gains a real-footage panel, the walk points at it, and the README says exactly what Spark Open did and did not ship | claude-fable-5-1 via Claude Code | none |
+| `d80cc7b` | 2026-10-31T22:04:20-0500 | demo: the walk visits my own world, sim racing on PitBot, fifteen lines | claude-fable-5-1 via Claude Code | none |
+| `11726c2` | 2026-10-31T22:05:01-0500 | demo: the walk trimmed to three minutes with the racing line in | claude-fable-5-1 via Claude Code | none |
+| `918dd78` | 2026-10-31T22:10:33-0500 | demo: the racing line says what the shipped pipeline does, the stream offset and the feed's facts | claude-fable-5-1 via Claude Code | none |
+| `9f35636` | 2026-10-31T22:36:36-0500 | public: private proxy names out of the code and the logs, the walk says where Wonder is asked, the page gains the racing panel, and a fresh clone runs the racing judge under its own spend cap | claude-fable-5-1 via Claude Code | none |
+| `07f7faa` | 2026-11-01T18:58:14-0500 | demo: build_video.py lays the presenter's camera in the corner when the take holds one | claude-fable-5-1 via Claude Code | none |
+| `1cd84e3` | 2026-11-01T19:22:39-0500 | demo: the walk spoken as a person would say it, the story first | claude-fable-5-1 via Claude Code | none |
+| `a893d42` | 2026-11-01T19:23:25-0500 | demo: the spoken walk trimmed towards three minutes | claude-fable-5-1 via Claude Code | none |
+| `ded30be` | 2026-11-01T19:26:06-0500 | demo: the walk told from the start, for someone who has never seen a warehouse camera | claude-fable-5-1 via Claude Code | none |
+| `2618e51` | 2026-11-01T19:26:51-0500 | demo: the walk at three minutes, told from the start | claude-fable-5-1 via Claude Code | none |
+| `ce37211` | 2026-11-01T19:27:45-0500 | demo: the walk opens in my own leagues, then the warehouse, sixteen segments | claude-fable-5-1 via Claude Code | none |
+| `b7e6b21` | 2026-11-01T19:32:35-0500 | demo: the walk rewritten so a stranger follows it, every term explained the first time | claude-fable-5-1 via Claude Code | none |
+| `e99a6ca` | 2026-11-01T19:53:09-0500 | demo: the walk says who it is for and why, the site, the insurer and the stewards | claude-fable-5-1 via Claude Code | none |
+| `2ca3fd6` | 2026-11-01T22:48:27-0500 | demo: the film's fifteen-line script, its stills, and who the forklift rulings are for | claude-fable-5-1 via Claude Code | none |
+| `2f14c4e` | 2026-11-02T08:35:28-0500 | demo: the race line says what the data did and did not register for this protest | claude-fable-5-1 via Claude Code | none |
+| `1977e0a` | 2026-11-02T11:27:18-0600 | site: the live demo page, its worker, its data builders and its deploy kit | claude-opus-5-5 via Claude Code | none |
+| `14ae2f2` | 2026-11-02T12:26:59-0600 | demo: the shipped record holds the model words beside each ruling | claude-opus-5-5 via Claude Code | none |

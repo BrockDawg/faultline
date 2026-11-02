@@ -85,15 +85,21 @@ NUMBERS = [
         r"(every rule that reads the truck's floor position \([^)]*\) is unable to rule)",
     ),
     ("real_hi_vis", 317, r"(the hi-vis rule reads the torso, not the floor, and is still ruled)"),
+    ("words_spend", 330, r"spent (\$[\d.]+) in all"),
+    ("words_spend_meta", 330, r"(\$[\d.]+) on the Meta Model API over \d+ calls"),
+    ("words_spend_baseten", 330, r"(\$[\d.]+) on Baseten over \d+ calls"),
+    ("words_cap", 330, r"under a (\$\d+) cap in code"),
+    ("notes_passed", 331, r"wrote a note on (\d+ of \d+) rulings"),
+    ("reads_agreed", 332, r"the three runs agreed on (\d+ of \d+) reads"),
 ]
 OPEN_WEIGHT = (
-    746,
+    759,
     re.escape(
         "Muse Spark Open is a Meta open-weight model, served by Baseten (partner inference, "
         "model id `meta-models/muse-spark-open-1026`)."
     ),
 )
-SHIPPED_REPLAY_LINE = 800
+SHIPPED_REPLAY_LINE = 813
 
 DRIVE_PATH = re.compile(r"(?<![A-Za-z])[A-Za-z]:[\\/]|\\\\|/Users/|/home/")
 
@@ -292,8 +298,10 @@ def _clips_of(r: dict, ids: list[str] | None, manifest, kind: str, ship: set[str
         host |= _host_strings(entry)
         start_s = float((entry.get("item") or {}).get("start_s", 0.0))
         wl = words.get(cid)
-        if wl is not None and wl.get("record") not in (None, line["record"]):
-            wl = None  # words written for another record of this clip
+        # A words line carries its own record (the hash of its words manifest), never the
+        # ruling's, so it is matched to the ruling by entry; each rule's verdict is matched next.
+        if wl is not None and wl.get("entry") != line["entry"]:
+            wl = None  # words written for another entry of this clip
         wb = _words_by_rule(wl, line, ship)
         rulings = []
         for x in line["rulings"]:

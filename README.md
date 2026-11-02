@@ -28,7 +28,7 @@ The car behind runs into the car ahead on the exit of a corner
 **Contents:**
 [Built during the hackathon, and what existed before](#built-during-the-hackathon-and-what-existed-before) ·
 [How it works](#how-it-works) ·
-[The forklift judge](#the-forklift-judge) ·
+[The forklift judge](#the-forklift-judge) · [Try it live](#try-it-live) ·
 [Scenes](#scenes) ·
 [What was measured](#what-was-measured) ·
 [Meta models used so far](#meta-models-used-so-far) ·
@@ -61,7 +61,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 105 |
+| Commits in this repo | 106 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 40 |
 | Experiment scripts in the working repo | 227 |
@@ -71,7 +71,7 @@ The car behind runs into the car ahead on the exit of a corner
 | Build plans in the working repo | 9 |
 | Rules packs | 8 |
 | Rules | 110 |
-| Tests | 849 |
+| Tests | 850 |
 | Paid calls to Meta models | 9362 |
 | Dollars metered on Meta models | $139.51 |
 
@@ -320,6 +320,19 @@ The aisle camera's marks put it well under the line, and no camera marked on the
 The real footage showed three things the synthetic clips did not.
 The truck can enter after the first 4 s of a window, where the box search no longer looks; a camera can sit low enough that the floor plane misplaces the truck; and a three-run model read, in the optional words beside a ruling, took a person in a pink shirt for someone with no hi-vis, which changes no verdict but shows why a model's words never decide one.
 The model calls for both passes cost $1.38, and the clips are not in this repo.
+
+---
+
+## Try it live
+
+The judge runs live at [metahackathon.pitbot.gg](https://metahackathon.pitbot.gg).
+Pick a forklift clip or a racing protest and press one button: the server rebuilds the rulings from the record, with no network and no key, and checks that the rebuilt record matches the stored hash.
+The words beside each forklift ruling came from one batch that spent $2.6819 in all, $2.2876 on the Meta Model API over 27 calls and $0.3944 on Baseten over 15 calls, under a $21 cap in code.
+Muse Wonder 1.0 wrote a note on 112 of 112 rulings, and every note passed the lint that refuses a clip's name: 12 of 12 on the three shipped clips, 8 of 8 on the two real aisle clips and 92 of 92 on the other 23 graded clips.
+Muse Spark Open read hi-vis and structure contact, the two rules whose reads ship, three times each, and the three runs agreed on 50 of 56 reads: 5 of 6 shipped, 2 of 4 real and 43 of 46 graded.
+An agreed read sits beside its ruling and never changes the verdict.
+The 26 graded clips, re-judged with this code and the network off, replay byte-identical to set hash `43afe3f7542eb0807723dea560ecfde31ab318ad54c059868e93394e20c39701`.
+The shipped record holds these words for its three clips in [`demo/record/preds.words.jsonl`](demo/record/preds.words.jsonl), and a replay with `--words` rebuilds them with the rulings' hash unchanged.
 
 ---
 
@@ -747,7 +760,7 @@ Muse Spark Open is a Meta open-weight model, served by Baseten (partner inferenc
 During the build it compiled the packs, each rule's text into predicates, three runs a rule, and a predicate shipped only where the three agreed ([`compile.py`](src/faultline/adapters/video/compile.py)).
 The hand route key ([`route_key.json`](src/faultline/adapters/video/data/route_key.json)) was fixed before any model run, and it is what routes the shipped demo pack; no compile record ships.
 At run time, when `--words` is on, it reads each rule from the frames three times beside the script's ruling, so a person can check the measurement against a model's view ([`wonder.py`](src/faultline/adapters/video/wonder.py)).
-Those reads are not in the shipped record; a run with `--words` writes them to a `.words.jsonl` file beside its rulings.
+A run with `--words` writes them, with Muse Wonder 1.0's notes, to a `.words.jsonl` file beside its rulings, and the shipped record holds them for its three clips in `demo/record/preds.words.jsonl`.
 The forklift client sends every `meta-models/` call to Baseten when `BASETEN_API_KEY` is set and everything else to the Meta Model API, so the open-weight calls run on partner inference without a proxy ([`client.py`](src/faultline/adapters/video/client.py)).
 Muse Glimmer, the other open-weight model, ran on a Modal L40S and locally on Ollama as the router's first tier and as a clock and vest reader in the experiments; it is not in the shipped judge, because the vest read it gave was beaten by the script's colour rule.
 The task router sends each call to one of three tiers: Glimmer, then Spark Open, then Wonder.
@@ -801,6 +814,12 @@ sha256sum demo/record/preds.jsonl replay.jsonl   # both d991b59e6768a1f6b77bdd0f
 ```
 
 `tests/adapters/video/test_replay_shipped.py` runs that replay on every test run and fails if a byte differs.
+
+With `--words` the same replay also rebuilds the notes and reads in `demo/record/preds.words.jsonl`, offline, into `replay.words.jsonl`:
+
+```sh
+uv run faultline-video replay demo/record/preds.jsonl --out replay.jsonl --words
+```
 
 `MODEL_API_BASE` overrides the Meta endpoint and `BASETEN_API_BASE` the Baseten one; without `BASETEN_API_KEY` every call goes to `MODEL_API_BASE`, which then has to route by model name.
 `FAULTLINE_CAP_USD` caps the spend of a run, and every call lands in the ledger first.
