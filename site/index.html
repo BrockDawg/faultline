@@ -71,18 +71,13 @@
     <div class="wrap actionbar-in">
       <p class="sel" aria-live="polite"><span class="sel-label">Selected</span> <span class="sel-name" id="sel-name">nothing yet</span></p>
       <button type="button" class="go" id="go" disabled>Rule on this clip</button>
+      <p class="go-what" id="go-what">Our server re-runs the judge on this clip's stored record, with no internet, and checks the result matches the published record.</p>
     </div>
   </div>
 
   <section class="run wrap" id="run" aria-labelledby="run-h" hidden tabindex="-1">
     <h2 class="run-title" id="run-h"></h2>
-    <ol class="stages" id="stages" aria-label="Progress on the server">
-      <li data-stage="queued"><span class="pip"></span><span class="stage-name">queued</span> <span class="stage-pos" id="stage-pos"></span></li>
-      <li data-stage="start"><span class="pip"></span><span class="stage-name">starting the judge</span></li>
-      <li data-stage="record"><span class="pip"></span><span class="stage-name">reading the record</span></li>
-      <li data-stage="rebuild"><span class="pip"></span><span class="stage-name">rebuilding the rulings</span></li>
-      <li data-stage="seal"><span class="pip"></span><span class="stage-name">sealing the record</span></li>
-    </ol>
+    <div class="progress" id="prog-run" hidden></div>
     <p class="busy" id="busy" role="status" hidden></p>
     <div class="seal" id="seal" hidden></div>
     <div class="out" id="out" aria-live="polite"></div>
@@ -109,7 +104,8 @@
       <div class="replay-box">
         <div class="replay-live">
           <button type="button" class="btn" id="replay-shipped">Replay the shipped <span data-count="shipped"></span> clips</button>
-          <p class="fine">Live on this server, with no network, one line per clip. It ends with the hash anyone gets at home.</p>
+          <p class="fine">Our server re-runs the judge on every shipped clip, with no internet, and checks each rebuilt line against the published record. It ends with the hash anyone gets at home.</p>
+          <div class="progress" id="prog-shipped" hidden></div>
           <ol class="replay-lines" id="replay-lines"></ol>
           <p class="replay-end" id="replay-end" hidden></p>
           <p class="mono-line">Expected <code class="hash" id="shipped-sha"></code></p>
@@ -154,8 +150,9 @@
       <div class="pack-out" id="protest-pack"></div>
       <div class="race-action">
         <button type="button" class="btn" id="check-protest">Check this record</button>
-        <p class="fine">The bundle hash, the frame hashes and the model's read rebuilt from its stored replies.</p>
+        <p class="fine">Our server replays this protest on both arms, with no internet, rebuilding the bundle hash, the frame hashes and the model's read from its stored replies, and checks each against the published record.</p>
       </div>
+      <div class="progress" id="prog-protest" hidden></div>
       <div class="race-result" id="protest-result" aria-live="polite"></div>
 
       <h3>The incident limit</h3>
@@ -165,6 +162,7 @@
         <button type="button" class="btn" id="check-limits">Re-rule from the feed</button>
         <p class="fine" id="limits-fine"></p>
       </div>
+      <div class="progress" id="prog-limits" hidden></div>
       <div class="table-scroll"><table class="limits" id="limits-table">
         <thead><tr><th scope="col">Session</th><th scope="col">Car</th><th scope="col">Ruling</th><th scope="col">On record</th><th scope="col" class="col-live">Live</th></tr></thead>
         <tbody></tbody>
@@ -265,8 +263,8 @@ uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl</co
   <span data-copy="r.na">·</span>
   <span data-copy="r.lines.rerule">sessions re-ruled from the feed match the stored lines, byte for byte</span>
   <span data-copy="r.lines.checked">sessions checked against the stored lines, byte for byte</span>
-  <span data-copy="r.fine.rerule">The server runs the incident-limit rule on every session's feed and compares each line to the stored one, byte for byte.</span>
-  <span data-copy="r.fine.checked">The server replays every stored incident-limit ruling from its record and compares each line, byte for byte.</span>
+  <span data-copy="r.fine.rerule">Our server runs the incident-limit rule on every session's feed, with no internet, and checks each line matches the stored one, byte for byte.</span>
+  <span data-copy="r.fine.checked">Our server replays every stored incident-limit ruling from its record, with no internet, and checks each line matches, byte for byte.</span>
   <span data-copy="replay.ok">identical</span>
   <span data-copy="replay.bad">not identical</span>
   <span data-copy="replay.end">Set hash, rebuilt live</span>
@@ -276,6 +274,62 @@ uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl</co
   <span data-copy="window">Window</span>
   <span data-copy="load.fail">The page data did not load. Reload in a moment.</span>
   <span data-copy="nomatch.why">The rebuild did not match the stored record.</span>
+  <span data-copy="what.clip">Our server re-runs the judge on this clip's stored record, with no internet, and checks the result matches the published record.</span>
+  <span data-copy="what.protest">Our server replays this protest's record on both arms, with no internet, and checks it matches the published record.</span>
+  <span data-copy="what.rerule">Our server re-rules every session from the sim's feed, with no internet, and checks each line matches the stored one.</span>
+  <span data-copy="what.checked">Our server replays every stored incident-limit ruling, with no internet, and checks each line matches the stored one.</span>
+  <span data-copy="prog.head">On our server, live</span>
+  <span data-copy="prog.running">Running for</span>
+  <span data-copy="prog.done">Finished in</span>
+  <span data-copy="prog.stopped">Stopped after</span>
+  <span data-copy="prog.unit">s</span>
+  <span data-copy="st.queued">Waiting in line</span>
+  <span data-copy="st.start">Starting the judge</span>
+  <span data-copy="st.record">Reading the record</span>
+  <span data-copy="st.rebuild">Rebuilding the rulings</span>
+  <span data-copy="st.seal">Sealing the record</span>
+  <span data-copy="st.inline">in line</span>
+  <span data-copy="st.queued.what">Live runs take turns on our server. Yours starts when the one ahead of it finishes.</span>
+  <span data-copy="st.start.what">The judge's own code starts on our server, with no internet and no key.</span>
+  <span data-copy="st.record.what.clip">It reads this clip's stored record: the measurements the camera's frames gave.</span>
+  <span data-copy="st.rebuild.what.clip">It re-runs every rule on those measurements.</span>
+  <span data-copy="st.seal.what.clip">It hashes the rebuilt record and compares it with the published one.</span>
+  <span data-copy="st.record.what.shipped">It reads the stored record of every shipped clip.</span>
+  <span data-copy="st.rebuild.what.shipped">It re-runs every rule on every clip, one line per clip.</span>
+  <span data-copy="st.seal.what.shipped">It hashes the rebuilt set and compares it with the hash anyone gets at home.</span>
+  <span data-copy="st.record.what.protest">It reads this protest's stored record on both arms: the feed's facts, the frame hashes and the model's stored replies.</span>
+  <span data-copy="st.rebuild.what.protest">It replays the protest and rebuilds the model's read from those stored replies.</span>
+  <span data-copy="st.seal.what.protest">It hashes each rebuilt record and compares it with the published one.</span>
+  <span data-copy="st.record.what.rerule">It reads the sim's own feed for every session.</span>
+  <span data-copy="st.rebuild.what.rerule">It runs the incident-limit rule on every session's feed.</span>
+  <span data-copy="st.seal.what.rerule">It compares each rebuilt line with the stored one, byte for byte.</span>
+  <span data-copy="st.record.what.checked">It reads every stored incident-limit ruling.</span>
+  <span data-copy="st.rebuild.what.checked">It replays each ruling from its record.</span>
+  <span data-copy="st.seal.what.checked">It compares each rebuilt line with the stored one, byte for byte.</span>
+  <span data-copy="card.wait">stored ruling · rebuilding…</span>
+  <span data-copy="card.stored">stored ruling</span>
+  <span data-copy="live.samev">same verdict, but the record differs</span>
+  <span data-copy="live.missing">not in the rebuilt record</span>
+  <span data-copy="live.wait">checking…</span>
+  <span data-copy="live.stored">stored</span>
+  <span data-copy="pack.wait">stored record · checking…</span>
+  <span data-copy="pack.same">checked the same</span>
+  <span data-copy="pack.diff">did not check the same</span>
+  <span data-copy="pack.stored">stored record</span>
+  <span data-copy="seal.published">Published record</span>
+  <span data-copy="seal.here">rebuilt here</span>
+  <span data-copy="seal.pending">waiting for the rebuild</span>
+  <span data-copy="seal.identical">Identical</span>
+  <span data-copy="seal.different">Different</span>
+  <span data-copy="seal.proof.clip">, so these rulings come from the code, not from hand edits.</span>
+  <span data-copy="seal.proof.protest">, so this record rebuilds from its stored replies, not from hand edits.</span>
+  <span data-copy="seal.proof.rerule">, so every incident-limit ruling comes from the code and the sim's feed, not from hand edits.</span>
+  <span data-copy="seal.proof.checked">, so every stored incident-limit ruling rebuilds from its record, not from hand edits.</span>
+  <span data-copy="seal.secs">seconds on our server, with no network</span>
+  <span data-copy="replay.wait">rebuilding…</span>
+  <span data-copy="replay.skip">not replayed this time</span>
+  <span data-copy="replay.home">the same hash anyone gets at home</span>
+  <span data-copy="replay.nothome">not the hash anyone gets at home</span>
 </div>
 </body>
 </html>

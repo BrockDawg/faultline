@@ -328,3 +328,83 @@ def test_graded_set_reads_only_the_install_keys():
     read = set(re.findall(r"\bg\.([a-z_0-9]+)", body))
     allowed = {"time", "seconds", "set_sha256", "commit", "network", "result"}
     assert read and read <= allowed, read
+
+
+KINDS = ("clip", "shipped", "protest", "rerule", "checked")
+STAGE_NAMES = ("queued", "start", "record", "rebuild", "seal")
+
+
+def _copy_keys() -> set[str]:
+    return {a["data-copy"] for _, a in _page().tags if a.get("data-copy")}
+
+
+def test_every_button_says_what_it_will_do_before_the_press():
+    """The one button carries a plain line, the copy for each kind it can run sits in the
+    HTML, and each of the four live buttons has its own progress panel slot."""
+    html = (SITE / "index.html").read_text(encoding="utf-8")
+    go = html.index('id="go"')
+    assert html.index('id="go-what"') > go, "the plain line sits under the button"
+    ids = {a["id"] for _, a in _page().tags if a.get("id")}
+    keys = _copy_keys()
+    for k in ("what.clip", "what.protest", "what.rerule", "what.checked"):
+        assert k in keys, k
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    for slot in ("prog-run", "prog-shipped", "prog-protest", "prog-limits"):
+        assert slot in ids, slot
+        assert f'"{slot}"' in js, f"the JS never fills {slot}"
+    assert 'progress("prog-shipped", "shipped")' in js
+    assert 'progress("prog-run", "clip")' in js
+
+
+def test_every_stage_has_a_plain_sentence_for_every_kind():
+    keys = _copy_keys()
+    for s in STAGE_NAMES:
+        assert f"st.{s}" in keys, s
+    for s in ("queued", "start"):
+        assert f"st.{s}.what" in keys, s
+    for kind in KINDS:
+        for s in ("record", "rebuild", "seal"):
+            assert f"st.{s}.what.{kind}" in keys, (s, kind)
+    for kind in ("clip", "protest", "rerule", "checked"):
+        assert f"seal.proof.{kind}" in keys, kind
+
+
+def test_progress_moves_only_on_worker_events():
+    """A stage event names a step just passed, so the next step lights; the only timer is
+    the elapsed clock, which writes seconds and nothing else."""
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    body = js[js.index("function progress(") :]
+    body = body[: body.index("\n  }\n")]
+    assert 'const STAGES = ["queued", "start", "record", "rebuild", "seal"]' in js
+    assert "at(i + 1)" in body, "a stage event lights the step after it"
+    assert js.count("setInterval(") == 1 and "setInterval(show, 100)" in body
+    show = re.search(r"const show = \(\) => \{([^}]*)\};", body)
+    assert show and show.group(1).strip().startswith("secs.textContent"), (
+        "the clock writes seconds only"
+    )
+    assert "Math.random" not in js and "%" not in re.sub(r"//.*", "", body)
+
+
+def test_stored_cards_show_at_once_then_flip():
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    rule = js[js.index("async function ruleClip") :]
+    rule = rule[: rule.index("\n  }\n")]
+    assert rule.index("renderRulings(clip)") < rule.index('job("rule"'), (
+        "stored cards before the job"
+    )
+    assert 'cardState(c, "wait", t("card.wait"))' in js
+    assert "flipCards(live" in rule and '"stored", t("card.stored")' in rule
+    flip = js[js.index("function flipCards") :]
+    flip = flip[: flip.index("\n  }\n")]
+    assert "still() ? 0 : 120" in flip, "the reveal stagger is off under reduced motion"
+    css = (SITE / "app.css").read_text(encoding="utf-8")
+    assert "prefers-reduced-motion:reduce" in css.replace(" ", "")
+    for cls in (".rcard.wait", ".rcard.same", ".rcard.differs", ".stages li.on", ".stages li.done"):
+        assert cls in css, cls
+
+
+def test_the_busy_line_is_the_plans_own_words():
+    keys = {a["data-copy"]: a for _, a in _page().tags if a.get("data-copy")}
+    html = (SITE / "index.html").read_text(encoding="utf-8")
+    assert "busy.clip" in keys
+    assert "Showing the stored ruling. The live rebuild is busy, try again in a minute." in html

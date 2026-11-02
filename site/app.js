@@ -51,16 +51,17 @@
     return d;
   }
   function modelBy(w) { return w.where === "Baseten" ? w.model + " on Baseten" : w.model + " (" + w.where + ")"; }
-  function tick(ok) {
+  function tick(ok, words) {
     const s = el("span", "tick" + (ok ? "" : " bad"));
     const g = sv("svg", { viewBox: "0 0 20 20", "aria-hidden": "true" });
     g.appendChild(sv("path", ok
       ? { d: "M4 10.5 L8.2 14.5 L16 6", fill: "none", stroke: "currentColor", "stroke-width": "2.4", "stroke-linecap": "round", "stroke-linejoin": "round" }
       : { d: "M5 5 L15 15 M15 5 L5 15", fill: "none", stroke: "currentColor", "stroke-width": "2.4", "stroke-linecap": "round" }));
     s.appendChild(g);
-    s.appendChild(document.createTextNode(t(ok ? "seal.match" : "seal.nomatch")));
+    s.appendChild(document.createTextNode(words != null ? words : t(ok ? "seal.match" : "seal.nomatch")));
     return s;
   }
+  const still = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // ---------------------------------------------------------------- numbers from the JSON
   function fillNumbers(attr, needsAttr, numbers) {
@@ -153,27 +154,114 @@
     $("#pick-limits").setAttribute("aria-pressed", String(sel.kind === "limits"));
     const go = $("#go");
     go.disabled = false;
-    if (sel.kind === "clip") { $("#sel-name").textContent = sel.id; go.textContent = t("go.clip"); }
+    const what = $("#go-what");
+    if (sel.kind === "clip") { $("#sel-name").textContent = sel.id; go.textContent = t("go.clip"); what.textContent = t("what.clip"); }
     if (sel.kind === "protest") {
       const p = protestById(sel.id);
       $("#sel-name").textContent = t("sel.protest") + " · " + (p ? p.label : sel.id);
       go.textContent = t("go.protest");
+      what.textContent = t("what.protest");
     }
-    if (sel.kind === "limits") { $("#sel-name").textContent = t("sel.limits"); go.textContent = limitsWord(); }
+    if (sel.kind === "limits") {
+      $("#sel-name").textContent = t("sel.limits");
+      go.textContent = limitsWord();
+      what.textContent = t("what." + limitsMode());
+    }
   }
 
-  // ---------------------------------------------------------------- the run strip
+  // ---------------------------------------------------------------- the progress panel
+  // A worker `stage` event names a step the code has just passed (start: the process is up,
+  // record: the entry is read, rebuild: the judge returned, seal: the hash compared), so the
+  // step after it is the one now running. Queue position 0 means the job holds a slot.
+  // The clock counts real time since the press; nothing here advances on a timer.
   const STAGES = ["queued", "start", "record", "rebuild", "seal"];
-  function stage(name) {
-    const i = STAGES.indexOf(name);
-    $$("#stages li").forEach((li, j) => {
-      li.classList.toggle("done", j < i);
-      li.classList.toggle("on", j === i);
+  function progress(id, kind) {
+    const box = clear($("#" + id));
+    box.classList.remove("off", "done");
+    box.hidden = false;
+    const head = el("div", "prog-head");
+    head.appendChild(el("p", "prog-title", t("prog.head")));
+    const clock = el("p", "prog-clock");
+    const lbl = el("span", null, t("prog.running"));
+    const secs = el("span", "prog-secs", "0.0");
+    clock.appendChild(lbl);
+    clock.appendChild(document.createTextNode(" "));
+    clock.appendChild(secs);
+    clock.appendChild(document.createTextNode(" " + t("prog.unit")));
+    head.appendChild(clock);
+    box.appendChild(head);
+    const ol = el("ol", "stages");
+    ol.setAttribute("aria-label", t("prog.head"));
+    const pos = el("span", "stage-pos");
+    const items = STAGES.map((name) => {
+      const li = el("li");
+      li.appendChild(el("span", "pip"));
+      const body = el("div", "stage-body");
+      const nm = el("p", "stage-name", t("st." + name));
+      if (name === "queued") { nm.appendChild(document.createTextNode(" ")); nm.appendChild(pos); }
+      body.appendChild(nm);
+      const own = "st." + name + ".what." + kind;
+      body.appendChild(el("p", "stage-what", own in COPY ? COPY[own] : t("st." + name + ".what")));
+      li.appendChild(body);
+      ol.appendChild(li);
+      return li;
     });
+    box.appendChild(ol);
+    const say = el("p", "sr");
+    say.setAttribute("role", "status");
+    box.appendChild(say);
+    const t0 = performance.now();
+    const show = () => { secs.textContent = ((performance.now() - t0) / 1000).toFixed(1); };
+    const iv = setInterval(show, 100);
+    let cur = -1, over = false;
+    function at(i) {
+      if (over || i <= cur) return;
+      cur = i;
+      items.forEach((li, j) => {
+        li.classList.toggle("done", j < i);
+        li.classList.toggle("on", j === i);
+        if (j === i) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
+      });
+      if (i > 0) pos.textContent = "";
+      if (i < STAGES.length) say.textContent = t("st." + STAGES[i]);
+    }
+    at(0);
+    return {
+      queued(p) {
+        if (p > 0) { at(0); pos.textContent = "#" + p + " " + t("st.inline"); }
+        else { pos.textContent = ""; at(1); }
+      },
+      stage(name) { const i = STAGES.indexOf(name); if (i >= 0) at(i + 1); },
+      finish(ok) {
+        if (over) return;
+        if (ok) at(STAGES.length);
+        over = true;
+        clearInterval(iv);
+        show();
+        lbl.textContent = t(ok ? "prog.done" : "prog.stopped");
+        items.forEach((li) => { li.classList.remove("on"); li.removeAttribute("aria-current"); });
+        box.classList.add(ok ? "done" : "off");
+        say.textContent = lbl.textContent + " " + secs.textContent + " " + t("prog.unit");
+      },
+    };
   }
-  function stagesDone(ok) {
-    $$("#stages li").forEach((li) => { li.classList.remove("on"); li.classList.toggle("done", ok); });
-    $("#stages").classList.toggle("off", !ok);
+  // Scroll only when the panel is off screen, so the button and the panel stay in view.
+  function bringIntoView(node, anchor) {
+    const r = node.getBoundingClientRect();
+    const bar = $("#actionbar").getBoundingClientRect();
+    const floor = Math.min(window.innerHeight, bar.top > 0 ? bar.top : window.innerHeight);
+    if (r.top < 0 || r.top > floor - 140) (anchor || node).scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "start" });
+  }
+  // One status line on a card: waiting, rebuilt the same, rebuilt differently, or stored.
+  function cardState(c, state, words) {
+    let st = c.querySelector(".cardstate");
+    if (!st) { st = el("p", "cardstate"); c.insertBefore(st, c.firstChild); }
+    clear(st);
+    c.classList.remove("wait", "same", "differs", "stored");
+    c.classList.add(state);
+    if (state === "wait") { st.appendChild(el("span", "cs-pip")); st.appendChild(el("span", null, words)); }
+    else if (state === "same" || state === "differs") st.appendChild(tick(state === "same", words));
+    else st.appendChild(el("span", null, words));
   }
   function openRun(title, mono) {
     const run = $("#run");
@@ -183,11 +271,15 @@
     if (mono) h.appendChild(idNode(mono, "mono"));
     $("#busy").hidden = true;
     $("#seal").hidden = true;
-    $("#stages").classList.remove("off");
-    $("#stage-pos").textContent = "";
-    $$("#stages li").forEach((li) => li.classList.remove("on", "done"));
     clear($("#out"));
-    run.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    // The bar holding the button sits right above the run: when the run's panel is off
+    // screen, bring the bar to the top so the button and the panel show together.
+    const r = run.getBoundingClientRect();
+    if (r.top < 0 || r.top > window.innerHeight - 360) {
+      const bar = $("#actionbar");
+      const top = window.scrollY + r.top - bar.offsetHeight - 4;
+      window.scrollTo({ top: Math.max(0, top), behavior: still() ? "auto" : "smooth" });
+    }
     run.focus({ preventScroll: true });
   }
   function setRunning(on) {
@@ -231,10 +323,7 @@
     on("error", (d) => finish(h.fallback, d));
     es.onerror = () => finish(h.fallback);
   }
-  function queued(pos) {
-    stage("queued");
-    $("#stage-pos").textContent = pos ? "#" + pos : "";
-  }
+  function showBusy(words) { $("#busy").textContent = words; $("#busy").hidden = false; }
 
   // ---------------------------------------------------------------- forklift: one clip
   async function loadClip(id) {
@@ -243,53 +332,75 @@
   }
   async function ruleClip(id) {
     openRun(t("run.clip"), id);
+    const pg = progress("prog-run", "clip");
     setRunning(true);
     let clip;
     try { clip = await loadClip(id); } catch (e) {
-      $("#busy").textContent = t("load.fail"); $("#busy").hidden = false; stagesDone(false); setRunning(false); return;
+      showBusy(t("load.fail")); pg.finish(false); setRunning(false); return;
     }
+    // the stored rulings show at once, each waiting for the server's rebuild
+    sealWait(clip.record);
+    renderRulings(clip);
     job("rule", { id: id }, {
-      queued: queued,
-      stage: stage,
+      queued: pg.queued,
+      stage: pg.stage,
       result: (d) => {
-        stagesDone(true);
-        sealLive(clip.record, d);
+        pg.finish(true);
+        sealLive(clip.record, d, "clip");
         const live = {};
         (d.rulings || []).forEach((r) => { live[r.rule] = r.verdict; });
-        renderRulings(clip, live, true);
+        flipCards(live, d.match === true);
         setRunning(false);
       },
       fallback: () => {
-        stagesDone(false);
-        $("#busy").textContent = t("busy.clip");
-        $("#busy").hidden = false;
+        pg.finish(false);
+        showBusy(t("busy.clip"));
         sealStored(clip.record);
-        renderRulings(clip, null, false);
+        $$("#out .rcard").forEach((c) => cardState(c, "stored", t("card.stored")));
         setRunning(false);
       },
     }, 120000);
   }
-  function sealLive(shipped, d, checked) {
+  function sealHashes(s, shipped, rebuilt) {
+    const line = el("p", "seal-line");
+    const a = el("span", "pair", t("seal.published") + " ");
+    a.appendChild(hashCode(shipped));
+    line.appendChild(a);
+    line.appendChild(el("span", "sep", " · "));
+    const b = el("span", rebuilt ? "pair" : null, t("seal.here") + " ");
+    b.appendChild(rebuilt ? hashCode(rebuilt) : el("span", "pending", t("seal.pending")));
+    line.appendChild(b);
+    s.appendChild(line);
+  }
+  function sealProof(s, ok, kind, d) {
+    const p = el("p", "seal-proof");
+    p.appendChild(tick(ok, t(ok ? "seal.identical" : "seal.different")));
+    p.appendChild(document.createTextNode(ok ? t("seal.proof." + kind) : ": " + (d.why || t("nomatch.why"))));
+    s.appendChild(p);
+    if (typeof d.seconds === "number") s.appendChild(el("p", "secs", d.seconds.toFixed(1) + " " + t("seal.secs")));
+  }
+  function sealWait(shipped) {
     const s = clear($("#seal"));
-    s.className = "seal press";
-    const rebuilt = typeof d.record_rebuilt === "string" ? d.record_rebuilt : null;
+    s.className = "seal wait";
+    sealHashes(s, shipped, null);
+    s.hidden = false;
+  }
+  function sealLive(shipped, d, kind) {
+    const s = clear($("#seal"));
     const ok = d.match === true;
-    s.appendChild(el("span", null, t("seal.record")));
-    s.appendChild(hashCode(shipped));
-    s.appendChild(el("span", null, t("seal.shipped") + " ·"));
-    if (rebuilt) s.appendChild(hashCode(rebuilt));
-    s.appendChild(el("span", null, t(checked ? "seal.checked" : "seal.rebuilt") + " ·"));
-    s.appendChild(tick(ok));
-    if (typeof d.seconds === "number") s.appendChild(el("span", "secs", d.seconds.toFixed(1) + " " + t("seal.seconds")));
-    if (!ok) s.appendChild(el("span", "secs", d.why || t("nomatch.why")));
+    s.className = "seal press" + (ok ? "" : " bad");
+    sealHashes(s, shipped, typeof d.record_rebuilt === "string" ? d.record_rebuilt : null);
+    sealProof(s, ok, kind, d);
     s.hidden = false;
   }
   function sealStored(shipped) {
     const s = clear($("#seal"));
     s.className = "seal stored";
-    s.appendChild(el("span", null, t("seal.record")));
-    s.appendChild(hashCode(shipped));
-    s.appendChild(el("span", null, t("seal.shipped") + " · " + t("seal.stored")));
+    const line = el("p", "seal-line");
+    line.appendChild(el("span", null, t("seal.published") + " "));
+    line.appendChild(hashCode(shipped));
+    line.appendChild(el("span", null, " · " + t("seal.stored")));
+    s.appendChild(line);
     s.hidden = false;
   }
   function hashCode(h) {
@@ -298,24 +409,32 @@
     return c;
   }
 
-  function renderRulings(clip, live, animate) {
+  function renderRulings(clip) {
     const out = clear($("#out"));
-    (clip.rulings || []).forEach((r, i) => {
-      const card = ruleCard(r, live);
-      if (animate) card.classList.add("enter", "d" + Math.min(i, 5));
-      out.appendChild(card);
+    (clip.rulings || []).forEach((r) => out.appendChild(ruleCard(r)));
+  }
+  // The rebuilt rulings land at once; each card flips in turn so the eye can follow.
+  function flipCards(live, ok) {
+    const gap = still() ? 0 : 120;
+    $$("#out .rcard").forEach((c, i) => {
+      const go = () => {
+        const has = Object.prototype.hasOwnProperty.call(live, c.dataset.rule);
+        const same = has && live[c.dataset.rule] === c.dataset.verdict;
+        if (same && ok) cardState(c, "same", t("live.same"));
+        else cardState(c, "differs", t(!has ? "live.missing" : same ? "live.samev" : "live.diff"));
+      };
+      if (gap) setTimeout(go, i * gap); else go();
     });
   }
-  function ruleCard(r, live) {
+  function ruleCard(r) {
     const c = el("article", "rcard");
+    c.dataset.rule = r.rule;
+    c.dataset.verdict = r.verdict;
     const head = el("div", "rcard-head");
     head.appendChild(el("h3", null, r.title || r.rule));
     head.appendChild(stamp(r.verdict));
     c.appendChild(head);
-    if (live && r.rule in live) {
-      const same = live[r.rule] === r.verdict;
-      c.appendChild(el("p", "livemark" + (same ? "" : " bad"), t(same ? "live.same" : "live.diff")));
-    }
+    cardState(c, "wait", t("card.wait"));
     c.appendChild(framesBlock(r));
     if (r.verdict === "breach" && r.decided_by) {
       c.appendChild(el("p", "label", t("decided")));
@@ -504,59 +623,74 @@
     const p = protestById(id);
     clear($("#protest-pack"));
     clear($("#protest-result"));
+    if (!S.running) $("#prog-protest").hidden = true;
     if (p) $("#protest-pack").appendChild(evidencePack(p));
   }
   function protestSeal(target, p, d, live) {
-    const s = el("div", "seal" + (live ? " press" : " stored"));
+    const s = el("div", "seal" + (live ? " press" + (d.match === true ? "" : " bad") : " stored"));
     const rec = p.record || {};
     ["arm1", "arm2"].forEach((arm, i) => {
-      const line = el("span", "secs");
-      line.textContent = t("r.arm") + " " + (i + 1) + ": ";
-      s.appendChild(line);
-      s.appendChild(hashCode(rec[arm]));
-      s.appendChild(el("span", null, t("seal.shipped")));
+      const line = el("p", "seal-line");
+      line.appendChild(el("b", null, t("r.arm") + " " + (i + 1) + " · "));
+      line.appendChild(el("span", null, t("seal.published") + " "));
+      line.appendChild(hashCode(rec[arm]));
       if (live) {
         const rb = (d.record_rebuilt || {})[arm];
-        if (rb) s.appendChild(hashCode(rb));
-        s.appendChild(el("span", null, t("seal.checked") + " ·"));
+        line.appendChild(el("span", "sep", " · "));
+        line.appendChild(el("span", null, t("seal.here") + " "));
+        if (rb) line.appendChild(hashCode(rb));
+        line.appendChild(document.createTextNode(" "));
         const ln = (d.lines || []).find((x) => x.arm === i + 1);
-        s.appendChild(tick(ln ? ln.match === true : d.match === true));
+        line.appendChild(tick(ln ? ln.match === true : d.match === true));
       }
+      s.appendChild(line);
     });
-    if (live && typeof d.seconds === "number") s.appendChild(el("span", "secs", d.seconds.toFixed(1) + " " + t("seal.seconds")));
-    if (live && d.match !== true) s.appendChild(el("span", "secs", d.why || t("nomatch.why")));
-    if (!live) s.appendChild(el("span", "secs", t("seal.stored")));
+    if (live) sealProof(s, d.match === true, "protest", d);
+    else s.appendChild(el("p", "secs", t("seal.stored")));
     target.appendChild(s);
   }
   function checkProtest(id, where) {
     const p = protestById(id);
     if (!p) return;
     const inRun = where === "run";
-    const target = inRun ? $("#out") : clear($("#protest-result"));
-    if (inRun) { openRun(t("run.protest"), p.label); target.appendChild(evidencePack(p)); }
+    let pack;
+    if (inRun) {
+      openRun(t("run.protest"), p.label);
+      pack = evidencePack(p);
+      $("#out").appendChild(pack);
+    } else {
+      clear($("#protest-result"));
+      pack = $("#protest-pack .evpack");
+    }
+    const pg = progress(inRun ? "prog-run" : "prog-protest", "protest");
+    if (!inRun) bringIntoView($("#prog-protest"), $("#check-protest").closest(".race-action"));
+    if (pack) cardState(pack, "wait", t("pack.wait"));
     setRunning(true);
     const btn = $("#check-protest");
     btn.disabled = true;
-    const busy = (txt) => {
-      if (inRun) { $("#busy").textContent = txt; $("#busy").hidden = false; }
-      else target.appendChild(el("p", "busy", txt));
+    const place = (box) => {
+      if (inRun) { const s = clear($("#seal")); s.className = "seal-wrap"; s.appendChild(box); s.hidden = false; }
+      else $("#protest-result").appendChild(box);
     };
     job("racing/protest", { id: id }, {
-      queued: inRun ? queued : null,
-      stage: inRun ? stage : null,
+      queued: pg.queued,
+      stage: pg.stage,
       result: (d) => {
-        if (inRun) stagesDone(true);
+        pg.finish(true);
+        if (pack) cardState(pack, d.match === true ? "same" : "differs", t(d.match === true ? "pack.same" : "pack.diff"));
         const box = el("div");
         protestSeal(box, p, d, true);
-        if (inRun) { const s = $("#seal"); clear(s); s.className = "seal-wrap"; s.appendChild(box); s.hidden = false; } else target.appendChild(box);
+        place(box);
         btn.disabled = false; setRunning(false);
       },
       fallback: () => {
-        if (inRun) stagesDone(false);
-        busy(t("busy.racing"));
+        pg.finish(false);
+        if (pack) cardState(pack, "stored", t("pack.stored"));
+        if (inRun) showBusy(t("busy.racing"));
+        else $("#protest-result").appendChild(el("p", "busy", t("busy.racing")));
         const box = el("div");
         protestSeal(box, p, {}, false);
-        if (inRun) { const s = $("#seal"); clear(s); s.className = "seal-wrap"; s.appendChild(box); s.hidden = false; } else target.appendChild(box);
+        place(box);
         btn.disabled = false; setRunning(false);
       },
     }, 120000);
@@ -581,12 +715,14 @@
     const inRun = where === "run";
     const mode = limitsMode();
     if (inRun) openRun(t("run.limits." + mode));
+    const pg = progress(inRun ? "prog-run" : "prog-limits", mode);
+    if (!inRun) bringIntoView($("#prog-limits"), $("#check-limits").closest(".race-action"));
     setRunning(true);
     const btn = $("#check-limits");
     btn.disabled = true;
-    $$("#limits-table td.col-live").forEach((td) => { td.textContent = ""; td.className = "col-live mono"; });
+    // every stored row shows at once, its live column waiting for the server's line
+    $$("#limits-table td.col-live").forEach((td) => { td.textContent = t("live.wait"); td.className = "col-live mono live-wait"; });
     $("#limits-sum").textContent = "";
-    const rows = [];
     const summary = inRun ? $("#out") : null;
     let tableClone = null;
     if (inRun) {
@@ -594,32 +730,38 @@
       tableClone.querySelector("table").removeAttribute("id");
       summary.appendChild(tableClone);
     }
+    const roots = () => [document.getElementById("limits-table")].concat(tableClone ? [tableClone] : []);
     const mark = (d) => {
-      rows.push(d);
-      const sel = (root) => $$("tr", root).filter((tr) => tr.dataset.label === d.id);
-      [document.getElementById("limits-table")].concat(tableClone ? [tableClone] : []).forEach((root) => {
-        sel(root).forEach((tr) => {
+      roots().forEach((root) => {
+        $$("tr", root).filter((tr) => tr.dataset.label === d.id).forEach((tr) => {
           const td = tr.querySelector("td.col-live");
+          td.className = "col-live mono";
           clear(td).appendChild(tick(d.match === true));
         });
       });
     };
+    const unmarked = (words) => roots().forEach((root) => {
+      $$("td.live-wait", root).forEach((td) => { td.className = "col-live mono"; td.textContent = words; });
+    });
     job("racing/limits", {}, {
-      queued: inRun ? queued : null,
-      stage: inRun ? stage : null,
+      queued: pg.queued,
+      stage: pg.stage,
       line: mark,
       result: (d) => {
-        if (inRun) stagesDone(true);
+        pg.finish(true);
+        unmarked(t("r.na"));
         const txt = (d.matched != null && d.sessions != null ? d.matched + " / " + d.sessions + " " : "") + t("r.lines." + (d.mode || mode));
         $("#limits-sum").textContent = txt;
         if (inRun) {
           summary.insertBefore(el("p", "race-sum", txt), summary.firstChild);
-          sealLive(d.record_shipped, d, (d.mode || mode) === "checked");
+          sealLive(d.record_shipped, d, d.mode || mode);
         }
         btn.disabled = false; setRunning(false);
       },
       fallback: () => {
-        if (inRun) { stagesDone(false); $("#busy").textContent = t("busy.racing"); $("#busy").hidden = false; }
+        pg.finish(false);
+        unmarked(t("live.stored"));
+        if (inRun) showBusy(t("busy.racing"));
         else $("#limits-sum").textContent = t("busy.racing");
         btn.disabled = false; setRunning(false);
       },
@@ -711,29 +853,51 @@
     const ol = clear($("#replay-lines"));
     const end = $("#replay-end");
     end.hidden = true;
+    const pg = progress("prog-shipped", "shipped");
+    bringIntoView($("#prog-shipped"), btn);
     S.running = true;
+    $("#go").disabled = true;
+    // the shipped clips show at once, each waiting for its rebuilt line
+    const row = (id) => {
+      const li = el("li", "wait");
+      li.dataset.id = id;
+      li.appendChild(el("span", null, id));
+      li.appendChild(el("span", "state", t("replay.wait")));
+      ol.appendChild(li);
+      return li;
+    };
+    ((S.index || {}).clips || []).filter((c) => c.group === "shipped").forEach((c) => row(c.id));
+    const done = () => { btn.disabled = false; S.running = false; if (S.sel) select(S.sel); };
     job("replay-shipped", {}, {
+      queued: pg.queued,
+      stage: pg.stage,
       line: (d) => {
-        const li = el("li");
-        li.appendChild(el("span", null, d.id || ""));
-        li.appendChild(el("span", d.match ? "ok" : "bad", t(d.match ? "replay.ok" : "replay.bad")));
-        ol.appendChild(li);
+        const id = d.id || "";
+        const li = $$("li", ol).find((x) => x.dataset.id === id) || row(id);
+        li.className = d.match ? "ok-row" : "bad-row";
+        const st = li.querySelector(".state");
+        st.className = "state " + (d.match ? "ok" : "bad");
+        st.textContent = t(d.match ? "replay.ok" : "replay.bad");
       },
       result: (d) => {
+        pg.finish(true);
         clear(end);
+        const want = ((S.index || {}).shipped_replay || {}).sha256;
+        const home = !!want && d.set_sha256 === want;
         end.appendChild(document.createTextNode(t("replay.end") + " "));
         end.appendChild(hashCode(d.set_sha256));
-        const want = ((S.index || {}).shipped_replay || {}).sha256;
         end.appendChild(document.createTextNode(" "));
-        end.appendChild(tick(!!want && d.set_sha256 === want));
-        if (typeof d.seconds === "number") end.appendChild(el("span", "fine", " " + d.seconds.toFixed(1) + " " + t("seal.seconds")));
+        end.appendChild(tick(home, t(home ? "replay.home" : "replay.nothome")));
+        if (typeof d.seconds === "number") end.appendChild(el("span", "fine", " " + d.seconds.toFixed(1) + " " + t("seal.secs")));
         end.hidden = false;
-        btn.disabled = false; S.running = false;
+        done();
       },
       fallback: () => {
+        pg.finish(false);
+        $$("li.wait", ol).forEach((li) => { li.className = ""; li.querySelector(".state").textContent = t("replay.skip"); });
         end.textContent = t("replay.busy");
         end.hidden = false;
-        btn.disabled = false; S.running = false;
+        done();
       },
     }, 240000);
   }
