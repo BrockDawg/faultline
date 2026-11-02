@@ -29,6 +29,28 @@ STILLS = HERE / "STILLS"
 W, H = 1920, 1080
 
 
+def has_video(path: Path) -> bool:
+    """True when the take holds a camera stream as well as the voice."""
+    out = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-select_streams",
+            "v:0",
+            "-show_entries",
+            "stream=codec_type",
+            "-of",
+            "csv=p=0",
+            str(path),
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    return out == "video"
+
+
 def audio_seconds(path: Path) -> float:
     out = subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)],
@@ -118,6 +140,13 @@ def main(argv: list[str] | None = None) -> int:
         "--lead", type=float, default=0.6, help="seconds of the first still before the voice starts"
     )
     ap.add_argument("--fps", type=int, default=30)
+    ap.add_argument(
+        "--camera",
+        choices=("corner", "off"),
+        default="corner",
+        help="when the take holds a camera stream, lay it in the bottom-right corner (default)",
+    )
+    ap.add_argument("--camera-width", type=int, default=480, help="the corner picture's width")
     a = ap.parse_args(argv)
 
     stills = media(a.stills)
@@ -136,6 +165,14 @@ def main(argv: list[str] | None = None) -> int:
             inputs = still_inputs(shots, Path(td))
             video = ["-map", "0:v:0"]
         voice_in = len(shots) if moving else 1
+        corner = a.camera == "corner" and has_video(a.audio)
+        if corner:
+            base = video[1] if moving else "[0:v]null[v]"
+            cam = (
+                f"[{voice_in}:v]scale={a.camera_width}:-2,"
+                "pad=iw+8:ih+8:4:4:color=white[cam];[v][cam]overlay=W-w-48:H-h-48[vo]"
+            )
+            video = ["-filter_complex", f"{base};{cam}", "-map", "[vo]"]
         cmd = [
             "ffmpeg",
             "-y",
