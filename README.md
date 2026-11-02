@@ -285,7 +285,7 @@ The speed order holds: a faster truck reads faster.
 
 The forklift demo, `faultline-video shift`, stitches clips into a shift and builds a dashboard: every breach shows the number that decided it, and every unable ruling names its missing fact in plain words.
 On the demo shift that is 48 windows and 240 rulings: 16 breaches to review, 84 clear and 140 unable, 110 of them because the camera moved.
-`faultline-video demo` builds a one-file walk through it, and `demo/` holds that page, its fifteen-line script and one still per line.
+`faultline-video demo` builds a one-file walk through it, and `demo/` holds that page, its sixteen-line script and one still per line.
 The contract smoke, `scripts/contract_smoke.py`, runs `steward judge` on an items file with no model call and checks every line.
 
 ### First real footage
@@ -825,7 +825,7 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 | [`src/faultline/adapters/video/`](src/faultline/adapters/video) | The forklift judge: the gates, SAM masks and tracks, the floor plane, the fact sheet, the pack compiler, the rulings, the record and replay, the shift dashboard and the demo builder; its site values, camera marks and pinned reads sit in `data/` beside the code |
 | `faultline-video` | The forklift judge's command line: `judge`, `replay`, `roster`, `compile`, `scan`, `shift` (the demo shift and its dashboard), `demo` and `lifecycle` |
 | `steward` | The steward contract's command line: `steward judge` writes one contract line per item |
-| [`demo/`](demo) | The forklift demo: the one-file walk (`faultline-demo.html`), its fifteen-line script (`SCRIPT.md`), one still per line (`STILLS/`) and the site pack it reads (`pack/`) |
+| [`demo/`](demo) | The forklift demo: the one-file walk (`faultline-demo.html`), its sixteen-line script (`SCRIPT.md`), one still per line (`STILLS/`) and the site pack it reads (`pack/`) |
 | [`packs/`](packs/README.md) | The eight rules packs, and the format in [`packs/README.md`](packs/README.md) |
 | [`experiments/`](experiments/README.md) | One log per measured experiment, with an index |
 | [`docs/`](docs/forklift-scan-route.md) | Design notes; [`docs/forklift-scan-route.md`](docs/forklift-scan-route.md) designs the forklift route for long footage with no report |
