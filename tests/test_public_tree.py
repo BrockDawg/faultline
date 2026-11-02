@@ -39,6 +39,8 @@ PRIVATE_SUFFIXES = (".mp4", ".jsonl", ".ndjson.gz", ".jpg")
 # The one feed-shaped file allowed outside assets/: the shipped replay set's ruling lines, which a
 # fresh clone replays to the byte. Exactly this path; any other .jsonl is still refused.
 SHIPPED_PREDS = "demo/record/preds.jsonl"
+# Wonder's notes and the three-run read for those lines, the side file `replay --words` rebuilds.
+SHIPPED_WORDS = "demo/record/preds.words.jsonl"
 
 # The shipped record stores each detected object as a box plus a run-length mask, and the mask's
 # `data=` payload is packed into printable characters, so a long payload holds letter runs that by
@@ -262,6 +264,7 @@ def test_no_private_media_or_feed_outside_assets() -> None:
         if n.lower().endswith(PRIVATE_SUFFIXES)
         and PurePosixPath(n).parts[0] != "assets"
         and n != SHIPPED_PREDS
+        and n != SHIPPED_WORDS
     ]
     assert not bad, f"video, feed, protest or frame files outside assets/: {bad}"
 

@@ -1,0 +1,46 @@
+{
+ "cache": null,
+ "est_usd": 0.014314750000000001,
+ "finish": "stop",
+ "frames": [
+  0,
+  15,
+  30,
+  45,
+  60,
+  75,
+  90,
+  105
+ ],
+ "images_sha256": [
+  "b9ac272d440c8a7e9d766b3377af2985171d9c559f24a5d454ba6b1680925247",
+  "e57a79ccab7054e2d1e85083bf92e2ddb57b55b32b9bdcf4f212ba93e7643b2a",
+  "d692d16c8381f112e6f9c6e583d2ff40f6690bf343682c3f85f419c8cf2beef7",
+  "ab50d863f7fe3dc471149919032cac1bf451c6bb65bfbdef5d061de74c7d30fc",
+  "d1b3137a2544411886e42c66553b2e07518f4d221df5ac5cce82e0ec5f4bb94e",
+  "46f83b1c8f5839b830623fc112558633716199419a606ddabde8b36ea526437b",
+  "8ba7cd1534432e12d4c7b458916541bd998ff7377720be4dbf5ab041573cb92f",
+  "1335e497b7efdbb0e2173c7605eaa03d480aad93d16700f17ae4be1a471433cd"
+ ],
+ "max_tokens": 12000,
+ "model": "meta-models/muse-spark-open-1026",
+ "prompt": "A fixed warehouse camera, one window of 5.0 s. The images that follow are frames [0, 15, 30, 45, 60, 75, 90, 105] (24 frames a second, 640x360), in that order.\nThe site: Synthetic site values (28 Oct 2026) plus the still-spotter exemption Brock approved on 28 Oct: a vested person standing still in the rear cone of a reversing truck is its spotter, not a separation breach. The whole view is a truck zone; every reverse needs a spotter. Pedestrian separation distance: 3.0 m.\n\nThe site's rules:\n### hi_vis_in_truck_zone: Wear high-visibility clothing in a truck zone\nAnyone on foot inside a truck-operating zone wears high-visibility clothing.\n\nOn video: A person inside a marked truck zone has no fluorescent yellow-green or orange-red band on the torso. A person who is too small to read, cut by the frame edge, mostly hidden or in low light is not ruled.\n\nSource: Site rule\n\n### spotter_when_reversing: Reverse with a spotter where the site requires one\nWhere the site requires a spotter, a truck reverses only with a spotter in high-visibility clothing watching the rear path. The site requires one at [a blind zone / a dock / a load that blocks the view].\n\nOn video: Inside such a zone, the truck travels against its fork end for a second or more with no vested person behind it.\n\nSource: Site rule\n\n### pedestrian_separation: Keep the site distance between a moving truck and a person on foot\nA moving truck keeps at least [3] metres from any person on foot. The site's own value replaces the placeholder.\n\nOn video: A person's feet come within the site distance of a moving truck's footprint, with the site's own distance.\n\nSource: Site rule\n\n### structure_contact: Do not touch racking or other structures\nA truck or its load never touches racking, uprights, guards, columns or stacked stock.\n\nOn video: The truck or its load meets racking, an upright, a guard, a column or stacked stock. A consequence within half a second (the structure shifts, something falls, the truck stops abruptly) is the evidence that the touch was real; a touch with no visible consequence is still a breach of this rule.\n\nSource: Site rule\n\nFor each rule, decide from these frames alone: \"breach\" if the frames show the rule broken, \"clear\" if they show it kept, \"unable\" if the frames cannot settle it.\nThis is independent read 2 of 3.\nAnswer with one JSON object only: {\"<rule id>\": {\"verdict\": \"breach|clear|unable\", \"frames\": [frame indexes], \"why\": \"<one sentence>\"}, ...}.",
+ "reply": "{\"hi_vis_in_truck_zone\": {\"verdict\": \"clear\", \"frames\": [0, 45, 105], \"why\": \"Both persons on foot in the truck zone wear fluorescent yellow-green vests clearly visible on the torso in all frames.\"}, \"spotter_when_reversing\": {\"verdict\": \"clear\", \"frames\": [0, 45, 90, 105], \"why\": \"Forks/pallet face north and the truck moves north fork-first (forward), not against its fork end, so no reversing requiring a spotter occurs.\"}, \"pedestrian_separation\": {\"verdict\": \"clear\", \"frames\": [0, 60, 105], \"why\": \"The moving forklift remains well over 3.0 m from the nearest person's feet throughout the 5s window as it advances up the aisle.\"}, \"structure_contact\": {\"verdict\": \"clear\", \"frames\": [0, 60, 105], \"why\": \"The truck and pallet stay centered in the aisle with no contact with racking, uprights or stock and no shift/fall/stop consequence.\"}}",
+ "system": null,
+ "temperature": 0.7,
+ "usage": {
+  "completion_tokens": 2442,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 1649,
+   "audio_tokens": 0,
+   "reasoning_tokens": 2194,
+   "rejected_prediction_tokens": 3902
+  },
+  "prompt_tokens": 3149,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 128
+  },
+  "total_tokens": 5591
+ }
+}

@@ -1,0 +1,46 @@
+{
+ "cache": null,
+ "est_usd": 0.021888249999999998,
+ "finish": "stop",
+ "frames": [
+  0,
+  15,
+  30,
+  45,
+  60,
+  75,
+  90,
+  105
+ ],
+ "images_sha256": [
+  "000cc746f5383e1820659f97cd578579d9358c8bb6620659cca1c0f452ae6ed6",
+  "cb01256fd41fda0e4c55d8d8e41cc308a4db49a32f73b10be83a6ef2ef8bfd0a",
+  "ab9b5be98ffc9e8c29bda9cd649f322b22b3f5318634a3a5ec13664b172fdee9",
+  "208a7cf2fd7088112d55c5ed6a8f15f829969880684e99b02ea446542b317574",
+  "6592165b862e6be16a5a3f761307d84efe9a10d56665964c69facf223442b91a",
+  "d09a24fae741084ca46efe0a2414cdf1bd6c4a984f517551e38b39ed3e3e9800",
+  "62c9c7e9bfa77a1d44256874b5d8c0ae31f65d5244da18fc5fd47cf54d85a8fa",
+  "4c1ce2b204540427b31e44153482c96f3dabf0b83da845e23c0b18b64ee836fe"
+ ],
+ "max_tokens": 12000,
+ "model": "meta-models/muse-spark-open-1026",
+ "prompt": "A fixed warehouse camera, one window of 5.0 s. The images that follow are frames [0, 15, 30, 45, 60, 75, 90, 105] (24 frames a second, 640x360), in that order.\nThe site: Synthetic site values (28 Oct 2026) plus the still-spotter exemption Brock approved on 28 Oct: a vested person standing still in the rear cone of a reversing truck is its spotter, not a separation breach. The whole view is a truck zone; every reverse needs a spotter. Pedestrian separation distance: 3.0 m.\n\nThe site's rules:\n### hi_vis_in_truck_zone: Wear high-visibility clothing in a truck zone\nAnyone on foot inside a truck-operating zone wears high-visibility clothing.\n\nOn video: A person inside a marked truck zone has no fluorescent yellow-green or orange-red band on the torso. A person who is too small to read, cut by the frame edge, mostly hidden or in low light is not ruled.\n\nSource: Site rule\n\n### spotter_when_reversing: Reverse with a spotter where the site requires one\nWhere the site requires a spotter, a truck reverses only with a spotter in high-visibility clothing watching the rear path. The site requires one at [a blind zone / a dock / a load that blocks the view].\n\nOn video: Inside such a zone, the truck travels against its fork end for a second or more with no vested person behind it.\n\nSource: Site rule\n\n### pedestrian_separation: Keep the site distance between a moving truck and a person on foot\nA moving truck keeps at least [3] metres from any person on foot. The site's own value replaces the placeholder.\n\nOn video: A person's feet come within the site distance of a moving truck's footprint, with the site's own distance.\n\nSource: Site rule\n\n### structure_contact: Do not touch racking or other structures\nA truck or its load never touches racking, uprights, guards, columns or stacked stock.\n\nOn video: The truck or its load meets racking, an upright, a guard, a column or stacked stock. A consequence within half a second (the structure shifts, something falls, the truck stops abruptly) is the evidence that the touch was real; a touch with no visible consequence is still a breach of this rule.\n\nSource: Site rule\n\nFor each rule, decide from these frames alone: \"breach\" if the frames show the rule broken, \"clear\" if they show it kept, \"unable\" if the frames cannot settle it.\nThis is independent read 3 of 3.\nAnswer with one JSON object only: {\"<rule id>\": {\"verdict\": \"breach|clear|unable\", \"frames\": [frame indexes], \"why\": \"<one sentence>\"}, ...}.",
+ "reply": "{\"hi_vis_in_truck_zone\": {\"verdict\": \"breach\", \"frames\": [6, 7], \"why\": \"Person on foot inside the truck zone in frames 6-7 has no fluorescent yellow-green or orange-red torso band and is clearly visible.\"}, \"spotter_when_reversing\": {\"verdict\": \"clear\", \"frames\": [], \"why\": \"Truck travels forward forks-first throughout the window and never travels against its fork end for a second, so no spotter is required.\"}, \"pedestrian_separation\": {\"verdict\": \"breach\", \"frames\": [6, 7], \"why\": \"Moving truck's footprint passes within ~2m of the person's feet in frames 6-7, inside the 3.0m site distance, with no vested still-spotter exemption.\"}, \"structure_contact\": {\"verdict\": \"clear\", \"frames\": [], \"why\": \"No contact between truck/load and racking, uprights or stock is visible and no shift, fall or abrupt stop occurs.\"}}",
+ "system": null,
+ "temperature": 0.7,
+ "usage": {
+  "completion_tokens": 4224,
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 3008,
+   "audio_tokens": 0,
+   "reasoning_tokens": 3995,
+   "rejected_prediction_tokens": 5532
+  },
+  "prompt_tokens": 3149,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 128
+  },
+  "total_tokens": 7373
+ }
+}
