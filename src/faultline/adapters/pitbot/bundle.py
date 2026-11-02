@@ -89,8 +89,6 @@ README_NUMBERS: dict[str, tuple[str, str]] = {
 }
 # The session limit as a limits line's evidence states it ("over the limit of 25 set by ...").
 _LIMIT = re.compile(r"\bthe limit of (\d+)\b")
-# key -> how the served text wraps the figure pulled from the README line.
-SERVED_WORDS = {"spend": "{} spent"}
 SCOREBOARD_ANCHOR = "The model's read did not pass its mark:"
 SCOREBOARD_HEADER = "| Mark | Result | Pass mark | Verdict |"
 SCOREBOARD_KEYS = {
@@ -225,8 +223,7 @@ def read_readme_numbers(readme: Path) -> dict[str, Any]:
         m = re.search(pattern, lines[i])
         if not m:
             raise BundleError(f"{readme}: line {i + 1} no longer states {key}.")
-        text = SERVED_WORDS[key].format(m.group(0)) if key in SERVED_WORDS else m.group(0)
-        numbers[key] = {"text": text, "readme_line": i + 1}
+        numbers[key] = {"text": m.group(0), "readme_line": i + 1}
     start = _find_line(lines, SCOREBOARD_ANCHOR, readme)
     try:
         head = next(i for i in range(start, len(lines)) if lines[i].strip() == SCOREBOARD_HEADER)
@@ -240,11 +237,12 @@ def read_readme_numbers(readme: Path) -> dict[str, Any]:
             raise BundleError(f"{readme}: line {i + 1} is not a four-cell scoreboard row.")
         mark, result, pass_mark, verdict = cells
         if SCOREBOARD_KEYS.get(mark) == "spend_mark":
-            # Only the dollar figure is served; the README's own words name the tooling.
+            # Only the dollar figure is served, exactly as the line states it, so the sweep
+            # finds it there; the rest of the README's cell names the tooling.
             spent = re.search(README_NUMBERS["spend"][1], result)
             if not spent:
                 raise BundleError(f"{readme}: line {i + 1} no longer states the spend.")
-            result = SERVED_WORDS["spend"].format(spent.group(0))
+            result = spent.group(0)
         board.append(
             {
                 "key": SCOREBOARD_KEYS.get(mark),

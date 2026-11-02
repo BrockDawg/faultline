@@ -60,6 +60,7 @@ MODELS = [
         "use": "writes the note beside a ruling",
     },
     {"name": "Muse Spark Open", "where": "Baseten", "use": "reads the frames three times"},
+    {"name": "Muse Spark 1.3", "where": "Meta Model API", "use": "the racing judge's read, arm 2"},
 ]
 
 # (key, README line, pattern): the text is the pattern's first group, or the whole match

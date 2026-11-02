@@ -122,8 +122,21 @@ class Site:
         blurred = {"frames": [{"file": "real_aisle_01/3.jpg", "checked": checked}]}
         (self.bundle / "frames" / "blurred.json").write_text(json.dumps(blurred), encoding="utf-8")
 
+    sources: Path | None = None
+
     def run(self, gitleaks: str = "gitleaks") -> list[sweep.Failure]:
-        return sweep.sweep(self.bundle, self.page, self.names, self.readme, gitleaks)
+        extra = {"sources": self.sources} if self.sources is not None else {}
+        return sweep.sweep(self.bundle, self.page, self.names, self.readme, gitleaks, **extra)
+
+    def write_shift_record(self, rows: list[dict[str, object]]) -> None:
+        """The shift run's own record (server only, never served), named by a sources.json."""
+        record = self.bundle.parents[2] / "shift-record"
+        record.mkdir(exist_ok=True)
+        text = "".join(json.dumps(r) + "\n" for r in rows)
+        (record / "windows.jsonl").write_text(text, encoding="utf-8")
+        self.sources = self.bundle.parents[2] / "sources.json"
+        doc = {"shift": {"output": {"path": str(record)}}}
+        self.sources.write_text(json.dumps(doc), encoding="utf-8")
 
     def main(self) -> int:
         return sweep.main(
@@ -381,3 +394,237 @@ def test_a_failed_sweep_removes_an_old_stamp_for_the_same_bundle(site: Site) -> 
     (site.names / "inputs.json").unlink()
     assert site.main() == 2
     assert not list(site.bundle.glob(".sweep-*.ok"))
+
+
+# ---------------------------------------------------------------- the prose view
+
+
+@needs_gitleaks
+def test_a_css_property_name_is_not_prose_but_a_comment_or_content_string_is(
+    site: Site,
+) -> None:
+    css = site.page / "app.css"
+    original = css.read_text(encoding="utf-8")
+    css.write_text(original + ".btn { cursor: pointer; }\na:hover{cursor:default}\n", "utf-8")
+    assert site.run() == []
+    for planted in (
+        "/* Cursor made this */\n",
+        '.btn::after { content: "Cursor"; }\n',
+        ".cursor { color: red; }\n",
+    ):
+        css.write_text(original + planted, encoding="utf-8")
+        assert 2 in _checks(site.run()), planted
+
+
+def _served(tmp_path: Path, name: str, text: str) -> sweep.Served:
+    path = tmp_path / name
+    path.write_text(text, encoding="utf-8")
+    return sweep.Served(path, name, text)
+
+
+def test_a_standard_html_element_name_is_not_a_name_hit(tmp_path: Path) -> None:
+    names = sweep.Names(names=["Ada Main"], league=[])
+    page = "<!doctype html><html><body><main><p>Rulings.</p></main></body></html>"
+    assert list(sweep.check_leaks([_served(tmp_path, "index.html", page)], names)) == []
+    for planted in (
+        page.replace("Rulings.", "Main rulings."),
+        page.replace("<main>", '<main id="main">'),
+        page.replace("<p>", "<x-main>").replace("</p>", "</x-main>"),
+        page.replace("<p>", "<p><!-- main -->"),
+    ):
+        failures = list(sweep.check_leaks([_served(tmp_path, "index.html", planted)], names))
+        assert [f.check for f in failures] == [1], planted
+    # outside HTML, the same word is prose
+    js = _served(tmp_path, "app.js", "const main = 1;\n")
+    assert [f.check for f in sweep.check_leaks([js], names)] == [1]
+
+
+# ---------------------------------------------------------------- demo-shift window frames
+
+
+def _add_window_frame(site: Site, folder: str, clip_in_manifest: str, under: str = "") -> str:
+    """Write a window poster at frames/<under><folder>/poster.jpg; return its bundle path."""
+    frames = site.bundle / "frames"
+    rel = f"{under}{folder}/poster.jpg"
+    path = (frames / rel).resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = JPEG + folder.encode()
+    path.write_bytes(data)
+    manifest = json.loads((frames / "frames.json").read_text(encoding="utf-8"))
+    manifest.append(
+        {
+            "file": rel,
+            "clip": clip_in_manifest,
+            "frame": "poster",
+            "kind": "synthetic",
+            "sha256": hashlib.sha256(data).hexdigest(),
+        }
+    )
+    (frames / "frames.json").write_text(json.dumps(manifest), encoding="utf-8")
+    return path.relative_to(site.bundle.resolve()).as_posix()
+
+
+def _window(window: str, clip: str, poster: str) -> dict[str, object]:
+    return {
+        "window": window,
+        "clip": clip,
+        "entry": f"fl-{window}",
+        "record": f"rec-{window}",
+        "poster": poster,
+        "rulings": [],
+    }
+
+
+def _record_row(window: str, clip: str, folder: str = "synthetic/pairs") -> dict[str, object]:
+    return {
+        "window": window,
+        "clip": f"D:/corpus/{folder}/{clip}.mp4",
+        "entry": f"fl-{window}",
+        "record": f"rec-{window}",
+    }
+
+
+def _write_shift(site: Site, windows: list[dict[str, object]]) -> None:
+    doc = {"schema": 1, "windows": windows}
+    (site.bundle / "shift.json").write_text(json.dumps(doc), encoding="utf-8")
+
+
+@needs_gitleaks
+def test_a_shift_window_frame_on_the_shift_record_as_synthetic_passes(site: Site) -> None:
+    poster = _add_window_frame(site, "w01-shift_only_07", "w01-shift_only_07")
+    _write_shift(site, [_window("w01-shift_only_07", "shift_only_07", poster)])
+    site.write_shift_record([_record_row("w01-shift_only_07", "shift_only_07")])
+    assert [str(f) for f in site.run()] == []
+
+
+@needs_gitleaks
+def test_a_window_frame_the_shift_does_not_name_fails(site: Site) -> None:
+    _add_window_frame(site, "w01-shift_only_07", "w01-shift_only_07")
+    _write_shift(site, [])
+    site.write_shift_record([_record_row("w01-shift_only_07", "shift_only_07")])
+    failures = site.run()
+    assert [f.check for f in failures] == [6]
+    assert "demo shift" in failures[0].message
+    (site.bundle / "shift.json").unlink()
+    assert [f.check for f in site.run()] == [6]
+
+
+@needs_gitleaks
+def test_a_window_frame_whose_manifest_clip_is_another_source_fails(site: Site) -> None:
+    poster = _add_window_frame(site, "w01-shift_only_07", "some_other_source")
+    _write_shift(site, [_window("w01-shift_only_07", "shift_only_07", poster)])
+    site.write_shift_record([_record_row("w01-shift_only_07", "shift_only_07")])
+    assert [f.check for f in site.run()] == [6]
+
+
+@needs_gitleaks
+def test_an_unblurred_real_shift_window_frame_fails(site: Site) -> None:
+    poster = _add_window_frame(site, "w01-real_aisle_01", "w01-real_aisle_01")
+    _write_shift(site, [_window("w01-real_aisle_01", "real_aisle_01", poster)])
+    site.write_shift_record([_record_row("w01-real_aisle_01", "real_aisle_01")])
+    failures = site.run()
+    assert [f.check for f in failures] == [6]
+    assert "real-footage" in failures[0].message
+
+
+# Finding 1: the manifest's own `kind: synthetic` is not proof; only the shift run's record is.
+@needs_gitleaks
+@pytest.mark.parametrize(
+    "record",
+    [
+        None,  # no shift record at all
+        [],  # the record does not list the window
+        [_record_row("w01-shift_only_07", "shift_only_07", folder="real/aisle")],
+        [{**_record_row("w01-shift_only_07", "shift_only_07"), "record": "rec-other"}],
+        [_record_row("w01-shift_only_07", "another_clip_09")],
+    ],
+)
+def test_a_window_frame_not_proven_synthetic_needs_its_blur_check(
+    site: Site, record: list[dict[str, object]] | None
+) -> None:
+    poster = _add_window_frame(site, "w01-shift_only_07", "w01-shift_only_07")
+    _write_shift(site, [_window("w01-shift_only_07", "shift_only_07", poster)])
+    if record is not None:
+        site.write_shift_record(record)
+    failures = site.run()
+    assert [f.check for f in failures] == [6]
+    assert "real-footage" in failures[0].message
+
+
+# Finding 2: a window frame sits in frames/, in a folder named by the window's own id.
+@needs_gitleaks
+@pytest.mark.parametrize(
+    ("folder", "window", "under"),
+    [
+        ("w02-shift_only_07", "w01-shift_only_07", ""),  # folder is not the window's id
+        ("x01-shift_only_07", "x01-shift_only_07", ""),  # not a wNN- folder
+        ("w01-shift_only_07", "w01-shift_only_07", "../elsewhere/"),  # outside frames/
+    ],
+)
+def test_a_window_frame_outside_its_own_window_folder_fails(
+    site: Site, folder: str, window: str, under: str
+) -> None:
+    # the manifest names the window's id, so only the file's own place can give it away
+    poster = _add_window_frame(site, folder, window, under=under)
+    _write_shift(site, [_window(window, "shift_only_07", poster)])
+    site.write_shift_record([_record_row(window, "shift_only_07")])
+    assert 6 in _checks(site.run())
+
+
+# Finding 3: a tooling word followed by `:` is not a CSS property name.
+@needs_gitleaks
+@pytest.mark.parametrize(
+    "planted",
+    [
+        ":root{--credit: Claude: yes}\n",
+        "Claude:hover{color:red}\n",
+        ".x{background:url(cursor:x)}\n",
+        '.x::after{content:"Made with\nCodex: x"}\n',
+        ".x{Claude: yes}\n",  # declaration position, but not a CSS property
+    ],
+)
+def test_a_tooling_word_shaped_like_a_css_property_still_fails(site: Site, planted: str) -> None:
+    css = site.page / "app.css"
+    css.write_text(css.read_text(encoding="utf-8") + planted, encoding="utf-8")
+    assert 2 in _checks(site.run())
+
+
+# Finding 4: only a real tag opening is markup; a quoted value, a comment or raw text is not.
+@pytest.mark.parametrize(
+    "page",
+    [
+        '<p><a title="<Mark Zed">x</a></p>',
+        '<p><a title="x> <Mark Zed">x</a></p>',
+        "<p>x</p><!-- <mark Zed -->",
+        "<textarea><mark Zed</textarea>",
+    ],
+)
+def test_a_name_inside_a_quoted_value_comment_or_raw_text_still_fails(
+    tmp_path: Path, page: str
+) -> None:
+    names = sweep.Names(names=["Mark Zed"], league=[])
+    failures = list(sweep.check_leaks([_served(tmp_path, "index.html", page)], names))
+    assert [f.check for f in failures] == [1], page
+
+
+# Finding 5: the replay counts the page renders sit on a README line too.
+@needs_gitleaks
+@pytest.mark.parametrize("key", ["shipped_replay", "graded_replay"])
+def test_a_replay_line_count_the_readme_does_not_state_fails(site: Site, key: str) -> None:
+    index = json.loads((site.bundle / "index.json").read_text(encoding="utf-8"))
+    site.edit_json("index.json", key, {**index[key], "lines": index[key]["lines"] + 1})
+    failures = [f for f in site.run() if f.check == 4]
+    assert failures and "lines" in failures[0].message
+
+
+def test_a_replay_count_in_words_on_the_line_that_introduces_its_code_block_passes() -> None:
+    readme = [
+        "The record of three clips ships here:",
+        "",
+        "```sh",
+        "sha256sum a b   # both d991b59e6768a1f6b77bdd0fd0c4c6fb45afbe9d837bdfc9abab0fbfaaff7010",
+        "```",
+    ]
+    assert sweep.replay_count_line(readme, 4, 3) == 1
+    assert sweep.replay_count_line(readme, 4, 4) is None
+    assert sweep.replay_count_line(["Over 26 lines, hash d991b59e."], 1, 26) == 1

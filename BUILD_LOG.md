@@ -110,3 +110,4 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `2f14c4e` | 2026-11-02T08:35:28-0500 | demo: the race line says what the data did and did not register for this protest | claude-fable-5-1 via Claude Code | none |
 | `1977e0a` | 2026-11-02T11:27:18-0600 | site: the live demo page, its worker, its data builders and its deploy kit | claude-opus-5-5 via Claude Code | none |
 | `14ae2f2` | 2026-11-02T12:26:59-0600 | demo: the shipped record holds the model words beside each ruling | claude-opus-5-5 via Claude Code | none |
+| `a874182` | 2026-11-02T15:56:12-0600 | site: the README states the live page, the words batch and the graded set hash | claude-opus-5-5 via Claude Code | none |

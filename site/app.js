@@ -789,6 +789,9 @@
       ow.appendChild(i % 2 ? el("code", null, part) : document.createTextNode(part));
     });
     const sha = (I.shipped_replay || {}).sha256 || "";
+    // the shipped count is the record's own line count, from the bundle, never typed in the HTML
+    const shippedLines = (I.shipped_replay || {}).lines;
+    $$('[data-count="shipped"]').forEach((n) => { n.textContent = typeof shippedLines === "number" ? String(shippedLines) : ""; });
     $("#shipped-sha").textContent = sha;
     $("#home-sha").textContent = sha;
     if (I.featured && I.featured[0]) select({ kind: "clip", id: I.featured[0] });

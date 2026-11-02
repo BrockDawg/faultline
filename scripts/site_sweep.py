@@ -8,16 +8,33 @@ Seven checks, each over every served file (the page folder and the bundle folder
    way `scripts/racing_card.py` gathers them from the racing names folder (`league.json` and
    its feeds, `inputs.json` and its pack). A missing or unreadable names source fails closed.
 2. Tooling words: none of `TOOLING_WORDS`, case-insensitive, whole word.
+
+Checks 1 and 2 read each file's prose view (`prose_view`): the file as served, with only the
+language's own markup words blanked, so a standard HTML element name (`<main>`) or a CSS
+property name (`cursor:`) is not read as a name or a tooling word. Both lists are closed:
+an HTML name is blanked only in a real tag opening (`<name` or `</name` followed by
+whitespace, `>` or `/`), never inside a quoted attribute value, a comment or a raw-text
+body (`script`, `style`, `textarea`, `title`); a CSS name is blanked only when it is a
+property in `CSS_PROPERTIES`, in declaration position (right after `{` or `;`), outside a
+comment or a quoted string. Everything else stays in, and every byte of every other file.
 3. Banned phrases: the medical and sports patterns of `tests/test_provenance.py`.
 4. Numbers: every entry of `numbers` in `index.json` and in `racing.json` (both required) appears on
-   its cited README line, the replay hashes sit on theirs, and every number in the page's HTML
-   text appears on one of those cited lines.
+   its cited README line, the replay hashes sit on theirs, each replay's `lines` count is stated
+   (in digits or as a word) on its hash line, or, when the hash sits in a code block, on the
+   prose line that introduces the block (`replay_count_line`), and every number in the page's
+   HTML text appears on one of those cited lines.
 5. Models: every `words` block and every racing read names its model; the open-weight line is
    verbatim; the four Meta models are in the models list. Racing: no sim session number,
    customer id, stream name or league folder name in any served file, and no racing image.
 6. Images: every image is listed in the frames manifest (`frames/frames.json`) with its hash,
-   belongs to a clip in `index.json`, and every real-footage frame has `checked: true` in
-   `frames/blurred.json`.
+   belongs to a clip in `index.json` or is a demo-shift window's frame (named by a `shift.json`
+   window, under `frames/`, in a `wNN-` folder named by that window's own `window` id), and
+   every real-footage frame has `checked: true` in `frames/blurred.json`. A window frame counts
+   as synthetic only when the shift run's own record (`windows.jsonl` in the folder that
+   `sources.json` names as `shift.output.path`, never served) holds that window with the same
+   entry, record and clip, read from a clip file inside a `synthetic` folder. Anything less,
+   including a missing record, treats the frame as real footage: it needs its blur check.
+   Nothing served (`frames.json`'s `kind`, `shift.json`) can vouch for itself.
 7. Secrets: `gitleaks dir` over the page and bundle folders only (refused on any folder that
    holds a `.git` or a `workspaces` folder), no `.env` file, no key variable with a value.
 
@@ -100,6 +117,86 @@ _KEY_VALUE = re.compile(
     r"[^\s\"',}]{8,}"
 )
 _MIN_SESSION_DIGITS = 6
+
+# The language's own words, blanked by `prose_view`: the standard HTML and SVG element names.
+# A custom element (`<x-name>`) or any other tag name is not in this set and stays checked.
+HTML_ELEMENTS = frozenset(
+    """
+    a abbr address area article aside audio b base bdi bdo blockquote body br button canvas
+    caption cite code col colgroup data datalist dd del details dfn dialog div dl dt em embed
+    fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html i iframe
+    img input ins kbd label legend li link main map mark menu meta meter nav noscript object ol
+    optgroup option output p picture pre progress q rp rt ruby s samp script search section
+    select slot small source span strong style sub summary sup table tbody td template textarea
+    tfoot th thead time title tr track u ul var video wbr
+    svg g path circle ellipse line polyline polygon rect text tspan defs desc symbol use
+    clippath lineargradient radialgradient stop mask pattern marker
+    """.split()
+)
+# A real tag opening: `<name` or `</name`, ended by whitespace, `>` or `/`.
+_HTML_TAG = re.compile(r"<(/?)([A-Za-z][A-Za-z0-9-]*)(?=[\s>/])")
+# Elements whose body is raw text: no tag inside them is markup until their own end tag.
+_HTML_RAW = frozenset({"script", "style", "textarea", "title"})
+# The language's own words in CSS, blanked by `prose_view`: real property names only.
+# An unknown word before `:` (a selector, a value, a custom property) stays checked.
+CSS_PROPERTIES = frozenset(
+    """
+    accent-color align-content align-items align-self all animation animation-delay
+    animation-direction animation-duration animation-fill-mode animation-iteration-count
+    animation-name animation-play-state animation-timing-function appearance aspect-ratio
+    backdrop-filter backface-visibility background background-attachment background-blend-mode
+    background-clip background-color background-image background-origin background-position
+    background-repeat background-size block-size border border-block border-bottom
+    border-bottom-color border-bottom-left-radius border-bottom-right-radius border-bottom-style
+    border-bottom-width border-collapse border-color border-image border-inline border-left
+    border-left-color border-left-style border-left-width border-radius border-right
+    border-right-color border-right-style border-right-width border-spacing border-style
+    border-top border-top-color border-top-left-radius border-top-right-radius border-top-style
+    border-top-width border-width bottom box-shadow box-sizing break-inside caption-side
+    caret-color clear clip clip-path color color-scheme column-count column-gap columns contain
+    container content content-visibility counter-increment counter-reset cursor direction
+    display empty-cells fill fill-opacity filter flex flex-basis flex-direction flex-flow
+    flex-grow flex-shrink flex-wrap float font font-family font-feature-settings font-kerning
+    font-size font-stretch font-style font-variant font-variant-numeric font-weight gap grid
+    grid-area grid-auto-columns grid-auto-flow grid-auto-rows grid-column grid-column-end
+    grid-column-start grid-row grid-row-end grid-row-start grid-template grid-template-areas
+    grid-template-columns grid-template-rows height hyphens image-rendering inline-size inset
+    isolation justify-content justify-items justify-self left letter-spacing line-height
+    list-style list-style-position list-style-type margin margin-block margin-bottom
+    margin-inline margin-left margin-right margin-top mask max-block-size max-height
+    max-inline-size max-width min-block-size min-height min-inline-size min-width mix-blend-mode
+    object-fit object-position opacity order outline outline-color outline-offset outline-style
+    outline-width overflow overflow-anchor overflow-wrap overflow-x overflow-y overscroll-behavior
+    padding padding-block padding-bottom padding-inline padding-left padding-right padding-top
+    place-content place-items place-self pointer-events position quotes resize right rotate row-gap
+    scale scroll-behavior scroll-margin scroll-margin-top scroll-padding scroll-snap-align
+    scroll-snap-type scrollbar-color scrollbar-gutter scrollbar-width shape-rendering stroke
+    stroke-dasharray stroke-dashoffset stroke-linecap stroke-linejoin stroke-opacity stroke-width
+    tab-size table-layout text-align text-anchor text-decoration text-decoration-color
+    text-decoration-line text-decoration-style text-decoration-thickness text-indent
+    text-overflow text-rendering text-shadow text-size-adjust text-transform
+    text-underline-offset text-wrap top touch-action transform transform-origin transition
+    transition-delay transition-duration transition-property transition-timing-function
+    translate unicode-bidi user-select vector-effect vertical-align visibility white-space
+    width will-change word-break word-spacing word-wrap writing-mode z-index
+    -webkit-backdrop-filter -webkit-font-smoothing -webkit-overflow-scrolling
+    -webkit-tap-highlight-color -webkit-text-size-adjust -webkit-appearance
+    -moz-osx-font-smoothing
+    """.split()
+)
+# CSS: a comment or a quoted string is kept whole, and an unterminated string is not a string.
+_CSS_KEEP = re.compile(r"""/\*.*?\*/|"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'""", re.DOTALL)
+# Declaration position: right after `{` or `;` (whitespace allowed), a name, then `:`.
+_CSS_DECLARATION = re.compile(r"([{;]\s*)(-?[A-Za-z][A-Za-z0-9-]*)(\s*:)")
+_WINDOW_FOLDER = re.compile(r"^w\d+-")
+NUMBER_WORDS = {
+    word: n
+    for n, word in enumerate(
+        """zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen
+        fifteen sixteen seventeen eighteen nineteen twenty""".split()
+    )
+}
+DEFAULT_SOURCES = REPO / "data" / "site" / "sources.json"
 
 
 class SweepError(Exception):
@@ -288,6 +385,88 @@ def gather_names(names_dir: Path) -> Names:
     return Names(names=names, league=league, racing_ids=_racing_ids(names_dir))
 
 
+# ---------------------------------------------------------------- the prose view
+
+
+def _blank(text: str, start: int, end: int) -> str:
+    return text[:start] + " " * (end - start) + text[end:]
+
+
+def _html_prose(text: str) -> str:
+    """Blank the standard element names of real tag openings only.
+
+    Comments, quoted attribute values and raw-text bodies are stepped over whole, so a
+    `<name` inside any of them is never blanked.
+    """
+    out = text
+    n = len(text)
+    i = 0
+    while True:
+        j = text.find("<", i)
+        if j < 0:
+            break
+        if text.startswith("<!--", j):
+            end = text.find("-->", j + 4)
+            i = n if end < 0 else end + 3
+            continue
+        m = _HTML_TAG.match(text, j)
+        if m is None:
+            i = j + 1
+            continue
+        name = m.group(2).casefold()
+        if name in HTML_ELEMENTS:
+            out = _blank(out, m.start(2), m.end(2))
+        k = m.end()
+        while k < n and text[k] != ">":  # the attributes, quoted values stepped over whole
+            if text[k] in "\"'":
+                close = text.find(text[k], k + 1)
+                k = n if close < 0 else close + 1
+            else:
+                k += 1
+        i = k + 1
+        if not m.group(1) and name in _HTML_RAW:
+            end = re.compile(rf"</{name}(?=[\s>/])", re.IGNORECASE).search(text, i)
+            i = n if end is None else end.start()
+    return out
+
+
+def _css_names(segment: str) -> str:
+    def blank(m: re.Match[str]) -> str:
+        if m.group(2).casefold() not in CSS_PROPERTIES:
+            return m.group(0)
+        return m.group(1) + " " * len(m.group(2)) + m.group(3)
+
+    return _CSS_DECLARATION.sub(blank, segment)
+
+
+def _css_prose(text: str) -> str:
+    out: list[str] = []
+    pos = 0
+    for m in _CSS_KEEP.finditer(text):
+        out.append(_css_names(text[pos : m.start()]))
+        out.append(m.group(0))
+        pos = m.end()
+    out.append(_css_names(text[pos:]))
+    return "".join(out)
+
+
+def prose_view(f: Served) -> str | None:
+    """The file's text with its language's own markup words blanked (same length, same lines).
+
+    `.html`/`.htm`: standard element names in real tag openings. `.css`: real property names
+    in declaration position.
+    Any other file is returned whole.
+    """
+    if f.text is None:
+        return None
+    suffix = f.path.suffix.lower()
+    if suffix in {".html", ".htm"}:
+        return _html_prose(f.text)
+    if suffix == ".css":
+        return _css_prose(f.text)
+    return f.text
+
+
 # ---------------------------------------------------------------- checks
 
 
@@ -301,10 +480,13 @@ def _name_hits(text: str, names: list[str], banned: list[str]) -> int:
 def check_leaks(files: list[Served], names: Names) -> Iterator[Failure]:
     squashed_bans = [re.sub(r"\s+", "", b).casefold() for b in names.league]
     for f in files:
-        for label, text in (("its path", f.rel), ("its text", f.text)):
-            if text is None:
+        for label, text, prose in (
+            ("its path", f.rel, f.rel),
+            ("its text", f.text, prose_view(f)),
+        ):
+            if text is None or prose is None:
                 continue
-            hits = _name_hits(text, names.names, names.league)
+            hits = _name_hits(prose, names.names, names.league)
             if hits:
                 yield Failure(1, f.rel, f"{hits} driver or league name hit(s) in {label}")
             squashed = re.sub(r"\s+", "", text).casefold()
@@ -319,10 +501,11 @@ def check_tooling(files: list[Served]) -> Iterator[Failure]:
     for f in files:
         for m in _TOOLING.finditer(f.rel):
             yield Failure(2, f.rel, f"tooling word {m.group(0)!r} in its path")
-        if f.text is None:
+        prose = prose_view(f)
+        if prose is None:
             continue
-        for m in _TOOLING.finditer(f.text):
-            line = _line_of(f.text, m.start())
+        for m in _TOOLING.finditer(prose):
+            line = _line_of(prose, m.start())
             yield Failure(2, f.rel, f"line {line}: tooling word {m.group(0)!r}")
 
 
@@ -356,6 +539,34 @@ def _readme_line(readme: list[str], number: Any) -> str | None:
     if isinstance(number, bool) or not isinstance(number, int) or not 1 <= number <= len(readme):
         return None
     return readme[number - 1]
+
+
+def _states_count(line: str, count: int) -> bool:
+    if any(m.group(0) == str(count) for m in _NUMBER.finditer(_norm(line))):
+        return True
+    words = re.findall(r"[a-z]+", line.casefold())
+    return any(NUMBER_WORDS.get(w) == count for w in words)
+
+
+def replay_count_line(readme: list[str], number: int, count: int) -> int | None:
+    """The README line (1-based) that states a replay's line count, or None.
+
+    The count is read from the hash's own line; when that line sits inside a fenced code
+    block, it is read from the prose line that introduces the block instead (the nearest
+    non-blank line above the opening fence), never from another code line.
+    """
+    if not 1 <= number <= len(readme):
+        return None
+    fences = [i for i in range(number - 1) if readme[i].lstrip().startswith("```")]
+    where = number
+    if len(fences) % 2:  # inside a code block: its opening fence is the last one above
+        k = fences[-1] - 1
+        while k >= 0 and not readme[k].strip():
+            k -= 1
+        if k < 0:
+            return None
+        where = k + 1
+    return where if _states_count(readme[where - 1], count) else None
 
 
 def check_numbers(
@@ -399,6 +610,21 @@ def check_numbers(
                 yield Failure(
                     4, doc_name, f"{key}: the hash is not on README line {item['readme_line']}"
                 )
+            count = item.get("lines")
+            stated = (
+                replay_count_line(readme, item["readme_line"], count)
+                if isinstance(count, int) and not isinstance(count, bool)
+                else None
+            )
+            if stated is None:
+                yield Failure(
+                    4,
+                    doc_name,
+                    f"{key}: lines {count!r} is not stated on README line {item['readme_line']} "
+                    "or on the line that introduces its code block",
+                )
+            else:
+                cited.append(readme[stated - 1])
     allowed = {m.group(0) for line in cited for m in _NUMBER.finditer(_norm(line))}
     for f in page_files:
         if f.text is None or not f.rel.lower().endswith((".html", ".htm")):
@@ -495,7 +721,94 @@ def _resolve(file: str, frames_dir: Path, bundle: Path) -> Path | None:
     return None
 
 
-def check_images(files: list[Served], bundle: Path, index: dict[str, Any]) -> Iterator[Failure]:
+def _window_files(shift: Any, frames_dir: Path, bundle: Path) -> dict[Path, dict[str, Any]]:
+    """Each frame file a demo-shift window names -> that window (its `shift.json` object).
+
+    Only a file under `frames/`, whose folder is the window's own `window` id and starts
+    `wNN-`, counts; the frames manifest must give that same id as the frame's clip.
+    """
+    out: dict[Path, dict[str, Any]] = {}
+    root = frames_dir.resolve()
+    windows = shift.get("windows") if isinstance(shift, dict) else None
+    for window in windows or []:
+        if not isinstance(window, dict):
+            continue
+        wid = window.get("window")
+        if not isinstance(wid, str) or not _WINDOW_FOLDER.match(wid):
+            continue
+        if not isinstance(window.get("clip"), str):
+            continue
+        named = [window.get("poster")]
+        for ruling in window.get("rulings") or []:
+            for frame in (ruling or {}).get("frames") or []:
+                if isinstance(frame, dict):
+                    named.append(frame.get("src"))
+        for file in named:
+            if not isinstance(file, str):
+                continue
+            where = _resolve(file, frames_dir, bundle)
+            if where is None or not where.is_relative_to(root) or where.parent.name != wid:
+                continue
+            out[where] = window
+    return out
+
+
+def shift_record(sources: Path | None) -> dict[str, dict[str, Any]]:
+    """The shift run's own windows (`windows.jsonl`), by window id; {} when there is none.
+
+    It is read from the folder `sources.json` names as `shift.output.path` (server only,
+    never served), so it is a witness the served files cannot write for themselves.
+    """
+    if sources is None:
+        return {}
+    doc = _read_json(sources)
+    folder = (
+        ((doc.get("shift") or {}).get("output") or {}).get("path")
+        if isinstance(doc, dict)
+        else None
+    )
+    if not isinstance(folder, str) or not folder:
+        return {}
+    path = Path(folder)
+    if not path.is_absolute():
+        path = sources.parent / path
+    rows = path / "windows.jsonl"
+    if not rows.is_file():
+        return {}
+    out: dict[str, dict[str, Any]] = {}
+    for line in rows.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            raise SweepError(f"{rows}: a line is not JSON.") from None
+        if isinstance(row, dict) and isinstance(row.get("window"), str):
+            out[row["window"]] = row
+    return out
+
+
+def _proven_synthetic(window: dict[str, Any], record: dict[str, dict[str, Any]]) -> bool:
+    """True only when the shift record shows this window read a clip from a synthetic folder."""
+    row = record.get(window["window"])
+    if row is None or not isinstance(row.get("clip"), str):
+        return False
+    clip = Path(row["clip"].replace("\\", "/"))
+    return (
+        row.get("entry") == window.get("entry")
+        and row.get("record") == window.get("record")
+        and clip.stem == window["clip"]
+        and "synthetic" in (part.casefold() for part in clip.parts[:-1])
+    )
+
+
+def check_images(
+    files: list[Served],
+    bundle: Path,
+    index: dict[str, Any],
+    shift: Any = None,
+    record: dict[str, dict[str, Any]] | None = None,
+) -> Iterator[Failure]:
     clips = {c.get("id"): c for c in index.get("clips") or [] if isinstance(c, dict)}
     real = {cid for cid, c in clips.items() if c.get("kind") == "real"}
     images = [f for f in files if _is_image(f) and f.path.suffix.lower() != ".svg"]
@@ -529,6 +842,7 @@ def check_images(files: list[Served], bundle: Path, index: dict[str, Any]) -> It
                         blurred[where] = entry.get("checked")
         except SweepError as exc:
             yield Failure(6, "frames/blurred.json", str(exc))
+    windows = _window_files(shift, frames_dir, bundle)
     for f in images:
         key = f.path.resolve()
         entry = listed.get(key)
@@ -538,9 +852,16 @@ def check_images(files: list[Served], bundle: Path, index: dict[str, Any]) -> It
         if entry.get("sha256") != _file_sha(f.path):
             yield Failure(6, f.rel, "its sha256 differs from the frames manifest")
         clip = entry.get("clip")
-        if clip not in clips:
-            yield Failure(6, f.rel, "its clip is not in the forklift clip list")
-        elif clip in real and blurred.get(key) is not True:
+        window = windows.get(key)
+        if clip in clips:
+            is_real = clip in real
+        elif window is not None and clip == window["window"]:
+            # a demo-shift window's frame: synthetic only on the shift record's word, else real
+            is_real = window["clip"] in real or not _proven_synthetic(window, record or {})
+        else:
+            yield Failure(6, f.rel, "its clip is not in the forklift clip list or the demo shift")
+            continue
+        if is_real and blurred.get(key) is not True:
             yield Failure(6, f.rel, "a real-footage frame without `checked: true` in blurred.json")
 
 
@@ -652,8 +973,13 @@ def sweep(
     names_dir: Path,
     readme: Path = REPO / "README.md",
     gitleaks: str = "gitleaks",
+    sources: Path | None = None,
 ) -> list[Failure]:
-    """Run the seven checks; return every failure. Raises SweepError when a source is missing."""
+    """Run the seven checks; return every failure. Raises SweepError when a source is missing.
+
+    `sources` is the bundle's `sources.json`, read only for the shift run's record; without it
+    every demo-shift window frame is held to the real-footage blur check.
+    """
     for folder, label in ((bundle, "--bundle"), (page, "--page")):
         if not folder.is_dir():
             raise SweepError(f"{folder}: {label} is not a folder.")
@@ -672,7 +998,9 @@ def sweep(
     failures += check_phrases(files, patterns)
     failures += check_numbers(bundle, page_files, readme_lines, docs)
     failures += check_models(files, docs, clips, readme_text, names)
-    failures += check_images(files, bundle, docs["index.json"])
+    shift_path = bundle / "shift.json"
+    shift = _read_json(shift_path) if shift_path.is_file() else None
+    failures += check_images(files, bundle, docs["index.json"], shift, shift_record(sources))
     for f in files:
         suffix = f.path.suffix.lower()
         if f.text is None and not _is_image(f):
@@ -701,12 +1029,23 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument("--names", type=Path, required=True, help="the racing names folder")
     parser.add_argument("--readme", type=Path, default=REPO / "README.md")
     parser.add_argument("--gitleaks", default="gitleaks", help="the gitleaks command")
+    parser.add_argument(
+        "--sources",
+        type=Path,
+        default=None,
+        help="the bundle's sources.json, for the shift run's record "
+        f"(default {DEFAULT_SOURCES.relative_to(REPO).as_posix()} when present)",
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
+    if args.sources is None and DEFAULT_SOURCES.is_file():
+        args.sources = DEFAULT_SOURCES
     old = None
     try:
         if args.bundle.is_dir():
             old = stamp_path(args.bundle)
-        failures = sweep(args.bundle, args.page, args.names, args.readme, args.gitleaks)
+        failures = sweep(
+            args.bundle, args.page, args.names, args.readme, args.gitleaks, args.sources
+        )
     except SweepError as exc:
         if old is not None and old.is_file():
             old.unlink()

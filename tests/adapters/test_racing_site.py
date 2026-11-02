@@ -233,8 +233,8 @@ def test_the_real_readme_still_states_every_number() -> None:
     assert set(bundle.SCOREBOARD_KEYS.values()) <= set(got["numbers"])
     assert got["numbers"]["over_limit"]["text"] == "29 cars over the limit"
     assert got["honesty"]["lines"][0].startswith("On decision 18")
-    assert got["numbers"]["spend"]["text"] == "$1.76 spent"
-    assert got["numbers"]["spend_mark"]["text"] == "$1.76 spent"
+    assert got["numbers"]["spend"]["text"] == "$1.76"
+    assert got["numbers"]["spend_mark"]["text"] == "$1.76"
 
 
 def test_limits_rows_carry_the_stated_incidents_and_limit(site: dict[str, Path]) -> None:
@@ -289,7 +289,7 @@ def test_no_served_text_holds_a_tooling_word(site: dict[str, Path]) -> None:
     doc = json.loads((site["out"] / "racing.json").read_text(encoding="utf-8"))
     served = list(bundle._texts(doc))
     assert served and not [t for t in served if "proxy" in t.casefold()]
-    assert doc["numbers"]["spend"]["text"] == "$1.76 spent"
+    assert doc["numbers"]["spend"]["text"] == "$1.76"
 
 
 def test_limits_mode_follows_the_feeds(site: dict[str, Path]) -> None:
