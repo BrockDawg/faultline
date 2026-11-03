@@ -15,7 +15,7 @@
   const t = (k) => (k in COPY ? COPY[k] : k);
 
   const S = {
-    index: null, racing: null, shift: null,
+    index: null, racing: null, racingMedia: null, shift: null,
     clips: {}, byId: {}, sel: null, protest: null, running: false,
   };
 
@@ -705,6 +705,23 @@
     box.appendChild(el("h4", null, p.label + " · " + t("r.rule") + " " + (p.rule || "")));
     if (withStory !== false) box.appendChild(el("p", "pack-story", protestStory(p)));
     if (p.clause) box.appendChild(el("p", "clause", p.clause));
+    const media = (S.racingMedia || {}).protests && (S.racingMedia.protests[String(p.id)] || null);
+    if (media && media.video) {
+      const fig = el("figure", "race-media");
+      const v = el("video");
+      v.controls = true;
+      v.muted = true;
+      v.playsInline = true;
+      v.preload = "metadata";
+      v.setAttribute("playsinline", "");
+      v.setAttribute("muted", "");
+      v.setAttribute("aria-label", "Race footage for " + p.label);
+      if (media.poster) v.poster = DATA + media.poster;
+      v.src = DATA + media.video;
+      fig.appendChild(v);
+      fig.appendChild(el("figcaption", null, "Real race footage, reconstructed from the stored review frames. Silent by design. The steward's ruling is shown below; model reads never decide it."));
+      box.appendChild(fig);
+    }
     box.appendChild(protestTimeline(p));
     const w = p.window || {};
     box.appendChild(el("p", "label", t("r.window")));
@@ -979,6 +996,7 @@
       tx.appendChild(where);
       tx.appendChild(el("span", "wgist" + (hasV(w, "breach") ? " t-breach" : ""), windowGist(w)));
       b.appendChild(tx);
+      b.appendChild(el("span", "wopen", "Open evidence"));
       b.addEventListener("click", () => (SH.open === i ? closeWindow(true) : openWindow(i)));
       list.appendChild(b);
       return b;
@@ -1339,6 +1357,7 @@
     }
     renderIndex();
     try { S.racing = await getJSON(DATA + "racing.json"); } catch (e) { S.racing = null; }
+    try { S.racingMedia = await getJSON(DATA + "racing/media.json"); } catch (e) { S.racingMedia = null; }
     renderRacing();
     try { S.shift = await getJSON(DATA + "shift.json"); } catch (e) { S.shift = null; }
     renderShift();
