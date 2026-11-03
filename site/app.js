@@ -730,10 +730,12 @@
 
   function evidencePack(p, withStory) {
     const box = el("article", "evpack");
-    box.appendChild(el("h4", null, p.label + " · " + t("r.rule") + " " + (p.rule || "")));
-    if (withStory !== false) box.appendChild(el("p", "pack-story", protestStory(p)));
-    if (p.clause) box.appendChild(el("p", "clause", p.clause));
     const media = (S.racingMedia || {}).protests && (S.racingMedia.protests[String(p.id)] || null);
+    const w = p.window || {};
+    const context = [w.race, w.lap == null ? null : "lap " + w.lap].filter(Boolean).join(" · ");
+    box.appendChild(el("h4", null, p.label + (context ? " · " + context : "")));
+    if (withStory !== false) box.appendChild(el("p", "pack-story", protestStory(p)));
+    if (p.clause && !media) box.appendChild(el("p", "clause", p.clause));
     if (media && media.video) {
       const fig = el("figure", "race-media");
       const v = el("video");
@@ -747,26 +749,27 @@
       if (media.poster) v.poster = DATA + media.poster;
       v.src = DATA + media.video;
       fig.appendChild(v);
-      fig.appendChild(el("figcaption", null, "Real race footage, reconstructed from the stored review frames. Silent by design. The steward's ruling is shown below; model reads never decide it."));
+      fig.appendChild(el("figcaption", null, "Silent replay from the stored review frames, sampled twice per second. The steward's ruling is shown below; model reads never decide it."));
       box.appendChild(fig);
     }
-    box.appendChild(protestTimeline(p));
-    const w = p.window || {};
-    box.appendChild(el("p", "label", t("r.window")));
-    const fs = w.feed_s || [];
-    box.appendChild(el("p", "evidence", [w.label, w.lap != null ? t("r.lap") + " " + w.lap : null, fs.length === 2 ? t("r.feed") + " " + fs[0] + "-" + fs[1] : null].filter(Boolean).join(" · ")));
-    box.appendChild(el("p", "label", t("r.set")));
-    const ul = el("ul", "cars");
-    (p.candidates || []).forEach((c) => ul.appendChild(el("li", null, c)));
-    box.appendChild(ul);
-    if ((p.facts || []).length) {
+    if (!media) box.appendChild(protestTimeline(p));
+    if (!media) {
+      box.appendChild(el("p", "label", t("r.window")));
+      const fs = w.feed_s || [];
+      box.appendChild(el("p", "evidence", [w.label, w.lap != null ? t("r.lap") + " " + w.lap : null, fs.length === 2 ? t("r.feed") + " " + fs[0] + "-" + fs[1] : null].filter(Boolean).join(" · ")));
+      box.appendChild(el("p", "label", t("r.set")));
+      const ul = el("ul", "cars");
+      (p.candidates || []).forEach((c) => ul.appendChild(el("li", null, c)));
+      box.appendChild(ul);
+    }
+    if (!media && (p.facts || []).length) {
       box.appendChild(el("p", "label", t("r.facts")));
       const f = el("ul");
       p.facts.forEach((x) => f.appendChild(el("li", null, x)));
       box.appendChild(f);
     }
-    if (p.evidence) { box.appendChild(el("p", "label", t("measurement"))); box.appendChild(el("p", "evidence", p.evidence)); }
-    box.appendChild(el("p", "label", t("r.steward")));
+    if (!media && p.evidence) { box.appendChild(el("p", "label", t("measurement"))); box.appendChild(el("p", "evidence", p.evidence)); }
+    box.appendChild(el("p", "label", media ? "Steward ruling" : t("r.steward")));
     box.appendChild(el("p", "decided", p.steward_ruling || ""));
     const arms = el("div", "words");
     arms.appendChild(el("p", "words-head", t("beside")));

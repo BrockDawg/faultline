@@ -904,7 +904,7 @@ def check_videos(
     record: dict[str, dict[str, Any]] | None = None,
     ffprobe: str = "ffprobe",
 ) -> Iterator[Failure]:
-    """Check 6 for videos: listed, hashed, a proven-synthetic shift window, no audio."""
+    """Check 6 for videos: proven shift clips or hash-checked racing review replays, no audio."""
     videos = [f for f in files if _is_video(f)]
     video_dir = (bundle / "video").resolve()
     manifest_path = bundle / "video" / "videos.json"
@@ -938,6 +938,12 @@ def check_videos(
         for w in (shift.get("windows") if isinstance(shift, dict) else None) or []
         if isinstance(w, dict) and isinstance(w.get("window"), str)
     }
+    racing = _read_json(bundle / "racing.json") if (bundle / "racing.json").is_file() else {}
+    protests = {
+        str(p.get("id")): p
+        for p in (racing.get("protests") or [])
+        if isinstance(p, dict) and p.get("id") is not None
+    }
     for f in videos:
         key = f.path.resolve()
         row = listed.get(key)
@@ -948,6 +954,47 @@ def check_videos(
             yield Failure(6, f.rel, "a video outside the bundle's video/ folder")
         if row.get("sha256") != _file_sha(f.path):
             yield Failure(6, f.rel, "its sha256 differs from video/videos.json")
+        if row.get("kind") == "racing_review":
+            pid = str(row.get("protest", ""))
+            protest = protests.get(pid)
+            source = REPO / "data/site/racing/preds-arm2.jsonl"
+            source_frames = REPO / "data/site/racing/preds-arm2.jsonl.frames"
+            source_row = None
+            if source.is_file():
+                try:
+                    for line in source.read_text(encoding="utf-8").splitlines():
+                        if not line:
+                            continue
+                        candidate = json.loads(line)
+                        if str(candidate.get("id")) == pid:
+                            source_row = candidate
+                            break
+                except (OSError, json.JSONDecodeError):
+                    source_row = None
+            hashes = row.get("source_sha256")
+            expected = [x.get("sha256") for x in (source_row or {}).get("frames", [])]
+            if not key.is_relative_to(video_dir) or key.name != f"racing-protest-{pid}.mp4":
+                yield Failure(6, f.rel, "a racing replay outside its numbered video path")
+            if protest is None or not isinstance(protest.get("frames_checked"), int):
+                yield Failure(6, f.rel, "a racing replay with no reviewed protest record")
+            if source_row is None or not isinstance(hashes, list) or hashes != expected:
+                yield Failure(6, f.rel, "its source frames do not match the stored racing record")
+            elif len(expected) != (protest or {}).get("frames_checked"):
+                yield Failure(6, f.rel, "its frame count differs from the reviewed protest record")
+            else:
+                for digest in expected:
+                    frame = source_frames / f"{digest}.jpg"
+                    if not frame.is_file() or _file_sha(frame) != digest:
+                        yield Failure(6, f.rel, "a source frame is missing or its hash changed")
+                        break
+            streams = _video_streams(f.path, ffprobe)
+            if isinstance(streams, str):
+                yield Failure(6, f.rel, streams)
+            elif "audio" in streams:
+                yield Failure(6, f.rel, "a video with an audio track")
+            elif streams != ["video"]:
+                yield Failure(6, f.rel, f"streams {streams}, not one video stream")
+            continue
         wid = row.get("window")
         window = windows.get(wid) if isinstance(wid, str) else None
         if window is None or not _WINDOW_FOLDER.match(str(wid)):
