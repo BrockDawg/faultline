@@ -119,3 +119,4 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `118e057` | 2026-11-02T20:42:32-0600 | demo: script lines 12 and 13 match the README | claude-opus-5-5 via Claude Code | none |
 | `4705d74` | 2026-11-03T09:09:32-0600 | feat: polish and deploy live demo page | claude-opus-5-5 via Claude Code | none |
 | `b7d9086` | 2026-11-03T09:29:53-0600 | fix: clarify evidence panel interactions | claude-opus-5-5 via Claude Code | none |
+| `0d5539b` | 2026-11-03T10:38:59-0600 | feat: judge path, hero case, Meta traces, shift label clarity | claude-opus-5-5 via Claude Code | none |

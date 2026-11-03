@@ -1,0 +1,63 @@
+1
+00:00:00,000 --> 00:00:12,000
+I run PitBot, for sim-racing leagues. When a driver protests a move, a volunteer steward digs through the race footage to rule on it.
+
+2
+00:00:12,000 --> 00:00:24,000
+I'm Brock. I built faultline: give it written rules and footage, and it rules on every rule, with the evidence.
+
+3
+00:00:24,000 --> 00:00:36,000
+The same judge reads a warehouse, where forklifts hurt people and nobody watches every camera.
+
+4
+00:00:36,000 --> 00:00:48,000
+Its rulings serve two people: the safety lead, who gets a short list to act on, and the insurer, who gets evidence instead of a form.
+
+5
+00:00:48,000 --> 00:01:00,000
+The site writes its rules in plain English. Meta's open-weight Muse Spark Open, on Baseten, compiles each rule three times; only what all three agree on ships.
+
+6
+00:01:00,000 --> 00:01:12,000
+It reads fixed site cameras, the kind every warehouse already has.
+
+7
+00:01:12,000 --> 00:01:24,000
+Meta's SAM 3.1 tracks the truck, and finds the people from text alone. Here, a man walks into the truck zone with no hi-vis.
+
+8
+00:01:24,000 --> 00:01:35,000
+Four floor points per camera, marked once, give it a measured floor, so scripts measure speed and distance, as bands.
+
+9
+00:01:35,000 --> 00:01:47,000
+A script reads the colour on his torso: breach, with the frames and the number that decided it. Two people ahead of the truck, both vested: clear.
+
+10
+00:01:47,000 --> 00:01:59,000
+Here the frame cuts the truck off, so nobody can see where it meets the floor. It won't guess: unable, naming the one fact it couldn't measure.
+
+11
+00:01:59,000 --> 00:02:05,000
+Then real footage. A camera near the floor made it see a touch that never happened, so now under one and a half metres it won't rule on the floor.
+
+12
+00:02:05,000 --> 00:02:17,000
+Nobody watches a whole shift. My demo shift: forty-eight windows, sixteen breaches to review, eighty-four clear, a hundred and forty unable — a hundred and ten of them, twenty-two windows times five rules, because the camera moved or was never marked.
+
+13
+00:02:17,000 --> 00:02:29,000
+Back to racing. The steward names the moment; scripts cut the frames, the steward rules from them. Meta's models named the right offender four times in eight.
+
+14
+00:02:29,000 --> 00:02:35,000
+[On screen: the live site's "Check nobody changed it" replay, ending "Same ruling. Nobody edited it."]
+
+15
+00:02:35,000 --> 00:02:47,000
+On twenty-six graded clips it found twelve of fourteen breach clips, and no false breach on the ten compliant ones. Every ruling rebuilds offline to the same bytes.
+
+16
+00:02:47,000 --> 00:02:57,000
+A rules pack is just written rules — the same judge can be taught a crane site, a press, a crossing; those packs are written the same way this one was. Scripts decide, Meta's models add words, a person makes the call. That's faultline.
