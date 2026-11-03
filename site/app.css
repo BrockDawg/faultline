@@ -460,3 +460,12 @@ td.pass{color:var(--clear);font-weight:700}td.fail{color:var(--breach);font-weig
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}
 }
+
+.judgepath{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;padding:.8rem 0;border-bottom:2px solid #1a1a1a}
+.judgepath a{font-weight:700}
+.jp-nums{margin-left:auto}
+.hero{padding:2rem 0}
+.hero-case{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+.hero-poster{width:100%;height:auto;border:1px solid #1a1a1a}
+.hero-num{font-size:1.25rem;font-weight:700}
+@media(max-width:700px){.hero-case{grid-template-columns:1fr}}

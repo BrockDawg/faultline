@@ -115,3 +115,7 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `cad8787` | 2026-11-02T17:44:23-0600 | site: every live button says what it does and shows it happening | claude-opus-5-5 via Claude Code | none |
 | `991ef68` | 2026-11-02T18:56:42-0600 | site: the page tells the story, each clip opens as a case file | claude-opus-5-5 via Claude Code | none |
 | `61339b9` | 2026-11-02T19:53:15-0600 | site: the shift reads as a short list, and an unable ruling says why first | claude-opus-5-5 via Claude Code | none |
+| `c6112ea` | 2026-11-02T20:30:09-0600 | site: every shift window plays its footage, and a ruling's frame jumps to it | claude-opus-5-5 via Claude Code | none |
+| `118e057` | 2026-11-02T20:42:32-0600 | demo: script lines 12 and 13 match the README | claude-opus-5-5 via Claude Code | none |
+| `4705d74` | 2026-11-03T09:09:32-0600 | feat: polish and deploy live demo page | claude-opus-5-5 via Claude Code | none |
+| `b7d9086` | 2026-11-03T09:29:53-0600 | fix: clarify evidence panel interactions | claude-opus-5-5 via Claude Code | none |

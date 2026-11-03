@@ -29,8 +29,62 @@
   </div>
 </header>
 
+<nav class="judgepath wrap" aria-label="Judge's path">
+  <a href="faultline-film-web.mp4">Watch the film</a>
+  <a href="#pick-h">Live demo</a>
+  <a href="#yours-h">Replay it yourself</a>
+  <a href="https://github.com/BrockDawg/faultline">GitHub</a>
+  <span class="jp-nums"><b data-num="breach_found"></b> breach clips found · <b data-num="false_breach"></b> false breaches · offline replay verified</span>
+</nav>
+
+<section class="hero wrap" aria-labelledby="hero-h">
+  <h2 id="hero-h">The hero case: a blind corner, no hi-vis</h2>
+  <p class="hero-lede">On a warehouse site, forklifts hurt people, and nobody watches every camera — faultline reads the site's written rules and its cameras, and rules on every rule, with the evidence.</p>
+  <div class="hero-case" id="hero-case">
+    <img class="hero-poster" id="hero-poster" alt="The deciding frame of the blind-corner clip">
+    <div class="hero-ruling">
+      <p><span class="stamp v-breach">Breach</span> <b>Wear high-visibility clothing in a truck zone</b></p>
+      <p class="hero-num" id="hero-num">Loading the ruling…</p>
+      <p class="fine">Scripts measure and decide. Meta models perceive and write words beside the ruling — never a verdict.</p>
+      <p><a href="#run" id="hero-open">Open this case</a> · <a href="faultline-film-web.mp4">Watch the film</a></p>
+    </div>
+  </div>
+</section>
+
 <main>
-  <section class="pick wrap" aria-labelledby="pick-h">
+  <section class="panel wrap" aria-labelledby="score-h">
+    <div class="panel-head"><h2 id="score-h">The scoreboard</h2><p class="panel-sub">On the graded fixed-camera clips, against a key reviewed by hand.</p></div>
+    <div class="panel-body">
+      <dl class="board">
+        <div data-needs="breach_found"><dt>Breach clips found</dt><dd data-num="breach_found"></dd></div>
+        <div data-needs="false_breach"><dt>False breaches on the compliant clips</dt><dd data-num="false_breach"></dd></div>
+        <div data-needs="unable"><dt>Rulings unable to rule, each naming its missing fact</dt><dd data-num="unable"></dd></div>
+        <div data-needs="replay"><dt>Replay</dt><dd data-num="replay"></dd></div>
+      </dl>
+      <div class="replay-box">
+        <div class="replay-live">
+          <h3>Check it at home</h3>
+          <p>You don't have to trust our server either. Run one command on your own machine, and the shipped record gives you this hash:</p>
+          <p class="mono-line"><code class="hash" id="shipped-sha"></code></p>
+          <p class="fine"><a href="#yours-h">The command is below.</a> Or watch our server do the same from scratch now.</p>
+          <button type="button" class="btn" id="replay-shipped">Replay the shipped <span data-count="shipped"></span> clips here</button>
+          <div class="progress" id="prog-shipped" hidden></div>
+          <ol class="replay-lines" id="replay-lines"></ol>
+          <p class="replay-end" id="replay-end" hidden></p>
+        </div>
+        <div class="replay-set" id="graded-set" hidden>
+          <h3>The graded set, replayed at deploy</h3>
+          <p class="fine">Every graded clip replayed on this server when it was deployed. A full live run takes minutes, too long to wait for here.</p>
+          <p class="mono-line"><span class="k">set</span> <code class="hash" id="graded-sha"></code></p>
+          <p class="mono-line"><span class="k">when</span> <span id="graded-when"></span></p>
+          <p class="mono-line" id="graded-match"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+<section class="pick wrap" aria-labelledby="pick-h">
     <div class="pick-grid">
       <div class="pick-forklift">
         <div class="pick-head">
@@ -53,7 +107,7 @@
       </div>
       <div class="pick-racing" id="pick-racing">
         <div class="pick-head">
-          <h2 class="pick-title" id="racing-h">PitBot racing</h2>
+          <h2 class="pick-title" id="racing-h">PitBot racing — proof</h2>
           <p class="pick-note">A real league, car numbers only</p>
         </div>
         <div class="tiles tiles-racing" role="group" aria-labelledby="racing-h">
@@ -104,41 +158,19 @@
     </div>
   </section>
 
-  <section class="panel wrap" aria-labelledby="score-h">
-    <div class="panel-head"><h2 id="score-h">The scoreboard</h2><p class="panel-sub">On the graded fixed-camera clips, against a key reviewed by hand.</p></div>
-    <div class="panel-body">
-      <dl class="board">
-        <div data-needs="breach_found"><dt>Breach clips found</dt><dd data-num="breach_found"></dd></div>
-        <div data-needs="false_breach"><dt>False breaches on the compliant clips</dt><dd data-num="false_breach"></dd></div>
-        <div data-needs="unable"><dt>Rulings unable to rule, each naming its missing fact</dt><dd data-num="unable"></dd></div>
-        <div data-needs="replay"><dt>Replay</dt><dd data-num="replay"></dd></div>
-      </dl>
-      <div class="replay-box">
-        <div class="replay-live">
-          <h3>Check it at home</h3>
-          <p>You don't have to trust our server either. Run one command on your own machine, and the shipped record gives you this hash:</p>
-          <p class="mono-line"><code class="hash" id="shipped-sha"></code></p>
-          <p class="fine"><a href="#yours-h">The command is below.</a> Or watch our server do the same from scratch now.</p>
-          <button type="button" class="btn" id="replay-shipped">Replay the shipped <span data-count="shipped"></span> clips here</button>
-          <div class="progress" id="prog-shipped" hidden></div>
-          <ol class="replay-lines" id="replay-lines"></ol>
-          <p class="replay-end" id="replay-end" hidden></p>
-        </div>
-        <div class="replay-set" id="graded-set" hidden>
-          <h3>The graded set, replayed at deploy</h3>
-          <p class="fine">Every graded clip replayed on this server when it was deployed. A full live run takes minutes, too long to wait for here.</p>
-          <p class="mono-line"><span class="k">set</span> <code class="hash" id="graded-sha"></code></p>
-          <p class="mono-line"><span class="k">when</span> <span id="graded-when"></span></p>
-          <p class="mono-line" id="graded-match"></p>
-        </div>
-      </div>
-    </div>
-  </section>
+  
+<section class="panel wrap" aria-labelledby="trace-h">
+  <div class="panel-head"><h2 id="trace-h">Meta models at work — inspectable, never deciding</h2></div>
+  <div class="panel-body">
+    <div id="trace-sam"><h3>SAM — finding people from text</h3><p>Loading the recorded trace…</p></div>
+    <div id="trace-spark"><h3>Muse Spark Open — compiling a plain-English rule</h3><p>Loading the recorded trace…</p></div>
+  </div>
+</section>
 
-  <section class="panel wrap" aria-labelledby="shift-h" id="shift-panel">
+<section class="panel wrap" aria-labelledby="shift-h" id="shift-panel">
     <div class="panel-head"><h2 id="shift-h">A shift</h2><p class="panel-sub" data-needs="shift_windows shift_rulings"><span data-num="shift_windows"></span> windows of footage, <span data-num="shift_rulings"></span> rulings, every rule answered on every window.</p></div>
     <div class="panel-body">
-      <p class="shift-lead">Nobody watches a whole shift. The judge reads every window, and the safety lead gets a short list of what to look at. Select a window below to open its evidence.</p>
+      <p class="shift-lead">Nobody watches a whole shift — here is the short list. The judge reads every window; To review shows the breaches first, and the full breakdown is one click deeper under All windows. Select a window below to open its evidence.</p>
       <p data-needs="shift_breach shift_clear shift_unable shift_camera_moved"><b class="t-breach" data-num="shift_breach"></b> breaches to review, <b class="t-clear" data-num="shift_clear"></b> clear and <b class="t-unable" data-num="shift_unable"></b> unable, <span data-num="shift_camera_moved"></span> of them because the camera moved or was never marked.</p>
       <figure class="shiftfig">
         <div class="shiftbar" id="shiftbar" aria-hidden="true"></div>
@@ -167,7 +199,7 @@
   </section>
 
   <section class="panel wrap" aria-labelledby="race-h" id="racing-panel">
-    <div class="panel-head"><h2 id="race-h">PitBot racing, live</h2><p class="panel-sub">The same judge on a real PitBot league: car numbers, no frames, no names.</p></div>
+    <div class="panel-head"><h2 id="race-h">The same judge, on the author's own league</h2><p class="panel-sub">Proof, not a second hero: real PitBot protests, steward rulings, car numbers only.</p></div>
     <div class="panel-body">
       <h3>Protests</h3>
       <p>A driver protests a move. A volunteer steward rules from the evidence pack. For a contact, the script never rules a breach: the steward rules, and the models' reads sit beside the evidence, never as a ruling. Select a protest to open its evidence pack and race evidence.</p>
@@ -284,8 +316,8 @@ uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl</co
   <span data-copy="go.busy">Checking…</span>
   <span data-copy="sel.protest">A protest</span>
   <span data-copy="sel.limits">The incident limit</span>
-  <span data-copy="busy.clip">Showing the stored ruling. The live rebuild is busy, try again in a minute.</span>
-  <span data-copy="busy.racing">Showing the stored record. The live check is busy, try again in a minute.</span>
+  <span data-copy="busy.clip">stored ruling — live check unavailable. The live rebuild is busy, try again in a minute.</span>
+  <span data-copy="busy.racing">stored ruling — live check unavailable. The live check is busy, try again in a minute.</span>
   <span data-copy="frames.ruling">frames the ruling names</span>
   <span data-copy="frames.model">frames shown to the model</span>
   <span data-copy="frames.window">the window</span>

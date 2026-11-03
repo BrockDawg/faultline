@@ -10,6 +10,16 @@ Give it a rules pack and footage, and it says for each rule whether it was follo
 Every output is a ruling: the rule, the offender and the evidence, never tips or statistics.
 It covers two domains today: warehouse forklifts, under OSHA 29 CFR 1910.178 and each site's own rules, and sim-racing leagues on PitBot (pitbot.gg), my league management platform.
 
+## Judge's path (10 minutes)
+
+- **Problem:** on a warehouse site, forklifts hurt people, and nobody watches every camera.
+- **Hero domain:** warehouse forklifts (OSHA 29 CFR 1910.178 + the site's own rules). PitBot racing below is the real-user proof, not a second hero.
+- **Watch the film:** [faultline-film-web.mp4](https://metahackathon.pitbot.gg/faultline-film-web.mp4) · **Live demo:** [metahackathon.pitbot.gg](https://metahackathon.pitbot.gg) · **Repo:** [github.com/BrockDawg/faultline](https://github.com/BrockDawg/faultline)
+- **Replay it yourself:** `uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl`
+- **Headline numbers:** 12 of 14 breach clips found · 0 of 10 false breaches on compliant clips · replay byte-identical offline.
+- **Run the tests:** `uv run --extra site pytest -q`
+- The judge refuses to rule when it cannot prove it, and names the missing fact. Scripts measure and decide every verdict; Meta models perceive and write words beside the ruling, never a verdict.
+
 <table>
 <tr>
 <td width="50%" valign="top">
@@ -61,7 +71,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 111 |
+| Commits in this repo | 115 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 40 |
 | Experiment scripts in the working repo | 227 |
@@ -285,7 +295,7 @@ Forklift speeds and distances on these synthetic clips are a ranking, not metres
 The speed order holds: a faster truck reads faster.
 
 The forklift demo, `faultline-video shift`, stitches clips into a shift and builds a dashboard: every breach shows the number that decided it, and every unable ruling names its missing fact in plain words.
-On the demo shift that is 48 windows and 240 rulings: 16 breaches to review, 84 clear and 140 unable, 110 of them because the camera moved or was never marked.
+On the demo shift that is 48 windows and 240 rulings: 16 breaches to review, 84 clear and 140 unable, 110 of them because the camera moved or was never marked (110 rulings = 22 windows × 5 rules, each naming camera.static; the other 30 unable rulings name other missing facts).
 `faultline-video demo` builds a one-file walk through it, and `demo/` holds that page, its fifteen-line script and one still per line.
 The contract smoke, `scripts/contract_smoke.py`, runs `steward judge` on an items file with no model call and checks every line.
 

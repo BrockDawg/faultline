@@ -63,6 +63,34 @@
   }
   const still = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+
+  async function renderHeroTraces() {
+    try {
+      const clip = await loadClip("blind_corner_no_vest_07");
+      const r = (clip.rulings || []).find((x) => x.rule === "hi_vis_in_truck_zone");
+      if (r) {
+        $("#hero-num").textContent = "Decided by: " + (r.decided_by || r.measurement || "");
+        const f = (r.frames || [])[0];
+        if (f) $("#hero-poster").src = DATA + f.src;
+      }
+      const sam = $("#trace-sam");
+      clear(sam);
+      sam.appendChild(el("h3", null, "SAM 3.1 (sam-3.1, Meta Model API) — finding people from text"));
+      sam.appendChild(el("p", null, "Text prompt \u201cperson\u201d \u2192 SAM 3.1 masks and video track \u2192 scripts measure the person in the truck zone. The model finds the person; it never rules."));
+      if (r) sam.appendChild(el("p", "fine", "On this clip: " + (r.measurement || "")));
+      const sp = $("#trace-spark");
+      clear(sp);
+      sp.appendChild(el("h3", null, "Muse Spark Open (meta-models/muse-spark-open-1026, Baseten) — compiling a plain-English rule"));
+      sp.appendChild(el("p", null, "Plain-English rule \u2192 three compile runs \u2192 only what all three agree on ships as the predicate \u2192 scripts apply it and decide. On this ruling the recorded reads beside it: "));
+      const reads = r && r.words && r.words.reads;
+      if (reads) sp.appendChild(el("p", "fine", reads.model + " on " + reads.where + ": " + reads.runs + " runs, agreed \u201c" + reads.agreed + "\u201d — words beside the ruling, never the verdict."));
+      const note = r && r.words && r.words.note;
+      if (note) sp.appendChild(el("p", "fine", note.model + " (" + note.where + ") wrote beside the ruling: " + note.text));
+    } catch (e) {
+      const n = $("#hero-num"); if (n) n.textContent = "stored ruling — live check unavailable";
+    }
+  }
+
   // ---------------------------------------------------------------- numbers from the JSON
   function fillNumbers(attr, needsAttr, numbers) {
     $$("[" + attr + "]").forEach((n) => {
@@ -1361,6 +1389,7 @@
     renderRacing();
     try { S.shift = await getJSON(DATA + "shift.json"); } catch (e) { S.shift = null; }
     renderShift();
+    renderHeroTraces();
     gradedSet();
   }
 

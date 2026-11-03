@@ -413,7 +413,7 @@ def test_the_busy_line_is_the_plans_own_words():
     keys = {a["data-copy"]: a for _, a in _page().tags if a.get("data-copy")}
     html = (SITE / "index.html").read_text(encoding="utf-8")
     assert "busy.clip" in keys
-    assert "Showing the stored ruling. The live rebuild is busy, try again in a minute." in html
+    assert "stored ruling — live check unavailable. The live rebuild is busy, try again in a minute." in html
 
 
 def _copy() -> dict[str, str]:
