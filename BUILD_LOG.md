@@ -120,3 +120,7 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `4705d74` | 2026-11-03T09:09:32-0600 | feat: polish and deploy live demo page | claude-opus-5-5 via Claude Code | none |
 | `b7d9086` | 2026-11-03T09:29:53-0600 | fix: clarify evidence panel interactions | claude-opus-5-5 via Claude Code | none |
 | `0d5539b` | 2026-11-03T10:38:59-0600 | feat: judge path, hero case, Meta traces, shift label clarity | claude-opus-5-5 via Claude Code | none |
+| `11e12cf` | 2026-11-03T10:48:02-0600 | docs: tally and build log for judge-path release | claude-opus-5-5 via Claude Code | none |
+| `2331cdf` | 2026-11-03T11:02:01-0600 | fix: ruff line length in busy-line test | claude-opus-5-5 via Claude Code | none |
+| `819d039` | 2026-11-03T11:02:39-0600 | fix: wrap busy-line string | claude-opus-5-5 via Claude Code | none |
+| `82968a9` | 2026-11-03T12:37:32-0600 | docs: log the final submission pass, its usage and its checks | muse-wonder-1.0 via Muse Code | none |
