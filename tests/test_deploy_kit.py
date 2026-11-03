@@ -214,7 +214,12 @@ def test_install_sh_parses() -> None:
     bash = shutil.which("bash")
     if bash is None:
         pytest.skip("no bash on this machine")
-    done = subprocess.run([bash, "-n", str(INSTALL)], capture_output=True, text=True)
+    done = subprocess.run(
+        [bash, "-n", INSTALL.relative_to(REPO).as_posix()],
+        capture_output=True,
+        text=True,
+        cwd=REPO,
+    )
     assert done.returncode == 0, done.stderr
 
 

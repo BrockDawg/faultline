@@ -709,7 +709,7 @@
     const w = p.window || {};
     box.appendChild(el("p", "label", t("r.window")));
     const fs = w.feed_s || [];
-    box.appendChild(el("p", "evidence", [w.label, w.lap != null ? t("r.lap") + " " + w.lap : null, fs.length === 2 ? t("r.feed") + " " + fs[0] + "–" + fs[1] : null].filter(Boolean).join(" · ")));
+    box.appendChild(el("p", "evidence", [w.label, w.lap != null ? t("r.lap") + " " + w.lap : null, fs.length === 2 ? t("r.feed") + " " + fs[0] + "-" + fs[1] : null].filter(Boolean).join(" · ")));
     box.appendChild(el("p", "label", t("r.set")));
     const ul = el("ul", "cars");
     (p.candidates || []).forEach((c) => ul.appendChild(el("li", null, c)));
