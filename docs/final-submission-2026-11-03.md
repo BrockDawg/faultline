@@ -7,17 +7,17 @@ It follows `docs/drop-2026-10-31.md`: one dated log per landing, with the spend 
 
 | What | Count |
 |---|---:|
-| Paid calls to the Meta Model API made by this session | 0 |
+| Paid calls through this project's metering proxy made by this session | 0 |
 | Paid calls to Baseten made by this session | 0 |
-| Dollars metered on Meta models added by this session | $0.00 |
-| Coding-agent model | Muse Wonder 1.0 (`muse-wonder-1.0`) via Muse Code, on a subscription |
+| Dollars added to the proxy meter (`tally.json`) by this session | $0.00 |
+| Coding-agent model | Muse Wonder 1.0 (`muse-wonder-1.0`), a Meta model, called over the Meta API through Muse (Meta's CLI tool) — direct API use, not through this project's metering proxy and not a subscription |
 | Coding-agent tokens (session usage report, owner-supplied 3 Nov) | Input 74,226,224; cached 71,767,322; output 268,774; total 74,494,998 |
 | Coding-agent cost (estimated, same report) | $29.56 over 258 turns, no subagents; observers 260 completed (8,827,189 tokens) |
 | Server-side script replays run (no model call in any of them) | 1 live worker check (screen capture), 1 shipped-set replay on the box, 2 graded-set replays on the box, 1 shipped-set replay locally |
 | Site deploys to brockdev | 2 (the second with `--record`) |
 
-The running count's meter (`tally.json`: 9,362 paid calls, $139.51) is unchanged by this session: nothing here called a metered model.
-The coding tools run on a subscription, so they are not in the meter, as the README's own tally note says; the token and cost figures above are the harness's session usage report, recorded here so this session's usage is on the record even though the tally's meter does not count it. The estimated $29.56 is a coding-tool figure, not Meta Model API spend, and is not added to `tally.json`'s paid dollars.
+The running count's meter (`tally.json`: 9,362 paid calls, $139.51) counts only calls routed through this project's metering proxy, and this session made none, so the proxy total is unchanged.
+This session's own model use was Meta API use all the same: Muse Wonder 1.0 through Muse, Meta's CLI tool, billed by the API and bypassing the proxy, so the proxy never saw it. The estimated $29.56 (74,494,998 tokens) is therefore real Meta spend for the totals, recorded here precisely so it can be added to them: project-metered $139.51 plus this session's direct-API $29.56 is $169.07 of Meta spend to date, before any later reconciliation. It is not written into `tally.json`'s paid dollars by hand, because `tally.json` is written by the working repo's own counter from the proxy ledger; the owner's counter is the place to fold this figure in, and this log is its source.
 The Meta models named in the new site traces (SAM 3.1 `sam-3.1`, Muse Spark Open `meta-models/muse-spark-open-1026`, Muse Spark 1.3, Muse Wonder 1.0) are read from the recorded replies already in the record; surfacing them made no new call.
 
 One correction to the record: the four commits of this pass (`0d5539b`, `11e12cf`, `2331cdf`, `819d039`) carry the trailer `Built-With: claude-opus-5-5 via Claude Code`, filled in by the commit hook from a stale `faultline.builtWith` git config left by an earlier session.
