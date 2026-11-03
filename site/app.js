@@ -83,7 +83,7 @@
 
   // A readable name from a clip id: "blind_corner_no_vest_07" -> "Blind corner, no vest".
   function humanise(id) {
-    const w = String(id).split("_").filter((x) => x && !/^\d+$/.test(x));
+    const w = String(id).split(/[_-]/).filter((x) => x && !/^\d+$/.test(x) && x !== "cctv");
     const out = w.map((x, i) => (i > 0 && x === "no" ? ", no" : (i ? " " : "") + x)).join("");
     return out ? out.charAt(0).toUpperCase() + out.slice(1) : String(id);
   }
@@ -118,10 +118,10 @@
     const p = posterSpan(c.poster);
     p.appendChild(dots(c.stamps));
     b.appendChild(p);
-    b.appendChild(el("span", "tile-title", c.title || humanise(c.id)));
+    b.appendChild(el("span", "tile-title", c.title || clipTitle(c.id)));
     b.appendChild(idNode(c.id, "tile-name"));
     b.appendChild(el("span", "tile-hint h-" + c.hint, t("hint." + c.hint)));
-    b.addEventListener("click", () => select({ kind: "clip", id: c.id }));
+    b.addEventListener("click", () => select({ kind: "clip", id: c.id }, true));
     return b;
   }
   function clipRow(c) {
@@ -132,7 +132,7 @@
     b.setAttribute("aria-pressed", "false");
     b.appendChild(idNode(c.id, "mono"));
     b.appendChild(dots(c.stamps));
-    b.addEventListener("click", () => select({ kind: "clip", id: c.id }));
+    b.addEventListener("click", () => select({ kind: "clip", id: c.id }, true));
     li.appendChild(b);
     return li;
   }
@@ -146,16 +146,21 @@
     });
   }
 
-  function select(sel) {
+  // Picking a case opens its case file at once; the button then checks nobody changed it.
+  function select(sel, scroll) {
     if (S.running) return;
     S.sel = sel;
     $$("[aria-pressed][data-clip]").forEach((n) => n.setAttribute("aria-pressed", String(sel.kind === "clip" && n.dataset.clip === sel.id)));
     $("#pick-protest").setAttribute("aria-pressed", String(sel.kind === "protest"));
     $("#pick-limits").setAttribute("aria-pressed", String(sel.kind === "limits"));
+    barFor(sel);
+    openCase(sel, scroll);
+  }
+  function barFor(sel) {
     const go = $("#go");
     go.disabled = false;
     const what = $("#go-what");
-    if (sel.kind === "clip") { $("#sel-name").textContent = sel.id; go.textContent = t("go.clip"); what.textContent = t("what.clip"); }
+    if (sel.kind === "clip") { $("#sel-name").textContent = clipTitle(sel.id); go.textContent = t("go.clip"); what.textContent = t("what.clip"); }
     if (sel.kind === "protest") {
       const p = protestById(sel.id);
       $("#sel-name").textContent = t("sel.protest") + " · " + (p ? p.label : sel.id);
@@ -166,6 +171,102 @@
       $("#sel-name").textContent = t("sel.limits");
       go.textContent = limitsWord();
       what.textContent = t("what." + limitsMode());
+    }
+  }
+
+  // ---------------------------------------------------------------- the case file
+  // Each case opens as an incident: what happened, the rulings, who acts on them.
+  // Featured clips use sentences from the film script; every other clip's sentences are
+  // built from its own record's rulings, never from a model's words.
+  function clipTitle(id) { const k = "case.title." + id; return k in COPY ? COPY[k] : humanise(id); }
+  function listWords(xs) { return xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " " + t("and") + " " + xs[xs.length - 1]; }
+  function uniq(xs) { return xs.filter((x, i) => x && xs.indexOf(x) === i); }
+  function cap(x) { return x ? x.charAt(0).toUpperCase() + x.slice(1) : x; }
+  function lacksOf(r) { const lk = typeof r.lacks === "object" && r.lacks ? r.lacks.words : r.lacks; return lk || r.missing_fact || ""; }
+  function byVerdict(rs, v) { return (rs || []).filter((r) => r.verdict === v); }
+  function clipStory(clip) {
+    const own = "case.story." + clip.id;
+    if (own in COPY) return [COPY[own]];
+    const rs = clip.rulings || [];
+    const br = byVerdict(rs, "breach"), un = byVerdict(rs, "unable_to_rule");
+    const out = [];
+    if ((S.byId[clip.id] || {}).group === "real") out.push(t("case.real"));
+    if (br.length) out.push(t("story.breach") + " " + listWords(br.map((r) => "“" + (r.title || r.rule) + "”")) + ".");
+    else out.push(t(un.length ? "story.nobreach" : "story.allclear"));
+    if (un.length) out.push(t("story.unable") + " " + words(un.length) + " " + t(un.length === 1 ? "story.rule" : "story.rules") + ".");
+    return out;
+  }
+  function clipFor(rs) {
+    const br = byVerdict(rs, "breach"), un = byVerdict(rs, "unable_to_rule");
+    const lines = [];
+    lines.push([t("for.lead"), br.length
+      ? cap(words(br.length)) + " " + t(br.length === 1 ? "for.item" : "for.items") + " " + listWords(br.map((r) => r.title || r.rule)) + "."
+      : t("for.lead.none")]);
+    lines.push([t("for.insurer"), t(br.length ? "for.insurer.breach" : "for.insurer.none")]);
+    if (un.length) lines.push([t("for.person"), t("for.lacked") + " " + uniq(un.map(lacksOf)).join("; ") + ". " + t("for.person.b")]);
+    return lines;
+  }
+  function protestStory(p) {
+    const w = p.window || {};
+    if (w.lap == null) return t("story.protest.nolap");
+    return t("story.protest") + " " + w.lap + (w.label ? ", " + t("story.in") + " " + w.label : "") + ".";
+  }
+  function renderCase(c) {
+    $("#run").hidden = false;
+    $("#run-kicker").textContent = c.kicker;
+    $("#run-h").textContent = c.title;
+    const st = clear($("#story"));
+    (c.story || []).forEach((x) => st.appendChild(el("p", null, x)));
+    const fl = clear($("#for"));
+    (c.forLines || []).forEach((pair) => {
+      const d = el("div");
+      d.appendChild(el("dt", null, pair[0]));
+      d.appendChild(el("dd", null, pair[1]));
+      fl.appendChild(d);
+    });
+    fl.hidden = !(c.forLines || []).length;
+    $("#why-text").textContent = t("why." + c.why);
+    $("#prog-run").hidden = true;
+    $("#busy").hidden = true;
+    $("#seal").hidden = true;
+    clear($("#out"));
+  }
+  function clipCase(clip) {
+    const real = (S.byId[clip.id] || {}).group === "real";
+    return { kicker: t(real ? "kicker.real" : "kicker.clip"), title: clipTitle(clip.id), story: clipStory(clip), forLines: clipFor(clip.rulings), why: "clip" };
+  }
+  function protestCase(p) {
+    return { kicker: t("kicker.protest"), title: p.label, story: [protestStory(p)], forLines: [[t("for.steward"), t("for.steward.what")]], why: "racing" };
+  }
+  function showLimitsCase() {
+    renderCase({ kicker: t("kicker.limits"), title: t("sel.limits"), story: [t("story.limits")], forLines: [[t("for.stewards"), t("for.stewards.what")]], why: "limits" });
+    const copy = $("#limits-table").closest(".table-scroll").cloneNode(true);
+    copy.querySelector("table").removeAttribute("id");
+    $$("td.col-live", copy).forEach((td) => { td.className = "col-live mono"; td.textContent = ""; });
+    $("#out").appendChild(copy);
+    return copy;
+  }
+  let openTok = 0;
+  async function openCase(sel, scroll) {
+    const tok = ++openTok;
+    if (sel.kind === "clip") {
+      let clip;
+      try { clip = await loadClip(sel.id); } catch (e) {
+        renderCase({ kicker: t("kicker.clip"), title: clipTitle(sel.id), story: [t("load.fail")], why: "clip" });
+        return;
+      }
+      if (tok !== openTok) return;
+      renderCase(clipCase(clip));
+      renderRulings(clip);
+    } else if (sel.kind === "protest") {
+      const p = protestById(sel.id);
+      if (!p) return;
+      renderCase(protestCase(p));
+      $("#out").appendChild(evidencePack(p, false));
+    } else if (sel.kind === "limits") showLimitsCase();
+    if (scroll) {
+      const r = $("#run").getBoundingClientRect();
+      if (r.top < 0 || r.top > window.innerHeight * 0.55) $("#run").scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "start" });
     }
   }
 
@@ -180,7 +281,9 @@
     box.classList.remove("off", "done");
     box.hidden = false;
     const head = el("div", "prog-head");
-    head.appendChild(el("p", "prog-title", t("prog.head")));
+    const hk = "prog.head." + kind;
+    const title = hk in COPY ? COPY[hk] : t("prog.head");
+    head.appendChild(el("p", "prog-title", title));
     const clock = el("p", "prog-clock");
     const lbl = el("span", null, t("prog.running"));
     const secs = el("span", "prog-secs", "0.0");
@@ -191,7 +294,7 @@
     head.appendChild(clock);
     box.appendChild(head);
     const ol = el("ol", "stages");
-    ol.setAttribute("aria-label", t("prog.head"));
+    ol.setAttribute("aria-label", title);
     const pos = el("span", "stage-pos");
     const items = STAGES.map((name) => {
       const li = el("li");
@@ -252,10 +355,10 @@
     const floor = Math.min(window.innerHeight, bar.top > 0 ? bar.top : window.innerHeight);
     if (r.top < 0 || r.top > floor - 140) (anchor || node).scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "start" });
   }
-  // One status line on a card: waiting, rebuilt the same, rebuilt differently, or stored.
+  // One quiet status line on a card: checking, unchanged, changed, or not checked this time.
   function cardState(c, state, words) {
     let st = c.querySelector(".cardstate");
-    if (!st) { st = el("p", "cardstate"); c.insertBefore(st, c.firstChild); }
+    if (!st) { st = el("p", "cardstate"); c.insertBefore(st, c.children[1] || null); }
     clear(st);
     c.classList.remove("wait", "same", "differs", "stored");
     c.classList.add(state);
@@ -263,31 +366,21 @@
     else if (state === "same" || state === "differs") st.appendChild(tick(state === "same", words));
     else st.appendChild(el("span", null, words));
   }
-  function openRun(title, mono) {
-    const run = $("#run");
-    run.hidden = false;
-    const h = clear($("#run-h"));
-    h.appendChild(document.createTextNode(title + (mono ? " " : "")));
-    if (mono) h.appendChild(idNode(mono, "mono"));
-    $("#busy").hidden = true;
-    $("#seal").hidden = true;
-    clear($("#out"));
-    // The bar holding the button sits right above the run: when the run's panel is off
-    // screen, bring the bar to the top so the button and the panel show together.
-    const r = run.getBoundingClientRect();
-    if (r.top < 0 || r.top > window.innerHeight - 360) {
-      const bar = $("#actionbar");
-      const top = window.scrollY + r.top - bar.offsetHeight - 4;
-      window.scrollTo({ top: Math.max(0, top), behavior: still() ? "auto" : "smooth" });
-    }
-    run.focus({ preventScroll: true });
+  // The check runs below the case file: bring the dispute line and the panel into view.
+  function showCheck() {
+    const why = $("#why");
+    const r = why.getBoundingClientRect();
+    const bar = $("#actionbar").getBoundingClientRect();
+    const floor = bar.top > 0 && bar.top < window.innerHeight ? bar.top : window.innerHeight;
+    if (r.top < 0 || r.top > floor - 220) why.scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "start" });
+    $("#run").focus({ preventScroll: true });
   }
   function setRunning(on) {
     S.running = on;
     const go = $("#go");
     go.disabled = on;
     if (on) go.textContent = t("go.busy");
-    else if (S.sel) select(S.sel);
+    else if (S.sel) barFor(S.sel);
   }
 
   // ---------------------------------------------------------------- worker calls
@@ -331,16 +424,17 @@
     return S.clips[id];
   }
   async function ruleClip(id) {
-    openRun(t("run.clip"), id);
-    const pg = progress("prog-run", "clip");
     setRunning(true);
     let clip;
     try { clip = await loadClip(id); } catch (e) {
-      showBusy(t("load.fail")); pg.finish(false); setRunning(false); return;
+      showBusy(t("load.fail")); setRunning(false); return;
     }
-    // the stored rulings show at once, each waiting for the server's rebuild
-    sealWait(clip.record);
+    // the case file's stored rulings show at once, each marked as being checked
+    renderCase(clipCase(clip));
     renderRulings(clip);
+    $$("#out .rcard").forEach((c) => cardState(c, "wait", t("card.wait")));
+    const pg = progress("prog-run", "clip");
+    showCheck();
     job("rule", { id: id }, {
       queued: pg.queued,
       stage: pg.stage,
@@ -361,46 +455,42 @@
       },
     }, 120000);
   }
-  function sealHashes(s, shipped, rebuilt) {
-    const line = el("p", "seal-line");
-    const a = el("span", "pair", t("seal.published") + " ");
-    a.appendChild(hashCode(shipped));
-    line.appendChild(a);
-    line.appendChild(el("span", "sep", " · "));
-    const b = el("span", rebuilt ? "pair" : null, t("seal.here") + " ");
-    b.appendChild(rebuilt ? hashCode(rebuilt) : el("span", "pending", t("seal.pending")));
-    line.appendChild(b);
+  // The result says what it means first; the record hashes sit in one small detail line.
+  function sealHead(s, ok, kind, d) {
+    const n = kind === "rerule" || kind === "checked" ? "all" : "one";
+    const h = el("p", "seal-head");
+    h.appendChild(tick(ok, t(ok ? "seal.same." + n : "seal.diff." + n)));
+    s.appendChild(h);
+    s.appendChild(el("p", "seal-sub", ok ? t("seal.how." + kind) : (d.why || t("nomatch.why"))));
+  }
+  // "record c82ca137… published · c82ca137… rebuilt · 18.0 s on our server"
+  function sealDetail(s, shipped, rebuilt, seconds, prefix, ok) {
+    const line = el("p", "seal-detail");
+    if (prefix) line.appendChild(document.createTextNode(prefix + " · "));
+    line.appendChild(document.createTextNode(t("seal.record") + " "));
+    line.appendChild(hashCode(shipped));
+    line.appendChild(document.createTextNode(" " + t("seal.pub") + " · "));
+    if (rebuilt) {
+      line.appendChild(hashCode(rebuilt));
+      line.appendChild(document.createTextNode(" " + t("seal.reb")));
+    } else line.appendChild(document.createTextNode(t("seal.notrun")));
+    if (typeof seconds === "number") line.appendChild(document.createTextNode(" · " + seconds.toFixed(1) + " " + t("seal.secs")));
+    if (ok != null) { line.appendChild(document.createTextNode(" ")); line.appendChild(tick(ok, "")); }
     s.appendChild(line);
-  }
-  function sealProof(s, ok, kind, d) {
-    const p = el("p", "seal-proof");
-    p.appendChild(tick(ok, t(ok ? "seal.identical" : "seal.different")));
-    p.appendChild(document.createTextNode(ok ? t("seal.proof." + kind) : ": " + (d.why || t("nomatch.why"))));
-    s.appendChild(p);
-    if (typeof d.seconds === "number") s.appendChild(el("p", "secs", d.seconds.toFixed(1) + " " + t("seal.secs")));
-  }
-  function sealWait(shipped) {
-    const s = clear($("#seal"));
-    s.className = "seal wait";
-    sealHashes(s, shipped, null);
-    s.hidden = false;
   }
   function sealLive(shipped, d, kind) {
     const s = clear($("#seal"));
     const ok = d.match === true;
     s.className = "seal press" + (ok ? "" : " bad");
-    sealHashes(s, shipped, typeof d.record_rebuilt === "string" ? d.record_rebuilt : null);
-    sealProof(s, ok, kind, d);
+    sealHead(s, ok, kind, d);
+    if (shipped) sealDetail(s, shipped, typeof d.record_rebuilt === "string" ? d.record_rebuilt : null, d.seconds);
+    else if (typeof d.seconds === "number") s.appendChild(el("p", "seal-detail", d.seconds.toFixed(1) + " " + t("seal.secs")));
     s.hidden = false;
   }
   function sealStored(shipped) {
     const s = clear($("#seal"));
     s.className = "seal stored";
-    const line = el("p", "seal-line");
-    line.appendChild(el("span", null, t("seal.published") + " "));
-    line.appendChild(hashCode(shipped));
-    line.appendChild(el("span", null, " · " + t("seal.stored")));
-    s.appendChild(line);
+    sealDetail(s, shipped, null);
     s.hidden = false;
   }
   function hashCode(h) {
@@ -434,7 +524,6 @@
     head.appendChild(el("h3", null, r.title || r.rule));
     head.appendChild(stamp(r.verdict));
     c.appendChild(head);
-    cardState(c, "wait", t("card.wait"));
     c.appendChild(framesBlock(r));
     if (r.verdict === "breach" && r.decided_by) {
       c.appendChild(el("p", "label", t("decided")));
@@ -575,9 +664,10 @@
     return g;
   }
 
-  function evidencePack(p) {
+  function evidencePack(p, withStory) {
     const box = el("article", "evpack");
     box.appendChild(el("h4", null, p.label + " · " + t("r.rule") + " " + (p.rule || "")));
+    if (withStory !== false) box.appendChild(el("p", "pack-story", protestStory(p)));
     if (p.clause) box.appendChild(el("p", "clause", p.clause));
     box.appendChild(protestTimeline(p));
     const w = p.window || {};
@@ -627,26 +717,16 @@
     if (p) $("#protest-pack").appendChild(evidencePack(p));
   }
   function protestSeal(target, p, d, live) {
-    const s = el("div", "seal" + (live ? " press" + (d.match === true ? "" : " bad") : " stored"));
+    const ok = d.match === true;
+    const s = el("div", "seal" + (live ? " press" + (ok ? "" : " bad") : " stored"));
+    if (live) sealHead(s, ok, "protest", d);
     const rec = p.record || {};
     ["arm1", "arm2"].forEach((arm, i) => {
-      const line = el("p", "seal-line");
-      line.appendChild(el("b", null, t("r.arm") + " " + (i + 1) + " · "));
-      line.appendChild(el("span", null, t("seal.published") + " "));
-      line.appendChild(hashCode(rec[arm]));
-      if (live) {
-        const rb = (d.record_rebuilt || {})[arm];
-        line.appendChild(el("span", "sep", " · "));
-        line.appendChild(el("span", null, t("seal.here") + " "));
-        if (rb) line.appendChild(hashCode(rb));
-        line.appendChild(document.createTextNode(" "));
-        const ln = (d.lines || []).find((x) => x.arm === i + 1);
-        line.appendChild(tick(ln ? ln.match === true : d.match === true));
-      }
-      s.appendChild(line);
+      const ln = (d.lines || []).find((x) => x.arm === i + 1);
+      const rb = live ? (d.record_rebuilt || {})[arm] : null;
+      sealDetail(s, rec[arm], rb, null, t("r.arm") + " " + (i + 1), live ? (ln ? ln.match === true : ok) : null);
     });
-    if (live) sealProof(s, d.match === true, "protest", d);
-    else s.appendChild(el("p", "secs", t("seal.stored")));
+    if (live && typeof d.seconds === "number") s.appendChild(el("p", "seal-detail", d.seconds.toFixed(1) + " " + t("seal.secs")));
     target.appendChild(s);
   }
   function checkProtest(id, where) {
@@ -655,21 +735,22 @@
     const inRun = where === "run";
     let pack;
     if (inRun) {
-      openRun(t("run.protest"), p.label);
-      pack = evidencePack(p);
+      renderCase(protestCase(p));
+      pack = evidencePack(p, false);
       $("#out").appendChild(pack);
     } else {
       clear($("#protest-result"));
       pack = $("#protest-pack .evpack");
     }
     const pg = progress(inRun ? "prog-run" : "prog-protest", "protest");
-    if (!inRun) bringIntoView($("#prog-protest"), $("#check-protest").closest(".race-action"));
+    if (inRun) showCheck();
+    else bringIntoView($("#prog-protest"), $("#check-protest").closest(".race-action"));
     if (pack) cardState(pack, "wait", t("pack.wait"));
     setRunning(true);
     const btn = $("#check-protest");
     btn.disabled = true;
     const place = (box) => {
-      if (inRun) { const s = clear($("#seal")); s.className = "seal-wrap"; s.appendChild(box); s.hidden = false; }
+      if (inRun) { const s = clear($("#seal")); s.className = "seal-wrap"; s.appendChild(box.firstChild); s.hidden = false; }
       else $("#protest-result").appendChild(box);
     };
     job("racing/protest", { id: id }, {
@@ -714,23 +795,18 @@
   function checkLimits(where) {
     const inRun = where === "run";
     const mode = limitsMode();
-    if (inRun) openRun(t("run.limits." + mode));
+    const tableClone = inRun ? showLimitsCase() : null;
+    const summary = inRun ? $("#out") : null;
     const pg = progress(inRun ? "prog-run" : "prog-limits", mode);
-    if (!inRun) bringIntoView($("#prog-limits"), $("#check-limits").closest(".race-action"));
+    if (inRun) showCheck();
+    else bringIntoView($("#prog-limits"), $("#check-limits").closest(".race-action"));
     setRunning(true);
     const btn = $("#check-limits");
     btn.disabled = true;
-    // every stored row shows at once, its live column waiting for the server's line
-    $$("#limits-table td.col-live").forEach((td) => { td.textContent = t("live.wait"); td.className = "col-live mono live-wait"; });
-    $("#limits-sum").textContent = "";
-    const summary = inRun ? $("#out") : null;
-    let tableClone = null;
-    if (inRun) {
-      tableClone = $("#limits-table").closest(".table-scroll").cloneNode(true);
-      tableClone.querySelector("table").removeAttribute("id");
-      summary.appendChild(tableClone);
-    }
     const roots = () => [document.getElementById("limits-table")].concat(tableClone ? [tableClone] : []);
+    // every stored row shows at once, its check column waiting for the server's line
+    roots().forEach((root) => $$("td.col-live", root).forEach((td) => { td.textContent = t("live.wait"); td.className = "col-live mono live-wait"; }));
+    clear($("#limits-sum"));
     const mark = (d) => {
       roots().forEach((root) => {
         $$("tr", root).filter((tr) => tr.dataset.label === d.id).forEach((tr) => {
@@ -750,10 +826,13 @@
       result: (d) => {
         pg.finish(true);
         unmarked(t("r.na"));
+        const ok = d.match === true;
         const txt = (d.matched != null && d.sessions != null ? d.matched + " / " + d.sessions + " " : "") + t("r.lines." + (d.mode || mode));
-        $("#limits-sum").textContent = txt;
+        const sum = clear($("#limits-sum"));
+        sum.appendChild(tick(ok, t(ok ? "seal.same.all" : "seal.diff.all")));
+        sum.appendChild(el("span", "race-sum-n", " " + txt));
         if (inRun) {
-          summary.insertBefore(el("p", "race-sum", txt), summary.firstChild);
+          summary.appendChild(el("p", "race-sum", txt));
           sealLive(d.record_shipped, d, d.mode || mode);
         }
         btn.disabled = false; setRunning(false);
@@ -776,10 +855,10 @@
     const first = ps.find((p) => p.honesty) || ps[0];
     if (first) {
       clear($("#poster-protest")).appendChild(protestTimeline(first));
-      $("#pick-protest").addEventListener("click", () => select({ kind: "protest", id: S.protest || first.id }));
+      $("#pick-protest").addEventListener("click", () => select({ kind: "protest", id: S.protest || first.id }, true));
     } else $("#pick-protest").hidden = true;
     clear($("#poster-limits")).appendChild(limitsBars(R.limits || []));
-    $("#pick-limits").addEventListener("click", () => select({ kind: "limits" }));
+    $("#pick-limits").addEventListener("click", () => select({ kind: "limits" }, true));
     const chips = clear($("#protest-chips"));
     ps.forEach((p) => {
       const c = el("button", "chip", p.label);
@@ -867,7 +946,7 @@
       return li;
     };
     ((S.index || {}).clips || []).filter((c) => c.group === "shipped").forEach((c) => row(c.id));
-    const done = () => { btn.disabled = false; S.running = false; if (S.sel) select(S.sel); };
+    const done = () => { btn.disabled = false; S.running = false; if (S.sel) barFor(S.sel); };
     job("replay-shipped", {}, {
       queued: pg.queued,
       stage: pg.stage,
@@ -912,7 +991,7 @@
     code.textContent = sha;
     $("#graded-when").textContent = [g.time || "", typeof g.seconds === "number" ? g.seconds.toFixed(0) + " s" : ""].filter(Boolean).join(" · ");
     const m = clear($("#graded-match"));
-    m.appendChild(tick(!!want && sha === want));
+    m.appendChild(tick(!!want && sha === want, ""));
     m.appendChild(document.createTextNode(" " + t(want && sha === want ? "graded.match" : "graded.nomatch")));
     $("#graded-set").hidden = false;
   }

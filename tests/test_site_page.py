@@ -157,7 +157,12 @@ def test_every_copy_key_the_js_reads_is_in_the_html():
     for c in _fixture("index.json")["clips"]:
         assert f"hint.{c['hint']}" in keys
     for mode in ("rerule", "checked"):
-        assert f"go.{mode}" in keys and f"r.lines.{mode}" in keys and f"run.limits.{mode}" in keys
+        assert f"go.{mode}" in keys and f"r.lines.{mode}" in keys and f"seal.how.{mode}" in keys
+        assert f"what.{mode}" in keys and f"r.fine.{mode}" in keys and f"prog.head.{mode}" in keys
+    for k in ("clip", "racing", "limits"):
+        assert f"why.{k}" in keys
+    for n in ("one", "all"):
+        assert f"seal.same.{n}" in keys and f"seal.diff.{n}" in keys
     for src in ("ruling", "model", "window"):
         assert f"frames.{src}" in keys
 
@@ -339,11 +344,12 @@ def _copy_keys() -> set[str]:
 
 
 def test_every_button_says_what_it_will_do_before_the_press():
-    """The one button carries a plain line, the copy for each kind it can run sits in the
-    HTML, and each of the four live buttons has its own progress panel slot."""
+    """The one button carries a plain line (why the check matters) right before it, the
+    copy for each kind it can run sits in the HTML, and each of the four live buttons has
+    its own progress panel slot."""
     html = (SITE / "index.html").read_text(encoding="utf-8")
     go = html.index('id="go"')
-    assert html.index('id="go-what"') > go, "the plain line sits under the button"
+    assert html.index('id="go-what"') < go, "the dispute line sits right before the button"
     ids = {a["id"] for _, a in _page().tags if a.get("id")}
     keys = _copy_keys()
     for k in ("what.clip", "what.protest", "what.rerule", "what.checked"):
@@ -366,7 +372,7 @@ def test_every_stage_has_a_plain_sentence_for_every_kind():
         for s in ("record", "rebuild", "seal"):
             assert f"st.{s}.what.{kind}" in keys, (s, kind)
     for kind in ("clip", "protest", "rerule", "checked"):
-        assert f"seal.proof.{kind}" in keys, kind
+        assert f"seal.how.{kind}" in keys, kind
 
 
 def test_progress_moves_only_on_worker_events():
@@ -408,3 +414,71 @@ def test_the_busy_line_is_the_plans_own_words():
     html = (SITE / "index.html").read_text(encoding="utf-8")
     assert "busy.clip" in keys
     assert "Showing the stored ruling. The live rebuild is busy, try again in a minute." in html
+
+
+def _copy() -> dict[str, str]:
+    """data-copy key -> its text, read from the hidden copy block."""
+    html = (SITE / "index.html").read_text(encoding="utf-8")
+    return dict(re.findall(r'<span data-copy="([^"]+)">([^<]*)</span>', html))
+
+
+def test_the_check_button_says_check_nobody_changed_it():
+    html = (SITE / "index.html").read_text(encoding="utf-8")
+    assert re.search(r'id="go"[^>]*>Check nobody changed it</button>', html)
+    assert re.search(r'id="check-protest"[^>]*>Check nobody changed it</button>', html)
+    copy = _copy()
+    assert copy["go.clip"] == "Check nobody changed it"
+    assert copy["go.protest"] == "Check nobody changed it"
+
+
+def _body(js: str, start: str) -> str:
+    body = js[js.index(start) :]
+    return body[: body.index("\n  }\n")]
+
+
+def test_the_result_headline_is_the_meaning():
+    """The result leads with what the check means; hashes sit in one small detail line."""
+    copy = _copy()
+    assert copy["seal.same.one"] == "Same ruling. Nobody edited it."
+    assert copy["seal.diff.one"] == (
+        "Not the same: this ruling does not match its published record."
+    )
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    head = _body(js, "function sealHead(")
+    assert '"seal.same." + n' in head and '"seal.diff." + n' in head
+    live = _body(js, "function sealLive(")
+    assert live.index("sealHead(") < live.index("sealDetail("), "meaning before the hashes"
+    assert copy["live.same"] == "unchanged", "each card says it quietly"
+
+
+def test_no_byte_word_in_the_page_copy():
+    """No user-facing byte-identical or byte for byte in the page's own words. The only one
+    left is a README number (the scoreboard's replay row), rendered from the bundle."""
+    text = " ".join(_page().text) + " " + " ".join(_copy().values())
+    hits = re.findall(r"[^.]*\bbyte[^.]*", text, re.I)
+    assert not hits, hits
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    strings = " ".join(re.findall(r"\"([^\"\\]*)\"", js))
+    assert not re.search(r"\bbyte", strings, re.I)
+
+
+def test_every_featured_clip_opens_as_an_incident():
+    """The three featured clips carry hand-written sentences from the film script; the JS
+    reads them before building any from the record's own rulings."""
+    copy = _copy()
+    for cid in _fixture("index.json")["featured"]:
+        assert copy.get(f"case.title.{cid}"), cid
+        assert copy.get(f"case.story.{cid}"), cid
+    assert "no hi-vis" in copy["case.story.blind_corner_no_vest_07"]
+    assert "Both wore hi-vis" in copy["case.story.spotter_ahead_01"]
+    assert "Nobody walked into view" in copy["case.story.idle_empty_aisle_40"]
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    story = _body(js, "function clipStory(")
+    assert story.index('"case.story." + clip.id') < story.index("clip.rulings"), (
+        "the script's sentences win; the rest come from the record's rulings"
+    )
+    assert ".words" not in story and "note" not in story, (
+        "a model's words never become the incident's sentences"
+    )
+    for k in ("for.lead", "for.insurer", "for.person", "why.clip", "why.racing"):
+        assert copy.get(k), k

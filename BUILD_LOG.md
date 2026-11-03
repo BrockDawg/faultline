@@ -112,3 +112,4 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `14ae2f2` | 2026-11-02T12:26:59-0600 | demo: the shipped record holds the model words beside each ruling | claude-opus-5-5 via Claude Code | none |
 | `a874182` | 2026-11-02T15:56:12-0600 | site: the README states the live page, the words batch and the graded set hash | claude-opus-5-5 via Claude Code | none |
 | `b0212fc` | 2026-11-02T17:05:03-0600 | site: the sweep passes the real bundle and still fails closed | claude-opus-5-5 via Claude Code | none |
+| `cad8787` | 2026-11-02T17:44:23-0600 | site: every live button says what it does and shows it happening | claude-opus-5-5 via Claude Code | none |
