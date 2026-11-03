@@ -129,3 +129,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `4b4160e` | 2026-11-03T12:45:41-0600 | docs: tally and build log include the usage totals | muse-wonder-1.0 via Muse Code | none |
 | `f278cb6` | 2026-11-03T12:47:52-0600 | docs: correct the usage record, Meta API via Muse not the proxy | muse-wonder-1.0 via Muse Code | muse-wonder-1.0 |
 | `7798e6c` | 2026-11-03T12:47:53-0600 | docs: tally and build log include the corrected usage record | muse-wonder-1.0 via Muse Code | muse-wonder-1.0 |
+| `6bb9f65` | 2026-11-03T13:22:14-0600 | docs: foreground the live demo link | claude-opus-5-5 via Claude Code | none |
+| `b6f3897` | 2026-11-03T16:05:15-0600 | feat: show sampled race footage in protest reviews | claude-opus-5-5 via Claude Code | none |
