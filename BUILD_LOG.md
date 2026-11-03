@@ -124,3 +124,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `2331cdf` | 2026-11-03T11:02:01-0600 | fix: ruff line length in busy-line test | claude-opus-5-5 via Claude Code | none |
 | `819d039` | 2026-11-03T11:02:39-0600 | fix: wrap busy-line string | claude-opus-5-5 via Claude Code | none |
 | `82968a9` | 2026-11-03T12:37:32-0600 | docs: log the final submission pass, its usage and its checks | muse-wonder-1.0 via Muse Code | none |
+| `e903a32` | 2026-11-03T12:38:04-0600 | docs: tally and build log include the final submission log | muse-wonder-1.0 via Muse Code | none |
+| `ff5eae0` | 2026-11-03T12:45:40-0600 | docs: add the session usage totals to the final submission log | muse-wonder-1.0 via Muse Code | none |
