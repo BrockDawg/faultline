@@ -482,3 +482,77 @@ def test_every_featured_clip_opens_as_an_incident():
     )
     for k in ("for.lead", "for.insurer", "for.person", "why.clip", "why.racing"):
         assert copy.get(k), k
+
+
+def _shift_html() -> str:
+    html = (SITE / "index.html").read_text(encoding="utf-8")
+    start = html.index('id="shift-panel"')
+    return html[start : html.index("</section>", start)]
+
+
+def test_the_shift_list_holds_no_rule_detail():
+    """A window's rules open in one detail panel beside the list, never inside a list row."""
+    html = _shift_html()
+    assert html.count('id="windows"') == 1 and html.count('id="wdetail"') == 1
+    assert "<details" not in html and "<ul" not in html
+    assert html.index('id="windows"') < html.index('id="wdetail"'), "the panel sits after the list"
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    render = _body(js, "function renderShift(")
+    for k in ("details", "summary", "measurement", "decided_by", "lacks", "whySentence("):
+        assert k not in render, f"the list rows read {k}: rule detail belongs in the panel"
+    detail = _body(js, "function openWindow(")
+    assert 'clear($("#wdetail"))' in detail and "SH.open = i" in detail
+    assert "closeWindow(false)" in detail.split("SH.open = i")[0], "one window open at a time"
+    assert '"Escape"' in render and "aria-expanded" in render
+
+
+def test_the_shift_list_opens_on_the_review_list():
+    html = _shift_html()
+    pressed = re.findall(r'data-wfilter="(\w+)" aria-pressed="(\w+)"', html)
+    assert dict(pressed) == {"review": "true", "unable": "false", "all": "false"}
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    assert 'setFilter("review")' in _body(js, "function renderShift(")
+    assert 'review: (w) => hasV(w, "breach")' in js
+
+
+def test_the_shift_panel_copy_has_no_static_digits():
+    text = re.sub(r"<[^>]+>", " ", _shift_html())
+    assert not re.findall(r"\d", text), "render shift numbers from the bundle"
+    shift_keys = [k for k in _copy() if k.split(".")[0] in ("wcap", "wd", "window")]
+    assert shift_keys
+    assert not [k for k in shift_keys if re.search(r"\d", _copy()[k])]
+
+
+def test_an_unable_ruling_never_shows_its_needed_fact_bare():
+    """FACT_WORDS name the fact a ruling NEEDED ("a camera held still…"); shown bare it reads
+    as the opposite of the truth. The reason leads, from the record's measurement, and the
+    fact only ever appears behind the "It needs:" label."""
+    from faultline.adapters.video.dashboard import FACT_WORDS
+
+    copy = _copy()
+    assert copy["needs"] == "It needs:"
+    assert copy["why.unable"] == "Why it could not rule"
+    assert "for.lacked" not in copy and "lacks" not in copy
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    html = (SITE / "index.html").read_text(encoding="utf-8")
+    for phrase in FACT_WORDS.values():
+        assert phrase not in js and phrase not in html, phrase
+    # lacksOf is read only by needsLine (which prefixes the label) and needsAdds (a compare)
+    allowed = []
+    for f in ("function lacksOf(", "function needsLine(", "function needsAdds("):
+        at = js.index(f)
+        eol = js.find("\n", at)
+        one_line = js[at:eol].rstrip().endswith("}")
+        allowed.append((at, eol if one_line else js.find("\n  }\n", at)))
+    for m in re.finditer(r"lacksOf\(", js):
+        assert any(a <= m.start() < b for a, b in allowed), js[m.start() - 60 : m.start() + 20]
+    assert 't("needs") + " " + lk' in _body(js, "function needsLine(")
+    owns = [k for k in copy if k.startswith("needs.")]
+    assert all(copy[k].startswith("It needs: ") for k in owns), owns
+    lacks_lines = [ln.strip() for ln in js.splitlines() if "r.lacks" in ln]
+    assert all("function lacksOf(" in ln or "const pw =" in ln for ln in lacks_lines), lacks_lines
+    for fn in ("function ruleCard(", "function unableLines("):
+        body = _body(js, fn)
+        assert body.index("whySentence(r)") < body.index("needsLine(r)"), fn
+    for fn in ("function clipStory(", "function clipFor(", "function windowGist("):
+        assert "whyShort" in _body(js, fn) and "lacksOf" not in _body(js, fn), fn

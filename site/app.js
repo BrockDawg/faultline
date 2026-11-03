@@ -182,7 +182,39 @@
   function listWords(xs) { return xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " " + t("and") + " " + xs[xs.length - 1]; }
   function uniq(xs) { return xs.filter((x, i) => x && xs.indexOf(x) === i); }
   function cap(x) { return x ? x.charAt(0).toUpperCase() + x.slice(1) : x; }
+  // The fact an unable ruling needed. Shown bare it reads as the opposite of the truth
+  // ("a camera held still…"), so it is only ever shown behind the "It needs:" label.
   function lacksOf(r) { const lk = typeof r.lacks === "object" && r.lacks ? r.lacks.words : r.lacks; return lk || r.missing_fact || ""; }
+  // A fact whose words name what was missing, not what was needed, carries its own needs line.
+  function needsLine(r) {
+    const own = "needs." + (r.missing_fact || "");
+    if (own in COPY) return COPY[own];
+    const lk = lacksOf(r);
+    return lk ? t("needs") + " " + lk.replace(/\.$/, "") + "." : "";
+  }
+  // Why it could not rule, from the record: the first sentence of the ruling's measurement.
+  // A sentence ends at a full stop after a letter, so "0.89 m" is never cut.
+  function whySentence(r) {
+    const m = String(r.measurement || "").trim();
+    if (!m) return "";
+    const end = m.search(/[^\d\s]\.(\s|$)/);
+    let s = end >= 0 ? m.slice(0, end + 2) : m;
+    const semi = s.indexOf(";");
+    if (s.length > 180 && semi > 0) s = s.slice(0, semi) + ".";
+    return s;
+  }
+  // The same reason as a short clause, for lines that join several rulings.
+  function whyShort(r) {
+    const s = whySentence(r);
+    const cut = s.search(/[;:]|[^\d\s]\.(\s|$)/);
+    let x = cut < 0 ? s : s.slice(0, s[cut] === ";" || s[cut] === ":" ? cut : cut + 1);
+    x = x.replace(/\.$/, "").trim();
+    // a long clause keeps its opening words, cut before a bracket or a comma
+    if (x.length > 90) { const c = x.slice(0, 90).search(/ \(|, (?=[^,]*$)/); x = c > 30 ? x.slice(0, c) : x.slice(0, x.lastIndexOf(" ", 88)) + "…"; }
+    return x ? x.charAt(0).toLowerCase() + x.slice(1) : needsLine(r).replace(/\.$/, "");
+  }
+  // The needs line repeats nothing: skipped when the reason already says it.
+  function needsAdds(r) { const lk = lacksOf(r).toLowerCase().replace(/\.$/, ""); return !!lk && !whySentence(r).toLowerCase().startsWith(lk); }
   function byVerdict(rs, v) { return (rs || []).filter((r) => r.verdict === v); }
   function clipStory(clip) {
     const own = "case.story." + clip.id;
@@ -193,7 +225,7 @@
     if ((S.byId[clip.id] || {}).group === "real") out.push(t("case.real"));
     if (br.length) out.push(t("story.breach") + " " + listWords(br.map((r) => "“" + (r.title || r.rule) + "”")) + ".");
     else out.push(t(un.length ? "story.nobreach" : "story.allclear"));
-    if (un.length) out.push(t("story.unable") + " " + words(un.length) + " " + t(un.length === 1 ? "story.rule" : "story.rules") + ".");
+    if (un.length) out.push(t("story.unable") + " " + words(un.length) + " " + t(un.length === 1 ? "story.rule" : "story.rules") + ": " + uniq(un.map(whyShort)).join("; ") + ".");
     return out;
   }
   function clipFor(rs) {
@@ -203,7 +235,7 @@
       ? cap(words(br.length)) + " " + t(br.length === 1 ? "for.item" : "for.items") + " " + listWords(br.map((r) => r.title || r.rule)) + "."
       : t("for.lead.none")]);
     lines.push([t("for.insurer"), t(br.length ? "for.insurer.breach" : "for.insurer.none")]);
-    if (un.length) lines.push([t("for.person"), t("for.lacked") + " " + uniq(un.map(lacksOf)).join("; ") + ". " + t("for.person.b")]);
+    if (un.length) lines.push([t("for.person"), t("for.unable") + " " + words(un.length) + " " + t(un.length === 1 ? "story.rule" : "story.rules") + ": " + uniq(un.map(whyShort)).join("; ") + ". " + t(un.length === 1 ? "for.person.b" : "for.person.bs")]);
     return lines;
   }
   function protestStory(p) {
@@ -530,14 +562,18 @@
       c.appendChild(el("p", "decided", r.decided_by));
     }
     if (r.verdict === "unable_to_rule") {
-      const lk = typeof r.lacks === "object" && r.lacks ? r.lacks.words : r.lacks;
       const pw = r.pack_words || (typeof r.lacks === "object" && r.lacks ? r.lacks.pack : null);
-      c.appendChild(el("p", "label", t("lacks")));
-      c.appendChild(el("p", "decided", lk || r.missing_fact || ""));
+      c.appendChild(el("p", "label", t("why.unable")));
+      c.appendChild(el("p", "why-line", whySentence(r) || needsLine(r)));
+      if (whySentence(r) && needsAdds(r)) c.appendChild(el("p", "needs", needsLine(r)));
       if (pw) c.appendChild(el("p", "packwords", t("pack") + ": “" + pw + "”"));
     }
-    c.appendChild(el("p", "label", t("measurement")));
-    c.appendChild(el("p", "evidence", r.measurement || ""));
+    // an unable card already led with the measurement's first sentence; the rest follows
+    const meas = r.verdict === "unable_to_rule" ? String(r.measurement || "").trim().slice(whySentence(r).length).trim() : r.measurement || "";
+    if (meas || r.verdict !== "unable_to_rule") {
+      c.appendChild(el("p", "label", t("measurement")));
+      c.appendChild(el("p", "evidence", meas));
+    }
     const w = r.words;
     if (w && (w.note || w.reads)) {
       const box = el("div", "words");
@@ -885,6 +921,23 @@
   }
 
   // ---------------------------------------------------------------- shift
+  // Master-detail: a short list of windows (the ones to review first), and one detail panel.
+  // A list row holds only a title, the window's place in the shift and its verdict dots;
+  // every rule's detail lives in the one panel, never inside a row.
+  const SH = { filter: "review", open: null, rows: [] };
+  const hasV = (w, v) => (w.rulings || []).some((r) => r.verdict === v);
+  const allV = (w, v) => (w.rulings || []).length > 0 && (w.rulings || []).every((r) => r.verdict === v);
+  const FILTERS = { review: (w) => hasV(w, "breach"), unable: (w) => allV(w, "unable_to_rule"), all: () => true };
+  const VORDER = { breach: 0, unable_to_rule: 1, clear: 2 };
+  function windowWhere(i, n) { return t("window") + " " + (i + 1) + " " + t("window.of") + " " + n; }
+  function windowGist(w) {
+    const rs = w.rulings || [];
+    const br = byVerdict(rs, "breach").length, un = byVerdict(rs, "unable_to_rule");
+    if (br) return cap(words(br)) + " " + t(br === 1 ? "wd.breach" : "wd.breaches") + (un.length ? " · " + words(un.length) + " " + t("wd.unable") : "");
+    if (un.length === rs.length) return cap(uniq(un.map(whyShort)).join("; "));
+    if (un.length) return cap(words(un.length)) + " " + t("wd.unable") + ": " + uniq(un.map(whyShort)).join("; ");
+    return t("wd.clear");
+  }
   function renderShift() {
     const sh = S.shift;
     if (!sh || !(sh.windows || []).length) { $("#shift-panel").hidden = true; return; }
@@ -895,33 +948,159 @@
     ["breach", "clear", "unable_to_rule"].forEach((v) => {
       const n = c[v] || 0;
       if (!n || !total) return;
-      const s = el("span", "v-" + v + " g" + Math.max(1, Math.round((n / total) * 20)));
-      bar.appendChild(s);
+      bar.appendChild(el("span", "v-" + v + " g" + Math.max(1, Math.round((n / total) * 20))));
     });
-    const ul = clear($("#windows"));
-    sh.windows.forEach((w) => {
-      const li = el("li");
-      const d = el("details");
-      const s = el("summary");
-      s.appendChild(el("span", null, t("window") + " " + w.window));
+    const n = sh.windows.length;
+    Object.keys(FILTERS).forEach((f) => { const x = $("#wf-" + f); if (x) x.textContent = String(sh.windows.filter(FILTERS[f]).length); });
+    const list = clear($("#windows"));
+    SH.rows = sh.windows.map((w, i) => {
+      const b = el("button", "wrow");
+      b.type = "button";
+      b.setAttribute("aria-expanded", "false");
+      b.setAttribute("aria-controls", "wdetail");
+      const th = el("span", "wthumb");
+      if (w.poster) {
+        const img = el("img");
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.alt = "";
+        img.addEventListener("error", () => th.classList.add("missing"));
+        img.src = DATA + w.poster;
+        th.appendChild(img);
+      } else th.classList.add("missing");
+      b.appendChild(th);
+      const tx = el("span", "wtext");
+      tx.appendChild(el("span", "wtitle", clipTitle(w.clip)));
+      const where = el("span", "wwhere");
+      where.appendChild(el("span", null, windowWhere(i, n)));
       const st = {};
       (w.rulings || []).forEach((r) => { st[r.rule] = r.verdict; });
-      s.appendChild(dots(st));
-      d.appendChild(s);
-      const rl = el("ul", "wrules");
-      (w.rulings || []).forEach((r) => {
-        const it = el("li");
-        it.appendChild(stamp(r.verdict, true));
-        const txt = el("span", null, r.title || r.rule);
-        it.appendChild(txt);
-        const ev = el("p", "evidence", r.verdict === "unable_to_rule" ? (r.lacks || r.missing_fact || "") : (r.decided_by || r.measurement || ""));
-        it.appendChild(ev);
-        rl.appendChild(it);
-      });
-      d.appendChild(rl);
-      li.appendChild(d);
-      ul.appendChild(li);
+      where.appendChild(dots(st));
+      tx.appendChild(where);
+      tx.appendChild(el("span", "wgist" + (hasV(w, "breach") ? " t-breach" : ""), windowGist(w)));
+      b.appendChild(tx);
+      b.addEventListener("click", () => (SH.open === i ? closeWindow(true) : openWindow(i)));
+      list.appendChild(b);
+      return b;
     });
+    $$("[data-wfilter]").forEach((btn) => btn.addEventListener("click", () => setFilter(btn.dataset.wfilter)));
+    $("#wdetail").addEventListener("keydown", (e) => { if (e.key === "Escape") closeWindow(true); });
+    list.addEventListener("keydown", (e) => { if (e.key === "Escape" && SH.open != null) closeWindow(true); });
+    let rz = 0;
+    window.addEventListener("resize", () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { if (SH.open != null) { $("#windows").after($("#wdetail")); placeDetail(SH.open); } }); });
+    setFilter("review");
+  }
+  function setFilter(f) {
+    const sh = S.shift;
+    SH.filter = f;
+    $$("[data-wfilter]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.wfilter === f)));
+    let shown = 0;
+    SH.rows.forEach((b, i) => { const on = FILTERS[f](sh.windows[i]); b.hidden = !on; if (on) shown++; });
+    if (SH.open != null && SH.rows[SH.open].hidden) closeWindow(false);
+    if (SH.open != null) { $("#windows").after($("#wdetail")); placeDetail(SH.open); }
+    const cnt = String(shown), c = sh.counts || {};
+    const head = !shown ? t("wcap.empty")
+      : f === "review" ? (c.breach ? c.breach + " " + t("wcap.review.n") + " " + cnt + " " + t("wcap.review.tail") : cnt + " " + t("wcap.review"))
+      : f === "unable" ? cnt + " " + t("wcap.unable")
+      : cnt + " " + t("wcap.all");
+    $("#wcaption").textContent = head + (shown ? " " + t("wcap.hint") : "");
+  }
+  // The panel opens full width directly under the line of the list that holds the picked row
+  // (on a phone that is the row itself), so the list stays in view above it.
+  function placeDetail(i) {
+    const d = $("#wdetail");
+    const top = SH.rows[i].offsetTop;
+    const line = SH.rows.filter((b) => !b.hidden && b.offsetTop === top);
+    (line[line.length - 1] || SH.rows[i]).after(d);
+  }
+  function closeWindow(focusRow) {
+    const i = SH.open;
+    if (i == null) return;
+    SH.open = null;
+    const d = $("#wdetail");
+    d.hidden = true;
+    clear(d);
+    SH.rows[i].setAttribute("aria-expanded", "false");
+    SH.rows[i].classList.remove("on");
+    $("#windows").after(d);
+    if (focusRow) SH.rows[i].focus();
+  }
+  // An unable ruling in the panel: why (from the record), what it needs, the rest of the measurement.
+  function unableLines(r) {
+    const out = [el("p", "wd-key", whySentence(r) || needsLine(r))];
+    if (whySentence(r) && needsAdds(r)) out.push(el("p", "needs", needsLine(r)));
+    const rest = String(r.measurement || "").trim().slice(whySentence(r).length).trim();
+    if (rest) out.push(el("p", "evidence", rest));
+    return out;
+  }
+  function openWindow(i) {
+    if (SH.open != null) closeWindow(false);
+    const sh = S.shift, w = sh.windows[i];
+    SH.open = i;
+    SH.rows[i].setAttribute("aria-expanded", "true");
+    SH.rows[i].classList.add("on");
+    const d = clear($("#wdetail"));
+    const head = el("div", "wd-head");
+    const hx = el("div");
+    hx.appendChild(el("p", "kicker", windowWhere(i, sh.windows.length)));
+    const h = el("h3", null, clipTitle(w.clip));
+    h.id = "wd-title";
+    hx.appendChild(h);
+    hx.appendChild(el("p", "wd-gist", windowGist(w)));
+    head.appendChild(hx);
+    const x = el("button", "wd-close", t("wd.close"));
+    x.type = "button";
+    x.addEventListener("click", () => closeWindow(true));
+    head.appendChild(x);
+    d.appendChild(head);
+    d.setAttribute("aria-labelledby", "wd-title");
+    const body = el("div", "wd-body");
+    const fig = el("figure", "wd-poster");
+    if (w.poster) {
+      const b = el("button", "frame-btn");
+      b.type = "button";
+      b.setAttribute("aria-label", t("wd.poster"));
+      const img = el("img");
+      img.decoding = "async";
+      img.alt = t("wd.poster");
+      img.addEventListener("error", () => b.classList.add("missing"));
+      img.src = DATA + w.poster;
+      b.appendChild(img);
+      b.addEventListener("click", () => { if (!b.classList.contains("missing")) enlarge(DATA + w.poster, clipTitle(w.clip)); });
+      fig.appendChild(b);
+      fig.appendChild(el("figcaption", null, t("wd.poster")));
+    } else fig.appendChild(el("p", "noframe", t("frames.none")));
+    body.appendChild(fig);
+    const rl = el("div", "wd-rules");
+    // A reason that several rulings share (a camera that moved fails every rule) is said once.
+    const unr = byVerdict(w.rulings, "unable_to_rule");
+    const m0 = unr.length > 1 && unr.every((r) => r.measurement === unr[0].measurement) ? unr[0] : null;
+    if (m0) {
+      const sh0 = el("div", "wd-shared");
+      sh0.appendChild(el("p", "label", t("why.unable") + " " + t(unr.length === (w.rulings || []).length ? "wd.shared.all" : "wd.shared.these")));
+      unableLines(m0).forEach((x) => sh0.appendChild(x));
+      rl.appendChild(sh0);
+    }
+    (w.rulings || []).slice().sort((a, b) => (VORDER[a.verdict] || 0) - (VORDER[b.verdict] || 0)).forEach((r) => {
+      const row = el("div", "wd-rule");
+      const top = el("div", "wd-rule-top");
+      top.appendChild(stamp(r.verdict, true));
+      top.appendChild(el("p", "wd-rule-title", r.title || r.rule));
+      row.appendChild(top);
+      if (r.verdict === "breach" && r.decided_by) row.appendChild(el("p", "wd-key", t("wd.decided") + ": " + r.decided_by));
+      if (r.verdict === "unable_to_rule") { if (!m0) unableLines(r).forEach((x) => row.appendChild(x)); }
+      else if (r.measurement) row.appendChild(el("p", "evidence", r.measurement));
+      const fr = (r.frames || []).map((f) => t("frame") + " " + f.n + " · " + Number(f.t_s).toFixed(2) + " s");
+      if (fr.length) row.appendChild(el("p", "wd-frames", fr.join(", ")));
+      rl.appendChild(row);
+    });
+    body.appendChild(rl);
+    d.appendChild(body);
+    $("#windows").after(d);
+    placeDetail(i);
+    d.hidden = false;
+    const r = d.getBoundingClientRect();
+    if (r.top < 0 || r.top > window.innerHeight * 0.6) d.scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "start" });
   }
 
   // ---------------------------------------------------------------- the shipped-3 replay and the graded set

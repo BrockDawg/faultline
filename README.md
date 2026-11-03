@@ -61,7 +61,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 109 |
+| Commits in this repo | 110 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 40 |
 | Experiment scripts in the working repo | 227 |
@@ -71,7 +71,7 @@ The car behind runs into the car ahead on the exit of a corner
 | Build plans in the working repo | 9 |
 | Rules packs | 8 |
 | Rules | 110 |
-| Tests | 871 |
+| Tests | 875 |
 | Paid calls to Meta models | 9362 |
 | Dollars metered on Meta models | $139.51 |
 
@@ -285,7 +285,7 @@ Forklift speeds and distances on these synthetic clips are a ranking, not metres
 The speed order holds: a faster truck reads faster.
 
 The forklift demo, `faultline-video shift`, stitches clips into a shift and builds a dashboard: every breach shows the number that decided it, and every unable ruling names its missing fact in plain words.
-On the demo shift that is 48 windows and 240 rulings: 16 breaches to review, 84 clear and 140 unable, 110 of them because the camera moved.
+On the demo shift that is 48 windows and 240 rulings: 16 breaches to review, 84 clear and 140 unable, 110 of them because the camera moved or was never marked.
 `faultline-video demo` builds a one-file walk through it, and `demo/` holds that page, its fifteen-line script and one still per line.
 The contract smoke, `scripts/contract_smoke.py`, runs `steward judge` on an items file with no model call and checks every line.
 

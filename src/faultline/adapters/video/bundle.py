@@ -78,7 +78,7 @@ NUMBERS = [
     ("shift_breach", 288, r"(\d+) breaches to review"),
     ("shift_clear", 288, r"(\d+) clear and \d+ unable"),
     ("shift_unable", 288, r"(\d+) unable, \d+ of them"),
-    ("shift_camera_moved", 288, r"(\d+) of them because the camera moved"),
+    ("shift_camera_moved", 288, r"(\d+) of them because the camera moved or was never marked"),
     ("real_camera_line", 316, r"(the line is [\d.]+ m)"),
     (
         "real_floor_unable",

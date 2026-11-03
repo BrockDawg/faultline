@@ -138,10 +138,20 @@
   <section class="panel wrap" aria-labelledby="shift-h" id="shift-panel">
     <div class="panel-head"><h2 id="shift-h">A shift</h2><p class="panel-sub" data-needs="shift_windows shift_rulings"><span data-num="shift_windows"></span> windows of footage, <span data-num="shift_rulings"></span> rulings, every rule answered on every window.</p></div>
     <div class="panel-body">
-      <p>Nobody watches a whole shift. The safety lead reads the list instead.</p>
-      <p data-needs="shift_breach shift_clear shift_unable shift_camera_moved"><b class="t-breach" data-num="shift_breach"></b> breaches to review, <b class="t-clear" data-num="shift_clear"></b> clear and <b class="t-unable" data-num="shift_unable"></b> unable, <span data-num="shift_camera_moved"></span> of them because the camera moved.</p>
-      <div class="shiftbar" id="shiftbar" aria-hidden="true"></div>
-      <ul class="windows" id="windows"></ul>
+      <p class="shift-lead">Nobody watches a whole shift. The judge reads every window, and the safety lead gets a short list of what to look at.</p>
+      <p data-needs="shift_breach shift_clear shift_unable shift_camera_moved"><b class="t-breach" data-num="shift_breach"></b> breaches to review, <b class="t-clear" data-num="shift_clear"></b> clear and <b class="t-unable" data-num="shift_unable"></b> unable, <span data-num="shift_camera_moved"></span> of them because the camera moved or was never marked.</p>
+      <figure class="shiftfig">
+        <div class="shiftbar" id="shiftbar" aria-hidden="true"></div>
+        <figcaption class="shiftkey">Every ruling on the shift: <span class="key v-breach">breach</span> <span class="key v-clear">clear</span> <span class="key v-unable_to_rule">unable to rule</span></figcaption>
+      </figure>
+      <div class="wfilter" role="group" aria-label="Show windows">
+        <button type="button" class="chip" data-wfilter="review" aria-pressed="true">To review <span class="count" id="wf-review"></span></button>
+        <button type="button" class="chip" data-wfilter="unable" aria-pressed="false">Nothing ruled <span class="count" id="wf-unable"></span></button>
+        <button type="button" class="chip" data-wfilter="all" aria-pressed="false">All windows <span class="count" id="wf-all"></span></button>
+      </div>
+      <p class="wcaption" id="wcaption" aria-live="polite"></p>
+      <div class="wlist" id="windows"></div>
+      <section class="wdetail" id="wdetail" hidden aria-label="The window you picked"></section>
     </div>
   </section>
 
@@ -257,8 +267,9 @@ uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl</co
   <span data-copy="for.insurer.breach">The frames and the number that decided it.</span>
   <span data-copy="for.insurer.none">The measurement behind every ruling.</span>
   <span data-copy="for.person">For a person to check</span>
-  <span data-copy="for.lacked">What it lacked:</span>
+  <span data-copy="for.unable">It could not rule on</span>
   <span data-copy="for.person.b">A person checks it.</span>
+  <span data-copy="for.person.bs">A person checks them.</span>
   <span data-copy="for.steward">For the steward</span>
   <span data-copy="for.steward.what">The cars within reach and the facts the sim's feed gave. The steward makes the call; the models' reads sit beside it.</span>
   <span data-copy="for.stewards">For the stewards</span>
@@ -283,7 +294,9 @@ uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl</co
   <span data-copy="frame">frame</span>
   <span data-copy="decided">The number that decided it</span>
   <span data-copy="measurement">The measurement</span>
-  <span data-copy="lacks">The fact it lacks</span>
+  <span data-copy="why.unable">Why it could not rule</span>
+  <span data-copy="needs">It needs:</span>
+  <span data-copy="needs.contact.consequence">It needs: a consequence within half a second (the structure shifts, something falls, the truck stops abruptly) to prove the touch was real.</span>
   <span data-copy="pack">The pack's own words</span>
   <span data-copy="wrote">wrote:</span>
   <span data-copy="reads.forklift">three reads:</span>
@@ -347,6 +360,24 @@ uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl</co
   <span data-copy="graded.match">matches the hash the README states</span>
   <span data-copy="graded.nomatch">differs from the hash the README states</span>
   <span data-copy="window">Window</span>
+  <span data-copy="window.of">of</span>
+  <span data-copy="wcap.review">windows hold the breaches to review. Start here.</span>
+  <span data-copy="wcap.review.n">breaches sit in</span>
+  <span data-copy="wcap.review.tail">windows. Start here.</span>
+  <span data-copy="wcap.unable">windows where no rule could be ruled. Each one says why, so nobody has to watch it.</span>
+  <span data-copy="wcap.all">windows, in shift order.</span>
+  <span data-copy="wcap.empty">No window in this list.</span>
+  <span data-copy="wcap.hint">Pick one to see what each rule found.</span>
+  <span data-copy="wd.close">Close</span>
+  <span data-copy="wd.shared.all">on every rule</span>
+  <span data-copy="wd.shared.these">on the rules marked unable</span>
+  <span data-copy="wd.poster">The window's first frame</span>
+  <span data-copy="wd.lacked">Could not rule without</span>
+  <span data-copy="wd.decided">Decided by</span>
+  <span data-copy="wd.breach">breach</span>
+  <span data-copy="wd.breaches">breaches</span>
+  <span data-copy="wd.unable">unable</span>
+  <span data-copy="wd.clear">All clear</span>
   <span data-copy="load.fail">The page data did not load. Reload in a moment.</span>
   <span data-copy="what.clip">Rulings get disputed. Prove nobody changed this one: our server re-runs the judge from scratch.</span>
   <span data-copy="what.protest">Rulings get disputed. Prove nobody changed this record: our server replays the protest from scratch.</span>
