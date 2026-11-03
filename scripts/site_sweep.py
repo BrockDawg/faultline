@@ -35,6 +35,12 @@ comment or a quoted string. Everything else stays in, and every byte of every ot
    entry, record and clip, read from a clip file inside a `synthetic` folder. Anything less,
    including a missing record, treats the frame as real footage: it needs its blur check.
    Nothing served (`frames.json`'s `kind`, `shift.json`) can vouch for itself.
+   Videos (`VIDEO_SUFFIXES`), failing closed: every one is listed in `video/videos.json` (and
+   sits in `video/`) with a matching sha256, is named `<window id>.mp4` by its manifest window,
+   that window is in `shift.json` with the same clip and is `_proven_synthetic` on the shift
+   record, neither its clip nor the record's is in `index.json`'s real group, and ffprobe shows
+   exactly one stream, a video one (no audio). No ffprobe on PATH is a failure, never a pass. A
+   manifest entry whose file is not there fails too.
 7. Secrets: `gitleaks dir` over the page and bundle folders only (refused on any folder that
    holds a `.git` or a `workspaces` folder), no `.env` file, no key variable with a value.
 
@@ -107,6 +113,7 @@ REQUIRED_MODELS = ("SAM 3.1", "Muse Spark Open", "Muse Wonder 1.0", "Muse Spark 
 
 TEXT_SUFFIXES = {".html", ".htm", ".js", ".mjs", ".css", ".json", ".txt", ".svg", ".md", ".map"}
 RASTER_SUFFIXES = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif", ".bmp", ".ico"}
+VIDEO_SUFFIXES = {".mp4", ".m4v", ".webm", ".mov", ".mkv"}
 _RASTER_MAGIC = (b"\xff\xd8\xff", b"\x89PNG", b"GIF8", b"RIFF", b"BM", b"\x00\x00\x01\x00")
 
 _NUMBER = re.compile(r"(?<![\w.])\d+(?:[.,]\d+)*(?![\w])")
@@ -865,6 +872,108 @@ def check_images(
             yield Failure(6, f.rel, "a real-footage frame without `checked: true` in blurred.json")
 
 
+def _is_video(f: Served) -> bool:
+    return f.path.suffix.lower() in VIDEO_SUFFIXES
+
+
+def _video_streams(path: Path, ffprobe: str) -> list[str] | str:
+    """The codec types of every stream in the file, or a problem in words."""
+    exe = shutil.which(ffprobe)
+    if exe is None:
+        return f"ffprobe ({ffprobe}) is not installed, so the no-audio check cannot run"
+    done = subprocess.run(
+        [exe, "-v", "error", "-show_entries", "stream=codec_type", "-of", "json", str(path)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if done.returncode != 0:
+        return f"ffprobe cannot read it (exit {done.returncode})"
+    try:
+        streams = json.loads(done.stdout or "{}").get("streams") or []
+    except (json.JSONDecodeError, AttributeError):
+        return "ffprobe gave no readable stream list"
+    return [str((s or {}).get("codec_type")) for s in streams]
+
+
+def check_videos(
+    files: list[Served],
+    bundle: Path,
+    index: dict[str, Any],
+    shift: Any = None,
+    record: dict[str, dict[str, Any]] | None = None,
+    ffprobe: str = "ffprobe",
+) -> Iterator[Failure]:
+    """Check 6 for videos: listed, hashed, a proven-synthetic shift window, no audio."""
+    videos = [f for f in files if _is_video(f)]
+    video_dir = (bundle / "video").resolve()
+    manifest_path = bundle / "video" / "videos.json"
+    if not manifest_path.is_file():
+        for f in videos:
+            yield Failure(6, f.rel, "a video with no video/videos.json to list it")
+        return
+    try:
+        doc = _read_json(manifest_path)
+    except SweepError as exc:
+        yield Failure(6, "video/videos.json", str(exc))
+        return
+    rows = doc.get("videos") if isinstance(doc, dict) else None
+    if not isinstance(rows, list):
+        yield Failure(6, "video/videos.json", "holds no `videos` list")
+        return
+    listed: dict[Path, dict[str, Any]] = {}
+    for i, row in enumerate(rows):
+        if not isinstance(row, dict) or not isinstance(row.get("file"), str):
+            yield Failure(6, "video/videos.json", f"entry {i} names no file")
+            continue
+        where = (bundle / row["file"]).resolve()
+        if not where.is_file():
+            yield Failure(6, "video/videos.json", f"entry {i}: its file is not in the bundle")
+            continue
+        listed[where] = row
+    clips = {c.get("id"): c for c in index.get("clips") or [] if isinstance(c, dict)}
+    real = {cid for cid, c in clips.items() if c.get("kind") == "real" or c.get("group") == "real"}
+    windows = {
+        w["window"]: w
+        for w in (shift.get("windows") if isinstance(shift, dict) else None) or []
+        if isinstance(w, dict) and isinstance(w.get("window"), str)
+    }
+    for f in videos:
+        key = f.path.resolve()
+        row = listed.get(key)
+        if row is None:
+            yield Failure(6, f.rel, "a video not listed in video/videos.json")
+            continue
+        if not key.is_relative_to(video_dir):
+            yield Failure(6, f.rel, "a video outside the bundle's video/ folder")
+        if row.get("sha256") != _file_sha(f.path):
+            yield Failure(6, f.rel, "its sha256 differs from video/videos.json")
+        wid = row.get("window")
+        window = windows.get(wid) if isinstance(wid, str) else None
+        if window is None or not _WINDOW_FOLDER.match(str(wid)):
+            yield Failure(6, f.rel, "its window is not in the demo shift")
+            continue
+        if f.path.stem != wid:
+            yield Failure(6, f.rel, "its file name is not its window's id")
+        if row.get("clip") != window.get("clip"):
+            yield Failure(6, f.rel, "its clip differs from the shift window's clip")
+        rec_clip = ((record or {}).get(wid) or {}).get("clip")
+        rec_stem = Path(rec_clip.replace("\\", "/")).stem if isinstance(rec_clip, str) else None
+        if {row.get("clip"), window.get("clip"), rec_stem} & real:
+            yield Failure(6, f.rel, "a video of a real-footage clip")
+            continue
+        if not isinstance(window.get("clip"), str) or not _proven_synthetic(window, record or {}):
+            yield Failure(6, f.rel, "a video not proven synthetic by the shift record")
+            continue
+        streams = _video_streams(f.path, ffprobe)
+        if isinstance(streams, str):
+            yield Failure(6, f.rel, streams)
+        elif "audio" in streams:
+            yield Failure(6, f.rel, "a video with an audio track")
+        elif streams != ["video"]:
+            yield Failure(6, f.rel, f"streams {streams}, not one video stream")
+
+
 def _scan_root_ok(folder: Path) -> str | None:
     resolved = folder.resolve()
     if (resolved / ".git").exists() or (resolved / "workspaces").exists():
@@ -974,6 +1083,7 @@ def sweep(
     readme: Path = REPO / "README.md",
     gitleaks: str = "gitleaks",
     sources: Path | None = None,
+    ffprobe: str = "ffprobe",
 ) -> list[Failure]:
     """Run the seven checks; return every failure. Raises SweepError when a source is missing.
 
@@ -1000,9 +1110,13 @@ def sweep(
     failures += check_models(files, docs, clips, readme_text, names)
     shift_path = bundle / "shift.json"
     shift = _read_json(shift_path) if shift_path.is_file() else None
-    failures += check_images(files, bundle, docs["index.json"], shift, shift_record(sources))
+    record = shift_record(sources)
+    failures += check_images(files, bundle, docs["index.json"], shift, record)
+    failures += check_videos(files, bundle, docs["index.json"], shift, record, ffprobe)
     for f in files:
         suffix = f.path.suffix.lower()
+        if _is_video(f):
+            continue  # check_videos holds every video to its own proof
         if f.text is None and not _is_image(f):
             failures.append(Failure(6, f.rel, "a binary file that is not an image"))
         elif f.text is None and suffix in TEXT_SUFFIXES:

@@ -396,3 +396,15 @@ def test_no_address_user_or_key_path(path: Path) -> None:
     assert not re.search(r"(?i)\bid_(rsa|ed25519|ecdsa)\b|\.ssh/", text), "a key path"
     # The box's ssh alias, spelled in two pieces so this test does not hold it either.
     assert not re.search(r"" + "brock" + "dev" + r"", text.lower()), "the box alias"
+
+
+def test_vhost_caches_json_jpeg_and_the_shift_videos_for_an_hour() -> None:
+    body = _strip_comments(_text(VHOST))
+    cache = re.search(r"location ~\*\s+(\S+)\s+\{\s*expires 1h;\s*\}", body)
+    assert cache, "no 1-hour cache location"
+    pattern = re.compile(cache.group(1), re.I)
+    for path in ("/data/index.json", "/data/frames/w01-x/poster.jpg", "/data/video/w01-x.mp4"):
+        assert pattern.search(path), path
+    assert not pattern.search("/index.html")
+    # an add_header in the cache location would drop the server-level security headers
+    assert "add_header" not in cache.group(0)

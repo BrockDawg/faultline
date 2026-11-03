@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -628,3 +629,171 @@ def test_a_replay_count_in_words_on_the_line_that_introduces_its_code_block_pass
     assert sweep.replay_count_line(readme, 4, 3) == 1
     assert sweep.replay_count_line(readme, 4, 4) is None
     assert sweep.replay_count_line(["Over 26 lines, hash d991b59e."], 1, 26) == 1
+
+
+# ---------------------------------------------------------------- demo-shift window videos
+
+HAS_FFMPEG = shutil.which("ffmpeg") is not None and shutil.which("ffprobe") is not None
+needs_ffmpeg = pytest.mark.skipif(not HAS_FFMPEG, reason="ffmpeg is absent")
+WID = "w01-shift_only_07"
+
+
+def _encode(path: Path, audio: bool) -> None:
+    """A one-second test video; with audio=True it carries a sine track."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    inputs = ["-f", "lavfi", "-i", "testsrc=duration=1:size=160x120:rate=12"]
+    if audio:
+        inputs += ["-f", "lavfi", "-i", "sine=duration=1", "-shortest", "-c:a", "aac"]
+    subprocess.run(
+        ["ffmpeg", "-v", "error", "-nostdin", *inputs, "-c:v", "libx264", "-y", str(path)],
+        check=True,
+    )
+
+
+def _add_video(
+    site: Site,
+    window: str = WID,
+    clip: str = "shift_only_07",
+    audio: bool = False,
+    listed: bool = True,
+    folder: str = "synthetic/pairs",
+) -> Path:
+    """A shift window (poster + record row) with a video at video/<window>.mp4 in the manifest."""
+    poster = _add_window_frame(site, window, window)
+    if window.endswith("real_aisle_01"):
+        site.set_blurred(True)
+        blurred = json.loads((site.bundle / "frames" / "blurred.json").read_text("utf-8"))
+        blurred["frames"].append({"file": f"{window}/poster.jpg", "checked": True})
+        (site.bundle / "frames" / "blurred.json").write_text(json.dumps(blurred), "utf-8")
+    _write_shift(site, [_window(window, clip, poster)])
+    site.write_shift_record([_record_row(window, clip, folder=folder)])
+    mp4 = site.bundle / "video" / f"{window}.mp4"
+    _encode(mp4, audio)
+    rows = []
+    if listed:
+        rows.append(
+            {
+                "file": f"video/{window}.mp4",
+                "window": window,
+                "clip": clip,
+                "sha256": hashlib.sha256(mp4.read_bytes()).hexdigest(),
+                "audio": False,
+            }
+        )
+    (site.bundle / "video" / "videos.json").write_text(
+        json.dumps({"schema": 1, "videos": rows}), encoding="utf-8"
+    )
+    return mp4
+
+
+def _video_failures(failures: list[sweep.Failure]) -> list[str]:
+    return [f.message for f in failures if f.where.endswith(".mp4") or "videos.json" in f.where]
+
+
+@needs_gitleaks
+@needs_ffmpeg
+def test_a_proven_synthetic_window_video_with_no_audio_passes(site: Site) -> None:
+    _add_video(site)
+    assert [str(f) for f in site.run()] == []
+
+
+@needs_gitleaks
+@needs_ffmpeg
+def test_an_unlisted_video_fails(site: Site) -> None:
+    _add_video(site, listed=False)
+    failures = site.run()
+    assert [f.check for f in failures] == [6]
+    assert "not listed" in failures[0].message
+
+
+@needs_gitleaks
+@needs_ffmpeg
+def test_a_video_with_no_manifest_fails(site: Site) -> None:
+    _add_video(site)
+    (site.bundle / "video" / "videos.json").unlink()
+    assert [f.check for f in site.run()] == [6]
+
+
+@needs_gitleaks
+@needs_ffmpeg
+def test_a_video_hash_mismatch_fails(site: Site) -> None:
+    mp4 = _add_video(site)
+    mp4.write_bytes(mp4.read_bytes() + b"\0")
+    failures = site.run()
+    assert [f.check for f in failures] == [6]
+    assert "sha256" in failures[0].message
+
+
+@needs_gitleaks
+@needs_ffmpeg
+@pytest.mark.parametrize("how", ["real folder", "no record", "record hash differs"])
+def test_a_video_of_an_unproven_window_fails(site: Site, how: str) -> None:
+    _add_video(site, folder="real/aisle" if how == "real folder" else "synthetic/pairs")
+    if how == "no record":
+        site.sources = None
+    elif how == "record hash differs":
+        site.write_shift_record([{**_record_row(WID, "shift_only_07"), "record": "rec-other"}])
+    msgs = _video_failures(site.run())
+    assert msgs == ["a video not proven synthetic by the shift record"]
+
+
+@needs_gitleaks
+@needs_ffmpeg
+def test_a_video_with_an_audio_track_fails(site: Site) -> None:
+    _add_video(site, audio=True)
+    failures = site.run()
+    assert [f.check for f in failures] == [6]
+    assert "audio" in failures[0].message
+
+
+@needs_gitleaks
+@needs_ffmpeg
+def test_a_real_clips_video_fails(site: Site) -> None:
+    _add_video(site, window="w01-real_aisle_01", clip="real_aisle_01")
+    msgs = _video_failures(site.run())
+    assert msgs == ["a video of a real-footage clip"]
+
+
+@needs_gitleaks
+@needs_ffmpeg
+def test_a_video_whose_manifest_clip_is_a_real_clip_fails(site: Site) -> None:
+    _add_video(site)
+    doc = json.loads((site.bundle / "video" / "videos.json").read_text("utf-8"))
+    doc["videos"][0]["clip"] = "real_aisle_01"
+    (site.bundle / "video" / "videos.json").write_text(json.dumps(doc), "utf-8")
+    msgs = _video_failures(site.run())
+    assert "a video of a real-footage clip" in msgs
+
+
+@needs_gitleaks
+@needs_ffmpeg
+def test_missing_ffprobe_fails_and_never_passes(site: Site) -> None:
+    _add_video(site)
+    extra = {"sources": site.sources}
+    failures = sweep.sweep(
+        site.bundle, site.page, site.names, site.readme, "gitleaks", ffprobe="no-ffprobe", **extra
+    )
+    assert [f.check for f in failures] == [6]
+    assert "ffprobe" in failures[0].message
+
+
+@needs_gitleaks
+@needs_ffmpeg
+def test_a_listed_video_that_is_not_there_fails(site: Site) -> None:
+    mp4 = _add_video(site)
+    mp4.unlink()
+    failures = site.run()
+    assert [f.check for f in failures] == [6]
+    assert "not in the bundle" in failures[0].message
+
+
+@needs_gitleaks
+@needs_ffmpeg
+def test_a_video_renamed_to_another_window_fails(site: Site) -> None:
+    mp4 = _add_video(site)
+    other = mp4.with_name("w02-shift_only_07.mp4")
+    mp4.rename(other)
+    doc = json.loads((site.bundle / "video" / "videos.json").read_text("utf-8"))
+    doc["videos"][0]["file"] = "video/w02-shift_only_07.mp4"
+    (site.bundle / "video" / "videos.json").write_text(json.dumps(doc), "utf-8")
+    assert _video_failures(site.run()) == ["its file name is not its window's id"]

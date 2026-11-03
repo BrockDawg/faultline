@@ -924,7 +924,7 @@
   // Master-detail: a short list of windows (the ones to review first), and one detail panel.
   // A list row holds only a title, the window's place in the shift and its verdict dots;
   // every rule's detail lives in the one panel, never inside a row.
-  const SH = { filter: "review", open: null, rows: [] };
+  const SH = { filter: "review", open: null, rows: [], seq: 0, video: null };
   const hasV = (w, v) => (w.rulings || []).some((r) => r.verdict === v);
   const allV = (w, v) => (w.rulings || []).length > 0 && (w.rulings || []).every((r) => r.verdict === v);
   const FILTERS = { review: (w) => hasV(w, "breach"), unable: (w) => allV(w, "unable_to_rule"), all: () => true };
@@ -1017,6 +1017,8 @@
     const i = SH.open;
     if (i == null) return;
     SH.open = null;
+    SH.seq++;
+    unloadVideo();
     const d = $("#wdetail");
     d.hidden = true;
     clear(d);
@@ -1055,23 +1057,10 @@
     d.appendChild(head);
     d.setAttribute("aria-labelledby", "wd-title");
     const body = el("div", "wd-body");
-    const fig = el("figure", "wd-poster");
-    if (w.poster) {
-      const b = el("button", "frame-btn");
-      b.type = "button";
-      b.setAttribute("aria-label", t("wd.poster"));
-      const img = el("img");
-      img.decoding = "async";
-      img.alt = t("wd.poster");
-      img.addEventListener("error", () => b.classList.add("missing"));
-      img.src = DATA + w.poster;
-      b.appendChild(img);
-      b.addEventListener("click", () => { if (!b.classList.contains("missing")) enlarge(DATA + w.poster, clipTitle(w.clip)); });
-      fig.appendChild(b);
-      fig.appendChild(el("figcaption", null, t("wd.poster")));
-    } else fig.appendChild(el("p", "noframe", t("frames.none")));
+    let fig = posterFig(w);
     body.appendChild(fig);
     const rl = el("div", "wd-rules");
+    const refs = [];
     // A reason that several rulings share (a camera that moved fails every rule) is said once.
     const unr = byVerdict(w.rulings, "unable_to_rule");
     const m0 = unr.length > 1 && unr.every((r) => r.measurement === unr[0].measurement) ? unr[0] : null;
@@ -1090,8 +1079,12 @@
       if (r.verdict === "breach" && r.decided_by) row.appendChild(el("p", "wd-key", t("wd.decided") + ": " + r.decided_by));
       if (r.verdict === "unable_to_rule") { if (!m0) unableLines(r).forEach((x) => row.appendChild(x)); }
       else if (r.measurement) row.appendChild(el("p", "evidence", r.measurement));
-      const fr = (r.frames || []).map((f) => t("frame") + " " + f.n + " · " + Number(f.t_s).toFixed(2) + " s");
-      if (fr.length) row.appendChild(el("p", "wd-frames", fr.join(", ")));
+      if ((r.frames || []).length) {
+        const fp = el("p", "wd-frames");
+        framesText(fp, r.frames);
+        refs.push({ p: fp, frames: r.frames });
+        row.appendChild(fp);
+      }
       rl.appendChild(row);
     });
     body.appendChild(rl);
@@ -1101,6 +1094,117 @@
     d.hidden = false;
     const r = d.getBoundingClientRect();
     if (r.top < 0 || r.top > window.innerHeight * 0.6) d.scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "start" });
+    // The window's footage replaces the still once the manifest says it exists; until then,
+    // and whenever it is missing or fails, the poster stays exactly as it was.
+    const seq = SH.seq;
+    videoIndex().then(() => {
+      if (SH.open !== i || SH.seq !== seq) return;
+      const m = VID.by[w.window];
+      if (!m) return;
+      const v = videoFig(w, m, () => {
+        if (SH.video !== v.video) return;
+        unloadVideo();
+        const back = posterFig(w);
+        v.fig.replaceWith(back);
+        fig = back;
+        refs.forEach((x) => framesText(x.p, x.frames));
+      });
+      fig.replaceWith(v.fig);
+      fig = v.fig;
+      refs.forEach((x) => framesButtons(x.p, x.frames, v.video, m));
+    });
+  }
+  function frameLabel(f) { return t("frame") + " " + f.n + " · " + Number(f.t_s).toFixed(2) + " s"; }
+  function framesText(p, frames) { clear(p).textContent = frames.map(frameLabel).join(", "); }
+  // A frame ref seeks the window's video to that moment and holds it there. The ref counts
+  // from the window's start, the same zero as the video.
+  function framesButtons(p, frames, video, m) {
+    clear(p);
+    p.classList.add("has-refs");
+    frames.forEach((f) => {
+      const b = el("button", "fref", frameLabel(f));
+      b.type = "button";
+      b.setAttribute("aria-label", t("wd.jump") + " " + frameLabel(f));
+      const at = f.t_s != null ? Number(f.t_s) : Number(f.n) / (m.fps || 24);
+      b.addEventListener("click", () => {
+        $$(".fref.on", $("#wdetail")).forEach((x) => x.classList.remove("on"));
+        b.classList.add("on");
+        seekTo(video, at);
+      });
+      p.appendChild(b);
+    });
+  }
+  function seekTo(v, at) {
+    const go = () => {
+      v.pause();
+      const end = isFinite(v.duration) ? Math.max(0, v.duration - 0.01) : at;
+      v.currentTime = Math.min(Math.max(0, at), end);
+    };
+    v.autoplay = false;
+    if (v.readyState >= 1) go();
+    else { v.preload = "auto"; v.addEventListener("loadedmetadata", go, { once: true }); v.load(); }
+    const r = v.getBoundingClientRect();
+    if (r.top < 0 || r.bottom > window.innerHeight) v.scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "nearest" });
+  }
+  function posterFig(w) {
+    const fig = el("figure", "wd-poster");
+    if (w.poster) {
+      const b = el("button", "frame-btn");
+      b.type = "button";
+      b.setAttribute("aria-label", t("wd.poster"));
+      const img = el("img");
+      img.decoding = "async";
+      img.alt = t("wd.poster");
+      img.addEventListener("error", () => b.classList.add("missing"));
+      img.src = DATA + w.poster;
+      b.appendChild(img);
+      b.addEventListener("click", () => { if (!b.classList.contains("missing")) enlarge(DATA + w.poster, clipTitle(w.clip)); });
+      fig.appendChild(b);
+      fig.appendChild(el("figcaption", null, t("wd.poster")));
+    } else fig.appendChild(el("p", "noframe", t("frames.none")));
+    return fig;
+  }
+  // The video is made only when its window opens, so nothing loads until a reader asks.
+  function videoFig(w, m, onFail) {
+    const fig = el("figure", "wd-poster wd-video");
+    const v = el("video");
+    v.controls = true;
+    v.muted = true;
+    v.loop = false;
+    v.playsInline = true;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("muted", "");
+    v.preload = "metadata";
+    if (m.width && m.height) { v.width = m.width; v.height = m.height; }
+    if (w.poster) v.poster = DATA + w.poster;
+    v.setAttribute("aria-label", t("wd.video") + ": " + clipTitle(w.clip));
+    v.addEventListener("error", onFail);
+    v.src = DATA + m.file;
+    SH.video = v;
+    fig.appendChild(v);
+    fig.appendChild(el("figcaption", null, t("wd.video.cap")));
+    if (!still()) { v.autoplay = true; const pp = v.play(); if (pp) pp.catch(() => {}); }
+    return { fig, video: v };
+  }
+  // Pause, drop the source and reset, so only one window's video ever holds memory.
+  function unloadVideo() {
+    const v = SH.video;
+    if (!v) return;
+    SH.video = null;
+    v.pause();
+    v.removeAttribute("src");
+    v.load();
+  }
+  // data/video/videos.json: {schema, videos: [{file, window, fps, width, height, ...}]}.
+  // Fetched once, the first time any window opens; a missing manifest means posters only.
+  const VID = { p: null, by: {} };
+  function videoIndex() {
+    if (!VID.p) {
+      VID.p = getJSON(DATA + "video/videos.json")
+        .then((doc) => { ((doc && doc.videos) || []).forEach((x) => { if (x && x.window && x.file) VID.by[x.window] = x; }); })
+        .catch(() => {});
+    }
+    return VID.p;
   }
 
   // ---------------------------------------------------------------- the shipped-3 replay and the graded set

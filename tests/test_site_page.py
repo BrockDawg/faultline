@@ -556,3 +556,63 @@ def test_an_unable_ruling_never_shows_its_needed_fact_bare():
         assert body.index("whySentence(r)") < body.index("needsLine(r)"), fn
     for fn in ("function clipStory(", "function clipFor(", "function windowGist("):
         assert "whyShort" in _body(js, fn) and "lacksOf" not in _body(js, fn), fn
+
+
+def test_a_window_video_is_made_only_when_the_window_opens():
+    """No video sits in the markup; the player is built inside openWindow's path, after the
+    manifest (fetched once, lazily) names the window, and asks for metadata only."""
+    html = (SITE / "index.html").read_text(encoding="utf-8")
+    assert "<video" not in html
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    assert js.count('"video/videos.json"') == 1
+    index = _body(js, "function videoIndex(")
+    assert "if (!VID.p)" in index, "the manifest is fetched once"
+    assert "videoIndex()" not in _body(js, "function renderShift("), "not fetched at load"
+    assert "videoIndex()" not in _body(js, "function boot(")
+    assert "videoIndex()" in _body(js, "function openWindow(")
+    fig = _body(js, "function videoFig(")
+    assert 'el("video")' in fig and 'v.preload = "metadata"' in fig
+    assert "v.muted = true" in fig and "v.loop = false" in fig and "playsinline" in fig
+    assert fig.index("still()") < fig.index("v.play()"), "no autoplay under reduced motion"
+    copy = _copy()
+    assert copy["wd.video.cap"] == (
+        "The footage the judge read for this window. Tap a frame on any rule to jump to it."
+    )
+    assert not re.search(r"\d", copy["wd.video.cap"] + copy["wd.jump"] + copy["wd.video"])
+
+
+def test_frame_refs_are_buttons_that_seek_and_hold():
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    refs = _body(js, "function framesButtons(")
+    assert 'el("button", "fref", frameLabel(f))' in refs and 'b.type = "button"' in refs
+    assert "Number(f.t_s)" in refs and "seekTo(video, at)" in refs
+    seek = _body(js, "function seekTo(")
+    assert "v.pause()" in seek and "v.currentTime =" in seek
+    assert "loadedmetadata" in seek, "a seek before metadata waits for it"
+    css = (SITE / "app.css").read_text(encoding="utf-8")
+    assert re.search(r"\.fref\{[^}]*min-height:44px", css), "a phone tap target"
+
+
+def test_a_missing_manifest_or_video_falls_back_to_the_poster():
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    index = _body(js, "function videoIndex(")
+    assert ".catch(() => {})" in index, "a missing manifest leaves the posters"
+    opened = js[js.index("function openWindow(") : js.index("function frameLabel(")]
+    assert "if (!m) return;" in opened, "a window without a video keeps its poster"
+    assert "const back = posterFig(w);" in opened and "framesText(x.p, x.frames)" in opened
+    assert 'v.addEventListener("error", onFail)' in _body(js, "function videoFig(")
+    assert "error" not in _copy().get("wd.video.cap", "").lower()
+
+
+def test_closing_or_switching_a_window_unloads_its_video():
+    js = (SITE / "app.js").read_text(encoding="utf-8")
+    unload = _body(js, "function unloadVideo(")
+    assert (
+        unload.index("v.pause()")
+        < unload.index('v.removeAttribute("src")')
+        < unload.index("v.load()")
+    )
+    close = _body(js, "function closeWindow(")
+    assert close.index("unloadVideo()") < close.index("clear(d)")
+    assert "SH.seq++" in close, "a late manifest never mounts into a closed window"
+    assert "closeWindow(false)" in _body(js, "function openWindow(").split("SH.open = i")[0]

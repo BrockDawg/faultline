@@ -114,3 +114,4 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `b0212fc` | 2026-11-02T17:05:03-0600 | site: the sweep passes the real bundle and still fails closed | claude-opus-5-5 via Claude Code | none |
 | `cad8787` | 2026-11-02T17:44:23-0600 | site: every live button says what it does and shows it happening | claude-opus-5-5 via Claude Code | none |
 | `991ef68` | 2026-11-02T18:56:42-0600 | site: the page tells the story, each clip opens as a case file | claude-opus-5-5 via Claude Code | none |
+| `61339b9` | 2026-11-02T19:53:15-0600 | site: the shift reads as a short list, and an unable ruling says why first | claude-opus-5-5 via Claude Code | none |
