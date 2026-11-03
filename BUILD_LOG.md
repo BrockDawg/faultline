@@ -128,3 +128,4 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `ff5eae0` | 2026-11-03T12:45:40-0600 | docs: add the session usage totals to the final submission log | muse-wonder-1.0 via Muse Code | none |
 | `4b4160e` | 2026-11-03T12:45:41-0600 | docs: tally and build log include the usage totals | muse-wonder-1.0 via Muse Code | none |
 | `f278cb6` | 2026-11-03T12:47:52-0600 | docs: correct the usage record, Meta API via Muse not the proxy | muse-wonder-1.0 via Muse Code | muse-wonder-1.0 |
+| `7798e6c` | 2026-11-03T12:47:53-0600 | docs: tally and build log include the corrected usage record | muse-wonder-1.0 via Muse Code | muse-wonder-1.0 |

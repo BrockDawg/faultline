@@ -14,7 +14,7 @@ It covers two domains today: warehouse forklifts, under OSHA 29 CFR 1910.178 and
 
 - **Problem:** on a warehouse site, forklifts hurt people, and nobody watches every camera.
 - **Hero domain:** warehouse forklifts (OSHA 29 CFR 1910.178 + the site's own rules). PitBot racing below is the real-user proof, not a second hero.
-- **Watch the film:** [faultline-film-web.mp4](https://metahackathon.pitbot.gg/faultline-film-web.mp4) · **Live demo:** [metahackathon.pitbot.gg](https://metahackathon.pitbot.gg) · **Repo:** [github.com/BrockDawg/faultline](https://github.com/BrockDawg/faultline)
+- **▶ OPEN THE LIVE DEMO NOW:** [metahackathon.pitbot.gg](https://metahackathon.pitbot.gg/) · **Watch the film:** [faultline-film-web.mp4](https://metahackathon.pitbot.gg/faultline-film-web.mp4) · **Repo:** [github.com/BrockDawg/faultline](https://github.com/BrockDawg/faultline)
 - **Replay it yourself:** `uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl`
 - **Headline numbers:** 12 of 14 breach clips found · 0 of 10 false breaches on compliant clips · replay byte-identical offline.
 - **Run the tests:** `uv run --extra site pytest -q`
@@ -71,7 +71,7 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 124 |
+| Commits in this repo | 125 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 40 |
 | Experiment scripts in the working repo | 227 |

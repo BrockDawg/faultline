@@ -414,8 +414,7 @@ def test_the_busy_line_is_the_plans_own_words():
     html = (SITE / "index.html").read_text(encoding="utf-8")
     assert "busy.clip" in keys
     stored = (
-        "stored ruling — live check unavailable. "
-        "The live rebuild is busy, try again in a minute."
+        "stored ruling — live check unavailable. The live rebuild is busy, try again in a minute."
     )
     assert stored in html
 
