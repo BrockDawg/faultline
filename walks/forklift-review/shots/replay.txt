@@ -1,0 +1,5 @@
+{"event": "stage", "name": "start"}
+{"event": "stage", "name": "record"}
+{"event": "stage", "name": "rebuild"}
+{"event": "stage", "name": "seal"}
+{"event": "result", "id": "blind_corner_no_vest_07", "match": true, "problems": [], "record_rebuilt": "c82ca137cb2c1b8b9415e7a0bd6befa344554dea8fbb30c44fef7c22d08c5044", "record_shipped": "c82ca137cb2c1b8b9415e7a0bd6befa344554dea8fbb30c44fef7c22d08c5044", "rulings": [{"rule": "hi_vis_in_truck_zone", "verdict": "breach"}, {"rule": "spotter_when_reversing", "verdict": "clear"}, {"rule": "pedestrian_separation", "verdict": "clear"}, {"rule": "structure_contact", "verdict": "clear"}], "seconds": 17.19, "set_sha256": "fe4e21838b276806a6e6f2c225ed5a6466fef66ceb2b64bf94cf3b8cc89af95f"}

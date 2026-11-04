@@ -1,0 +1,292 @@
+{
+  "schema": 1,
+  "kind": "visual_moment_candidates",
+  "meaning": "SAM mask motion suggests where a steward should review; this is not a contact finding or verdict.",
+  "video": "C:\\glitch\\workspaces\\faultline\\site\\data\\video\\racing-protest-24.mp4",
+  "video_sha256": "d6116af0ed6399285581b53ac3caafab70f6f0db17813ba5bf197bda2cbeb639",
+  "sam_reply": "C:\\glitch\\workspaces\\faultline\\data\\racing\\sam-checks\\24\\sam-reply.txt",
+  "sam_reply_sha256": "ece53442860c8caaaa3323af338dfdf6ccefb1d3f6f2ad6c42a871aca8c59a86",
+  "prompt": "race car",
+  "roi_xywh": null,
+  "clip_start_s": 6917.3,
+  "clip_duration_s": 14.5,
+  "sam_frames_processed": null,
+  "sam_estimated_usd": null,
+  "sam_cache": null,
+  "candidate_count": 8,
+  "status": "candidates_ranked",
+  "candidates": [
+    {
+      "frame": 139,
+      "clip_time_s": 11.583,
+      "score": 490.128,
+      "mask_gap_px": 7,
+      "pre_distance_px": 89.2,
+      "distance_at_candidate_px": 69.2,
+      "post_distance_px": 191.5,
+      "relative_motion_change_px": 288.5,
+      "track_pair": [
+        "8",
+        "9"
+      ],
+      "review_frame_range": [
+        127,
+        151
+      ],
+      "source_time_s": 6928.883,
+      "review_source_time_range_s": [
+        6927.883,
+        6929.883
+      ],
+      "review_frame_times_source_s": [
+        6927.883,
+        6928.133,
+        6928.383,
+        6928.633,
+        6928.883,
+        6929.133,
+        6929.383,
+        6929.633,
+        6929.883
+      ]
+    },
+    {
+      "frame": 99,
+      "clip_time_s": 8.25,
+      "score": 481.528,
+      "mask_gap_px": 1,
+      "pre_distance_px": 179.4,
+      "distance_at_candidate_px": 30.8,
+      "post_distance_px": 80.3,
+      "relative_motion_change_px": 102.1,
+      "track_pair": [
+        "6",
+        "8"
+      ],
+      "review_frame_range": [
+        87,
+        111
+      ],
+      "source_time_s": 6925.55,
+      "review_source_time_range_s": [
+        6924.55,
+        6926.55
+      ],
+      "review_frame_times_source_s": [
+        6924.55,
+        6924.8,
+        6925.05,
+        6925.3,
+        6925.55,
+        6925.8,
+        6926.05,
+        6926.3,
+        6926.55
+      ]
+    },
+    {
+      "frame": 85,
+      "clip_time_s": 7.083,
+      "score": 370.796,
+      "mask_gap_px": 1,
+      "pre_distance_px": 129.5,
+      "distance_at_candidate_px": 44.0,
+      "post_distance_px": 49.6,
+      "relative_motion_change_px": 196.3,
+      "track_pair": [
+        "8",
+        "9"
+      ],
+      "review_frame_range": [
+        73,
+        97
+      ],
+      "source_time_s": 6924.383,
+      "review_source_time_range_s": [
+        6923.383,
+        6925.383
+      ],
+      "review_frame_times_source_s": [
+        6923.383,
+        6923.633,
+        6923.883,
+        6924.133,
+        6924.383,
+        6924.633,
+        6924.883,
+        6925.133,
+        6925.383
+      ]
+    },
+    {
+      "frame": 110,
+      "clip_time_s": 9.167,
+      "score": 358.382,
+      "mask_gap_px": 1,
+      "pre_distance_px": 60.2,
+      "distance_at_candidate_px": 30.3,
+      "post_distance_px": 97.6,
+      "relative_motion_change_px": 172.1,
+      "track_pair": [
+        "6",
+        "8"
+      ],
+      "review_frame_range": [
+        98,
+        122
+      ],
+      "source_time_s": 6926.467,
+      "review_source_time_range_s": [
+        6925.467,
+        6927.467
+      ],
+      "review_frame_times_source_s": [
+        6925.467,
+        6925.717,
+        6925.967,
+        6926.217,
+        6926.467,
+        6926.717,
+        6926.967,
+        6927.217,
+        6927.467
+      ]
+    },
+    {
+      "frame": 74,
+      "clip_time_s": 6.167,
+      "score": 284.894,
+      "mask_gap_px": 1,
+      "pre_distance_px": 72.9,
+      "distance_at_candidate_px": 22.8,
+      "post_distance_px": 50.6,
+      "relative_motion_change_px": 135.3,
+      "track_pair": [
+        "6",
+        "8"
+      ],
+      "review_frame_range": [
+        62,
+        86
+      ],
+      "source_time_s": 6923.467,
+      "review_source_time_range_s": [
+        6922.467,
+        6924.467
+      ],
+      "review_frame_times_source_s": [
+        6922.467,
+        6922.717,
+        6922.967,
+        6923.217,
+        6923.467,
+        6923.717,
+        6923.967,
+        6924.217,
+        6924.467
+      ]
+    },
+    {
+      "frame": 132,
+      "clip_time_s": 11.0,
+      "score": 192.772,
+      "mask_gap_px": 1,
+      "pre_distance_px": 64.9,
+      "distance_at_candidate_px": 49.5,
+      "post_distance_px": 73.8,
+      "relative_motion_change_px": 116.7,
+      "track_pair": [
+        "7",
+        "9"
+      ],
+      "review_frame_range": [
+        120,
+        144
+      ],
+      "source_time_s": 6928.3,
+      "review_source_time_range_s": [
+        6927.3,
+        6929.3
+      ],
+      "review_frame_times_source_s": [
+        6927.3,
+        6927.55,
+        6927.8,
+        6928.05,
+        6928.3,
+        6928.55,
+        6928.8,
+        6929.05,
+        6929.3
+      ]
+    },
+    {
+      "frame": 117,
+      "clip_time_s": 9.75,
+      "score": 135.035,
+      "mask_gap_px": 1,
+      "pre_distance_px": 48.2,
+      "distance_at_candidate_px": 33.3,
+      "post_distance_px": 46.6,
+      "relative_motion_change_px": 80.9,
+      "track_pair": [
+        "7",
+        "9"
+      ],
+      "review_frame_range": [
+        105,
+        129
+      ],
+      "source_time_s": 6927.05,
+      "review_source_time_range_s": [
+        6926.05,
+        6928.05
+      ],
+      "review_frame_times_source_s": [
+        6926.05,
+        6926.3,
+        6926.55,
+        6926.8,
+        6927.05,
+        6927.3,
+        6927.55,
+        6927.8,
+        6928.05
+      ]
+    },
+    {
+      "frame": 146,
+      "clip_time_s": 12.167,
+      "score": 65.424,
+      "mask_gap_px": 6,
+      "pre_distance_px": 102.8,
+      "distance_at_candidate_px": 90.7,
+      "post_distance_px": 110.9,
+      "relative_motion_change_px": 16.9,
+      "track_pair": [
+        "7",
+        "8"
+      ],
+      "review_frame_range": [
+        134,
+        158
+      ],
+      "source_time_s": 6929.467,
+      "review_source_time_range_s": [
+        6928.467,
+        6930.467
+      ],
+      "review_frame_times_source_s": [
+        6928.467,
+        6928.717,
+        6928.967,
+        6929.217,
+        6929.467,
+        6929.717,
+        6929.967,
+        6930.217,
+        6930.467
+      ]
+    }
+  ]
+}

@@ -25,6 +25,7 @@ SCAN_WIDTH = 160
 MAX_SCAN_S = 240.0  # read at most this much of a window
 CUT_LEVEL = 35.0  # mean absolute grey change between thumbnails that is a shot cut
 SPIKE_Z = 2.5  # a motion spike sits this many MADs over the window's median
+HARD_CUT_GUARD_S = 1.0  # a nearby cut can still explain a frame-change spike
 VERDICT_BANDS = [
     (60.0, "no_action"),
     (120.0, "racing_incident"),
@@ -64,50 +65,125 @@ def motion(path: Path, start_s: float, end_s: float, budget_s: float | None = No
     cuts = [int(i + 1) for i, d in enumerate(diffs) if d > CUT_LEVEL]
     inner = np.asarray([d for i, d in enumerate(diffs) if (i + 1) not in cuts], float)
     spikes: list[int] = []
+    spike_evidence: list[dict] = []
     if len(inner) >= 4:
         med = float(np.median(inner))
         mad = float(np.median(np.abs(inner - med))) or 1.0
-        spikes = [
-            int(i + 1)
-            for i, d in enumerate(diffs)
-            if (i + 1) not in cuts and (d - med) / mad > SPIKE_Z
-        ]
+        for i, d in enumerate(diffs):
+            frame = int(i + 1)
+            if frame in cuts:
+                continue
+            z_score = (float(d) - med) / mad
+            if z_score > SPIKE_Z:
+                spikes.append(frame)
+                spike_evidence.append(
+                    {
+                        "frame": frame,
+                        "change": round(float(d), 3),
+                        "z_score": round(z_score, 3),
+                    }
+                )
+    peak_index = int(np.argmax(diffs))
+    peak_frame = peak_index + 1
+    peak_change = float(diffs[peak_index])
+    peak_z = (peak_change - med) / mad if len(inner) >= 4 else 0.0
     return {
         "read": True,
         "span_s": round(span, 1),
         "frames": int(len(th)),
         "shot_cuts": cuts,
         "motion_spikes": spikes,
+        "motion_spike_evidence": spike_evidence,
+        "activity_peak": {
+            "frame": peak_frame,
+            "change": round(peak_change, 3),
+            "z_score": round(float(peak_z), 3),
+            "hard_cut": peak_frame in cuts,
+        },
+        "motion_baseline": {"median_change": round(med, 3), "mad": round(mad, 3)}
+        if len(inner) >= 4
+        else None,
         "mean_change": round(float(diffs.mean()), 2),
         "seconds": round(time.monotonic() - t0, 1),
     }
 
 
 def scan(path: Path, start_s: float = 0.0, end_s: float | None = None) -> list[dict]:
-    """Contact candidates for a broadcast recording: motion spikes inside one shot, as {t_s, frames,
-    evidence}.
+    """Motion-change candidates for a broadcast recording.
+
+    The original point-candidate fields stay available for callers.  The extra fields describe the
+    thumbnail measurement so a later review-window pass can rank video evidence without treating it
+    as measured contact.
     """
     if end_s is None:
         end_s = video.probe(path).get("duration") or start_s + MAX_SCAN_S
     out = []
+    cut_times: list[float] = []
     t = start_s
     while t < end_s:
         m = motion(path, t, min(end_s, t + MAX_SCAN_S))
         if m.get("read"):
-            for s in m["motion_spikes"]:
-                ts = t + s / SCAN_FPS
+            cut_times.extend(t + cut / SCAN_FPS for cut in m.get("shot_cuts", []))
+            details = {item["frame"]: item for item in m.get("motion_spike_evidence", [])}
+            fallback = not m["motion_spikes"]
+            selected = (
+                [m["activity_peak"]]
+                if fallback and m.get("activity_peak")
+                else [details[frame] for frame in m["motion_spikes"]]
+            )
+            for detail in selected:
+                frame = int(detail["frame"])
+                ts = t + frame / SCAN_FPS
+                nearest_cut_s = min(
+                    (abs(frame - cut) / SCAN_FPS for cut in m["shot_cuts"]), default=None
+                )
+                if fallback:
+                    cut_note = "; this sample is a detected hard cut" if detail["hard_cut"] else ""
+                    evidence = (
+                        f"No strong motion spike passed the {SPIKE_Z:g} MAD threshold in this "
+                        f"{min(end_s - t, MAX_SCAN_S):.0f} s scan block. The fallback is the "
+                        f"largest sampled frame change at {ts:.1f} s{cut_note}; low confidence, "
+                        "review the surrounding footage. It does not identify a car, measure "
+                        "contact, or decide a ruling."
+                    )
+                else:
+                    evidence = (
+                        f"Frame-to-frame change at {ts:.1f} s sits over {SPIKE_Z:g} MADs "
+                        "above the shot's median and is not itself a hard cut; "
+                        "a review candidate for a human steward, not a ruling: no car is "
+                        "identified and no contact is measured."
+                    )
                 out.append(
                     {
                         "t_s": round(ts, 1),
                         "frames": [int(round(ts * 30))],
-                        "evidence": f"Frame-to-frame change at {ts:.1f} s sits over {SPIKE_Z:g} "
-                        "MADs "
-                        "above the shot's median with no shot cut; "
-                        "a contact candidate for a human steward, not a ruling: no car is "
-                        "identified and no contact is measured.",
+                        "evidence": evidence,
+                        "motion": {
+                            "change": detail.get("change"),
+                            "z_score": detail.get("z_score"),
+                            "baseline": m.get("motion_baseline"),
+                            "fallback": fallback,
+                            "fallback_reason": "no_thresholded_spike_in_scan_block"
+                            if fallback
+                            else None,
+                            "source_block_s": [round(t, 1), round(min(end_s, t + MAX_SCAN_S), 1)],
+                            "nearest_hard_cut_s": round(nearest_cut_s, 3)
+                            if nearest_cut_s is not None
+                            else None,
+                            "near_hard_cut": nearest_cut_s is not None
+                            and nearest_cut_s <= HARD_CUT_GUARD_S,
+                        },
                     }
                 )
         t += MAX_SCAN_S
+    for item in out:
+        nearest_cut_s = min((abs(item["t_s"] - cut_time) for cut_time in cut_times), default=None)
+        item["motion"]["nearest_hard_cut_s"] = (
+            round(nearest_cut_s, 3) if nearest_cut_s is not None else None
+        )
+        item["motion"]["near_hard_cut"] = (
+            nearest_cut_s is not None and nearest_cut_s <= HARD_CUT_GUARD_S
+        )
     return out
 
 

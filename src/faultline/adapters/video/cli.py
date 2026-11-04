@@ -21,9 +21,12 @@ faultline-video lifecycle <lifecycle.json> <window>/<rule> <to> --by insurer|sit
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -1162,14 +1165,301 @@ def cmd_compile(args) -> int:
     return 0
 
 
+def _scan_roi(value: str) -> tuple[int, int, int, int]:
+    try:
+        roi = tuple(int(part.strip()) for part in value.split(","))
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("ROI must be x,y,width,height in source pixels") from exc
+    if len(roi) != 4 or any(part < 0 for part in roi) or roi[2] < 2 or roi[3] < 2:
+        raise argparse.ArgumentTypeError("ROI must be x,y,width,height in source pixels")
+    return roi
+
+
+def _encode_scan_roi(
+    source: Path, start_s: float, end_s: float, roi: tuple[int, int, int, int], out: Path
+) -> bytes:
+    """Encode one selected review window and its caller-selected replay pane for SAM."""
+    info = video.probe(source)
+    x, y, width, height = roi
+    if x + width > info["width"] or y + height > info["height"]:
+        raise ValueError(
+            f"ROI {roi} is outside the {info['width']}x{info['height']} source-video frame."
+        )
+    scale = min(video.W / width, video.H / height)
+    scaled_w = max(2, int(round(width * scale / 2)) * 2)
+    scaled_h = max(2, int(round(height * scale / 2)) * 2)
+    pad_x, pad_y = (video.W - scaled_w) // 2, (video.H - scaled_h) // 2
+    vf = (
+        f"crop={width}:{height}:{x}:{y},scale={scaled_w}:{scaled_h},"
+        f"pad={video.W}:{video.H}:{pad_x}:{pad_y},fps={FPS}"
+    )
+    out.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-y",
+            "-ss",
+            f"{start_s:.3f}",
+            "-t",
+            f"{max(0.05, end_s - start_s):.3f}",
+            "-i",
+            str(source),
+            "-vf",
+            vf,
+            "-c:v",
+            "libx264",
+            "-crf",
+            "20",
+            "-pix_fmt",
+            "yuv420p",
+            "-movflags",
+            "+faststart",
+            "-an",
+            str(out),
+        ],
+        check=True,
+        capture_output=True,
+    )
+    return out.read_bytes()
+
+
+def _source_sha256(path: Path) -> str:
+    with path.open("rb") as fh:
+        return hashlib.file_digest(fh, "sha256").hexdigest()
+
+
+def _scan_telemetry(args) -> list[dict]:
+    """Read supporting feed events without letting them choose a visual candidate."""
+    if args.feed is None and args.session is None:
+        return []
+    if args.feed is None or args.session is None:
+        raise ValueError("--feed and --session must be provided together.")
+    from dataclasses import asdict
+
+    from faultline.adapters.pitbot.events import all_events
+    from faultline.adapters.pitbot.feed import Feed
+
+    result = []
+    for event in all_events(Feed.load(args.feed, args.session)):
+        item = asdict(event)
+        item["feed_time_s"] = item["te_lo"]
+        item["t_s"] = round(item["te_lo"] + args.telemetry_offset_s, 3)
+        item["source"] = "PitBot feed event; supporting context only"
+        result.append(item)
+    return result
+
+
+def _legacy_scan_fields(windows: list[dict], spikes: list[dict], source_hash: str) -> None:
+    """Keep the old point-candidate fields on every grouped JSONL record."""
+    for window in windows:
+        matching = [
+            spike
+            for spike in spikes
+            if float(window["start_s"]) <= float(spike["t_s"]) <= float(window["end_s"])
+        ]
+        if matching:
+            strongest = max(
+                matching,
+                key=lambda spike: (
+                    float((spike.get("motion") or {}).get("z_score", 0.0)),
+                    -float(spike["t_s"]),
+                ),
+            )
+            for name in ("t_s", "frames", "evidence"):
+                if name in strongest:
+                    window[name] = strongest[name]
+        window["source_video_sha256"] = source_hash
+
+
+def _attach_scan_telemetry(args, windows: list[dict]) -> list[dict]:
+    """Attach optional telemetry without allowing a feed failure to stop video review."""
+    try:
+        from faultline.adapters.video.review_windows import annotate_telemetry
+
+        return annotate_telemetry(windows, _scan_telemetry(args))
+    except Exception as exc:  # telemetry is contextual; an unreadable feed must not hide video
+        message = f"telemetry was not attached: {type(exc).__name__}: {exc}"
+        for window in windows:
+            window["telemetry_context"] = {
+                "events": [],
+                "error": message,
+                "meaning": (
+                    "Telemetry is supporting context only; video candidate order is unchanged."
+                ),
+            }
+        print(f"scan note: {message}", file=sys.stderr)
+        return windows
+
+
+def _refine_scan_window(args, windows: list[dict]) -> dict | None:
+    """Run SAM only for the one window, ROI, and paid call the steward selected."""
+    if not args.sam_refine:
+        return None
+    if args.candidate is None or args.roi is None:
+        raise ValueError("--sam-refine requires both --candidate N and --roi x,y,width,height.")
+    if not args.confirm:
+        raise ValueError(
+            "--sam-refine makes a paid SAM call; pass --confirm after reviewing its cost."
+        )
+    if not 0 <= args.candidate < len(windows):
+        raise ValueError(f"--candidate must name one of 0 through {len(windows) - 1}.")
+
+    chosen = windows[args.candidate]
+    start_s, end_s = float(chosen["start_s"]), float(chosen["end_s"])
+    frames_hint = max(1, int(math.ceil((end_s - start_s) * FPS)))
+    reserved_usd = max(client.SAM_MIN_FRAMES, 2 * frames_hint) * client.SAM_FRAME_USD
+    remaining_usd = client.cap_usd() - client.spent(client.WAVE_START_TS)
+    print(
+        "SAM refinement preflight: "
+        f"window {args.candidate}, {frames_hint} frame hint, reserves ${reserved_usd:.4f}; "
+        f"${remaining_usd:.4f} remains under the local cap."
+    )
+    if reserved_usd > remaining_usd:
+        raise client.BudgetSpent(
+            f"SAM refinement would reserve ${reserved_usd:.4f}, above the ${remaining_usd:.4f} "
+            "remaining local cap; no model call is made."
+        )
+
+    source = Path(args.video)
+    source_hash = _source_sha256(source)
+    with tempfile.TemporaryDirectory(prefix="faultline-scan-sam-") as temp:
+        encoded = _encode_scan_roi(source, start_s, end_s, args.roi, Path(temp) / "review.mp4")
+    result = client.sam_video(
+        encoded,
+        args.sam_prompt,
+        tag=f"racing-review-window:{source_hash[:12]}:{args.candidate}",
+        frames_hint=frames_hint,
+    )
+    reply = result["text"]
+    reply_path = Path(args.out).with_suffix(".sam.txt")
+    reply_path.write_text(reply, encoding="utf-8", newline="\n")
+    from faultline.adapters.pitbot.moment_candidates import rank_moments
+    from faultline.adapters.video import sam
+
+    cache_dir = Path(args.out).parent / f"{Path(args.out).stem}.sam-cache"
+    candidates = rank_moments(
+        sam.track_stats(reply, cache_dir),
+        sam.mask_crops(reply, cache_dir),
+        frame_count=frames_hint,
+    )
+    for candidate in candidates:
+        candidate["source_time_s"] = round(start_s + candidate["clip_time_s"], 3)
+        candidate["review_source_time_range_s"] = [
+            round(start_s + frame / FPS, 3) for frame in candidate["review_frame_range"]
+        ]
+        candidate["review_frame_times_source_s"] = [
+            round(start_s + time_s, 3) for time_s in candidate.pop("review_frame_times_s")
+        ]
+    return {
+        "meaning": (
+            "SAM mask motion is a follow-up search hint for this steward-selected replay pane; "
+            "it is not a contact finding or a verdict."
+        ),
+        "candidate_index": args.candidate,
+        "source_video_sha256": source_hash,
+        "window_s": [round(start_s, 3), round(end_s, 3)],
+        "roi_xywh": list(args.roi),
+        "prompt": args.sam_prompt,
+        "reserved_usd": round(reserved_usd, 6),
+        "estimated_usd": result.get("est_usd"),
+        "frames_processed": (result.get("usage") or {}).get("video_frames_processed"),
+        "cache": result.get("cache"),
+        "reply": str(reply_path),
+        "reply_sha256": hashlib.sha256(reply.encode("utf-8")).hexdigest(),
+        "candidates": candidates,
+    }
+
+
 def cmd_scan(args) -> int:
     from faultline.adapters.video.racing import scan
+    from faultline.adapters.video.review_gate import assess_window
+    from faultline.adapters.video.review_windows import build_windows
 
-    events = scan(Path(args.video), args.start, args.end)
-    with Path(args.out).open("w", encoding="utf-8", newline="\n") as fh:
-        for e in events:
-            fh.write(json.dumps(e, sort_keys=True) + "\n")
-    print(f"{len(events)} contact candidates to {args.out}")
+    source = Path(args.video)
+    info = video.probe(source)
+    end_s = args.end if args.end is not None else info.get("duration")
+    if end_s is None or end_s <= args.start:
+        print("scan needs a readable, positive video range.", file=sys.stderr)
+        return 2
+    if args.before_s < 0 or args.after_s < 0:
+        print("scan refused: --before-s and --after-s must be non-negative.", file=sys.stderr)
+        return 2
+    spikes = scan(source, args.start, end_s)
+    windows = build_windows(
+        spikes,
+        start_s=args.start,
+        end_s=end_s,
+        before_s=args.before_s,
+        after_s=args.after_s,
+    )
+    try:
+        _legacy_scan_fields(windows, spikes, _source_sha256(source))
+    except OSError as exc:
+        print(f"scan refused: {exc}", file=sys.stderr)
+        return 2
+    windows = _attach_scan_telemetry(args, windows)
+    try:
+        refinement = _refine_scan_window(args, windows)
+    except (ValueError, client.ApiError, client.BudgetSpent, OSError) as exc:
+        print(f"scan refused: {exc}", file=sys.stderr)
+        return 2
+    if refinement is not None:
+        windows[args.candidate]["sam_refinement"] = refinement
+    for window in windows:
+        assessment = assess_window(window, video_duration_s=end_s)
+        window["reviewability"] = {
+            "disposition": assessment["disposition"],
+            "reason": assessment["reason"],
+            "explanation": assessment["explanation"],
+        }
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open("w", encoding="utf-8", newline="\n") as fh:
+        for window in windows:
+            fh.write(json.dumps(window, sort_keys=True) + "\n")
+    counts = {
+        status: sum(window["reviewability"]["disposition"] == status for window in windows)
+        for status in ("accept_for_review", "insufficient", "reject")
+    }
+    print(
+        f"{len(windows)} video-only review window(s) to {out}; "
+        f"{counts['accept_for_review']} eligible for review, "
+        f"{counts['insufficient']} insufficient, {counts['reject']} invalid; no verdict"
+    )
+    return 0
+
+
+def cmd_review_gate(args) -> int:
+    from faultline.adapters.video.review_gate import gate_document
+
+    source = Path(args.candidates)
+    out = Path(args.out)
+    try:
+        if source.resolve() == out.resolve():
+            print("review-gate refused: input and output paths must differ", file=sys.stderr)
+            return 2
+        windows = [
+            json.loads(line)
+            for line in source.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"review-gate refused: {exc}", file=sys.stderr)
+        return 2
+    if any(not isinstance(window, dict) for window in windows):
+        print("review-gate refused: each JSONL line must be an object", file=sys.stderr)
+        return 2
+    document = gate_document(windows, video_duration_s=args.duration_s)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    counts = document["counts"]
+    print(
+        "review-gate: "
+        f"{counts['accept_for_review']} eligible for review, "
+        f"{counts['insufficient']} insufficient, {counts['reject']} invalid; no verdict"
+    )
     return 0
 
 
@@ -1317,7 +1607,68 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--out", required=True)
     s.add_argument("--start", type=float, default=0.0)
     s.add_argument("--end", type=float, default=None)
+    s.add_argument(
+        "--before-s",
+        type=float,
+        default=3.0,
+        help="seconds of footage before each grouped visual spike (default: 3)",
+    )
+    s.add_argument(
+        "--after-s",
+        type=float,
+        default=3.0,
+        help="seconds of footage after each grouped visual spike (default: 3)",
+    )
+    s.add_argument("--feed", type=Path, help="optional PitBot feed JSONL for context only")
+    s.add_argument("--session", help="feed session name, required with --feed")
+    s.add_argument(
+        "--telemetry-offset-s",
+        type=float,
+        default=0.0,
+        help="add this offset to feed seconds before attaching context (default: 0)",
+    )
+    s.add_argument(
+        "--sam-refine",
+        action="store_true",
+        help="run one paid SAM mask-motion follow-up for a selected review window",
+    )
+    s.add_argument(
+        "--candidate",
+        type=int,
+        help="zero-based visual review-window index for --sam-refine",
+    )
+    s.add_argument(
+        "--roi",
+        type=_scan_roi,
+        help="replay-view ROI as x,y,width,height in source pixels for --sam-refine",
+    )
+    s.add_argument(
+        "--sam-prompt",
+        default="race car",
+        help="SAM object prompt for --sam-refine (default: race car)",
+    )
+    s.add_argument(
+        "--confirm",
+        action="store_true",
+        help="authorize the single paid SAM request requested by --sam-refine",
+    )
     s.set_defaults(fn=cmd_scan)
+    g = sub.add_parser(
+        "review-gate",
+        help="classify existing review windows for reviewability; never decide an incident",
+    )
+    g.add_argument(
+        "candidates",
+        help="JSONL review-window candidates, such as faultline-video scan output",
+    )
+    g.add_argument("--out", required=True, help="write the reviewability results here")
+    g.add_argument(
+        "--duration-s",
+        type=float,
+        default=None,
+        help="source video duration; candidates extending beyond it are rejected as invalid",
+    )
+    g.set_defaults(fn=cmd_review_gate)
     args = ap.parse_args(argv)
     os.environ.setdefault("PYTHONHASHSEED", "0")
     return args.fn(args)

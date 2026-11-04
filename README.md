@@ -71,17 +71,17 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 131 |
+| Commits in this repo | 140 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 40 |
 | Experiment scripts in the working repo | 227 |
 | Experiment data files in the working repo | 671 |
-| Design notes published here | 3 |
+| Design notes published here | 5 |
 | Design notes in the working repo | 9 |
 | Build plans in the working repo | 9 |
 | Rules packs | 8 |
 | Rules | 110 |
-| Tests | 899 |
+| Tests | 909 |
 | Paid calls to Meta models | 9362 |
 | Dollars metered on Meta models | $139.51 |
 
@@ -654,8 +654,8 @@ The model's read named the offender on 4 of 8 on both arms against a mark of 8 o
 
 #### Identity and the moment
 
-- **The moment is found; identity is the hard part.**
-  Timing landed within 1 s on most clips, and the misses were identity: misread digits, on-screen labels trusted over the car, or a touch the camera never showed.
+- **A full-session scan now proposes windows; it has not proved contact recall.**
+  The scan reads the whole recording at low resolution for visual-change spikes, groups nearby spikes into padded review windows, and keeps that video-first order even when telemetry is quiet. Telemetry can be attached as context only. The racing pipeline's telemetry locator held the truth second within 2 s on 2 of 7 protests. The SAM contact experiment searched short windows whose times were already supplied, and its whole-frame prompt followed the onboard view instead of the incident replay on most cases. Neither result establishes a live, full-session contact locator.
 - **The report picks the incident.**
   Without one, a 50 s clip with five spins has no single answer, and on 18 human-steward windows with no report Spark scored 5 of 18.
 - **Identity comes from the screen.**
@@ -879,6 +879,18 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 The hackathon build stops on 4 November 2026.
 The work does not.
 This is what I build next, in the order I expect to do it, so a reader can see where the project is going and hold me to it.
+
+### Find racing moments across the full session
+
+The current demo uses a stored moment for each protest; a live session cannot depend on that hand-entered timestamp. Without one, the telemetry locator chooses a single candidate and held the truth second within 2 seconds on only 2 of 7 scored protests. SAM's contact measurements were run only on short, already-located windows, and the 58-case pass mostly tracked the onboard view rather than the replay pane. Native video from Spark Open found an incident inside a 16-second window on 4 of 21 events and raised false incidents on 5 of 18 controls.
+
+The repository now has an experimental full-session motion scan: it reads low-resolution thumbnails across a recording, groups nearby visual-change spikes into padded review windows, and keeps those video candidates in visual-score order. If a 240-second scan block has no strong spike, it returns the block's largest sampled frame change as a clearly marked low-confidence fallback. That fallback is still video-derived; it may be ordinary traffic or a camera edit. Telemetry can sit beside a candidate as context, but never adds, removes or reorders one. The cut gate can miss a soft cut, and an impact hidden by smoke or an edit may have no visible motion signal.
+
+Each scan window now carries a reviewability status: `accept_for_review`, `insufficient`, or `reject`. `Reject` means malformed or out-of-range input, never "no incident." Fallback-only candidates remain in the scan output marked `insufficient`; the gate does not create a separate human-review queue or decide whether an incident happened. Its status is not yet enforced by the later evidence pipeline. The next step is to measure that pipeline's accept/reject policy on held-out full sessions. Clips 1 and 13 both remain `insufficient/fallback_only`; the gate cannot distinguish them.
+
+On the eight short protest excerpts in the site bundle, the strongest returned timestamp landed within 2 seconds of the stored, stream-mapped review moment on 5 of 8 clips. This includes a low-confidence fallback on protest 1, which Brock confirms shows no incident. These short excerpts do not establish full-session recall. A fallback trades an empty scan for an `insufficient` candidate; a measured accept/reject policy in the later evidence pipeline remains future work.
+
+For a steward-selected window only, an optional SAM pass can examine an explicitly supplied replay-view crop after an explicit paid-call confirmation. It supplies mask-motion evidence beside the window, never a contact finding or ruling. The scan still needs scoring on held-out full sessions, and still needs a reliable replay-view finder. Neither SAM nor a model decides the ruling.
 
 ### Racing truth from the sim's own replay
 

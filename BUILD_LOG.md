@@ -135,3 +135,6 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `840a51f` | 2026-11-04T08:35:49-0600 | use-continuous-original-racing-video-in: commit before closing | claude-opus-5-5 via Claude Code | none |
 | `c41b431` | 2026-11-04T08:36:42-0600 | docs: refresh totals after continuous video update | claude-opus-5-5 via Claude Code | none |
 | `93b18d1` | 2026-11-04T08:43:53-0600 | test: include racing media in page schema fixture | claude-opus-5-5 via Claude Code | none |
+| `e25ba70` | 2026-11-04T08:44:08-0600 | docs: refresh counts after racing media schema fix | claude-opus-5-5 via Claude Code | none |
+| `c9a4a13` | 2026-11-04T11:15:35-0600 | feat: add experimental racing review-window finder | claude-opus-5-5 via Claude Code | none |
+| `5a508b5` | 2026-11-04T11:32:35-0600 | fix: add low-confidence racing scan fallback | claude-opus-5-5 via Claude Code | none |

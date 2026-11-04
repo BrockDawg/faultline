@@ -1,0 +1,97 @@
+{
+  "asked": "map out our project",
+  "shape": "C",
+  "lost": false,
+  "where": {
+    "projects": [
+      {
+        "name": "Faultline",
+        "path": "../..",
+        "says": "A rules-compliance judge for video, covering forklift safety and sim-racing."
+      }
+    ],
+    "guess": 1,
+    "fits": true
+  },
+  "look": {
+    "kind": "something else",
+    "parts": [
+      {
+        "name": "Shared rules and records",
+        "says": "Loads rule packs and records how each ruling was made."
+      },
+      {
+        "name": "Forklift video judge",
+        "says": "Measures video evidence and applies warehouse rules."
+      },
+      {
+        "name": "PitBot racing adapter",
+        "says": "Turns racing reports and feed data into steward rulings."
+      },
+      {
+        "name": "Live demo site",
+        "says": "Shows stored cases and can re-run a ruling through the server."
+      },
+      {
+        "name": "Build and validation tools",
+        "says": "Prepare demo data, check the public site, and deploy it."
+      }
+    ],
+    "thing": "Faultline, a rules judge for video",
+    "read": [
+      "README.md",
+      "AGENTS.md",
+      "STATE.md",
+      "pyproject.toml",
+      "src/faultline/cli.py",
+      "src/faultline/pack.py",
+      "src/faultline/ruling.py",
+      "src/faultline/frames.py",
+      "src/faultline/record.py",
+      "src/faultline/adapters/video/cli.py",
+      "src/faultline/adapters/video/serve.py",
+      "src/faultline/adapters/pitbot/cli.py",
+      "src/faultline/adapters/pitbot/bundle.py",
+      "src/faultline/adapters/pitbot/replay_one.py",
+      "site/index.html",
+      "site/app.js",
+      "site/data/racing.json",
+      "site/data/racing/media.json",
+      "scripts/deploy_site.py"
+    ],
+    "all": false
+  },
+  "narrow": {
+    "first": 1,
+    "list": [
+      "Open the warehouse case and check its ruling again",
+      "Replay the shipped forklift examples",
+      "Open a PitBot protest and check its ruling",
+      "Re-run the racing incident limits"
+    ],
+    "said": "I want to see the path that runs for pitbot protests and it's rulings, so maybe 3 is closest?",
+    "picked": 3
+  },
+  "action": {
+    "end": "The page shows whether both saved ruling records rebuild to the same bytes.",
+    "link": "This follows the path that runs for PitBot protests and their stored steward rulings.",
+    "start": "You pick a PitBot protest and click the Check nobody changed it button.",
+    "files": [
+      "site/index.html",
+      "site/app.js",
+      "site/data/racing.json",
+      "site/data/racing/media.json",
+      "src/faultline/adapters/video/serve.py",
+      "src/faultline/adapters/pitbot/replay_one.py",
+      "src/faultline/adapters/pitbot/bundle.py",
+      "src/faultline/cli.py",
+      "src/faultline/record.py"
+    ],
+    "question": "What happens when I pick a PitBot protest and check it?",
+    "seen": {
+      "where": "Faultline live demo, PitBot Protests section (https://metahackathon.pitbot.gg/)",
+      "kind": "page"
+    }
+  },
+  "confirmed": "OK."
+}
