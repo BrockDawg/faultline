@@ -89,6 +89,8 @@ def group_motion_spikes(
         if duration_s is not None:
             end = min(max(0.0, duration_s), end)
         max_strength = max(strengths, default=0.0)
+        fallback_count = sum(bool((item.get("motion") or {}).get("fallback")) for item in group)
+        strong_count = len(group) - fallback_count
         # Extra nearby samples help choose what to review, but never describe severity or contact.
         visual_score = round(max_strength + 0.25 * max(0, len(group) - 1), 3)
         windows.append(
@@ -99,8 +101,11 @@ def group_motion_spikes(
                 "center_s": round(sum(times) / len(times), 3),
                 "duration_s": round(max(0.0, end - start), 3),
                 "visual_score": visual_score,
+                "confidence": "low" if fallback_count and not strong_count else "experimental",
                 "motion": {
                     "spike_count": len(group),
+                    "strong_spike_count": strong_count,
+                    "fallback_spike_count": fallback_count,
                     "spike_times_s": [round(value, 3) for value in times],
                     "max_z_score": round(max_strength, 3),
                     "sum_z_score": round(sum(strengths), 3),
@@ -121,7 +126,15 @@ def group_motion_spikes(
             }
         )
 
-    return sorted(windows, key=lambda item: (-item["visual_score"], item["start_s"], item["end_s"]))
+    return sorted(
+        windows,
+        key=lambda item: (
+            item["confidence"] == "low",
+            -item["visual_score"],
+            item["start_s"],
+            item["end_s"],
+        ),
+    )
 
 
 def build_windows(
