@@ -133,3 +133,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `b6f3897` | 2026-11-03T16:05:15-0600 | feat: show sampled race footage in protest reviews | claude-opus-5-5 via Claude Code | none |
 | `b0f541c` | 2026-11-03T16:13:41-0600 | docs: refresh submission totals | claude-opus-5-5 via Claude Code | none |
 | `840a51f` | 2026-11-04T08:35:49-0600 | use-continuous-original-racing-video-in: commit before closing | claude-opus-5-5 via Claude Code | none |
+| `c41b431` | 2026-11-04T08:36:42-0600 | docs: refresh totals after continuous video update | claude-opus-5-5 via Claude Code | none |
+| `93b18d1` | 2026-11-04T08:43:53-0600 | test: include racing media in page schema fixture | claude-opus-5-5 via Claude Code | none |
