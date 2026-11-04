@@ -181,6 +181,7 @@ def test_js_reads_only_schema_fields():
     """Every bundle field the JS names exists in the hand-written schema fixture."""
     js = (SITE / "app.js").read_text(encoding="utf-8")
     index, racing, shift = _fixture("index.json"), _fixture("racing.json"), _fixture("shift.json")
+    racing_media = _fixture("racing_media.json")
     clip = _fixture("clips/blind_corner_no_vest_07.json")
 
     def keys(o, out):
@@ -194,7 +195,7 @@ def test_js_reads_only_schema_fields():
         return out
 
     schema = set()
-    for doc in (index, racing, shift, clip):
+    for doc in (index, racing, racing_media, shift, clip):
         keys(doc, schema)
     # worker event fields (the plan's worker API), and the JS's own state names
     worker = {
