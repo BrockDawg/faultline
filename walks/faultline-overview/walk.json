@@ -1,0 +1,539 @@
+{
+  "question": "What happens when I pick a PitBot protest and check it?",
+  "shape": "C",
+  "place": "Faultline live demo · PitBot Protests section",
+  "root": "../..",
+  "run": "Read the source and captured the live page on 4 November 2026. The re-check request was not sent.",
+  "about": {
+    "what": "The PitBot protest panel in the Faultline live demo.",
+    "who": "Drivers protest a move, volunteer stewards rule, and visitors can inspect the evidence.",
+    "on": "Protest choices, race footage, a saved steward ruling, model reads, and a record check.",
+    "address": "https://metahackathon.pitbot.gg/ · PitBot Protests"
+  },
+  "files": [
+    {
+      "id": "page",
+      "path": "site/index.html",
+      "kind": "runs in your browser",
+      "says": "The protest panel, its evidence area, and its check button."
+    },
+    {
+      "id": "browser",
+      "path": "site/app.js",
+      "kind": "runs in your browser",
+      "says": "Loads the stored cases, displays evidence, and handles the check button."
+    },
+    {
+      "id": "cases",
+      "path": "site/data/racing.json",
+      "kind": "read by the page",
+      "says": "The public protest entries, stored steward rulings, and model reads."
+    },
+    {
+      "id": "media",
+      "path": "site/data/racing/media.json",
+      "kind": "read by the page",
+      "says": "The public video and source links for racing protests."
+    },
+    {
+      "id": "api",
+      "path": "src/faultline/adapters/video/serve.py",
+      "kind": "runs on the demo server",
+      "says": "Accepts a protest ID and queues a replay job."
+    },
+    {
+      "id": "replay",
+      "path": "src/faultline/adapters/pitbot/replay_one.py",
+      "kind": "runs in a short-lived process",
+      "says": "Copies one protest from each saved arm and checks whether replay rebuilds it."
+    },
+    {
+      "id": "core",
+      "path": "src/faultline/cli.py",
+      "kind": "runs in the replay process",
+      "says": "Rebuilds saved ruling lines from their bundles and refuses mismatches."
+    },
+    {
+      "id": "record",
+      "path": "src/faultline/record.py",
+      "kind": "runs in the replay process",
+      "says": "Calculates the hash used to check a saved record."
+    }
+  ],
+  "moments": [
+    {
+      "state": "see",
+      "say": "The page opens with Protest 18 selected, its race video, steward ruling, and model reads beside it.",
+      "screen": {
+        "shot": "protest-panel",
+        "source": "Captured from the live site on 4 November 2026. I scrolled to the protest section by hand; the browser was restricted to GET and HEAD requests. No check was sent.",
+        "place": "https://metahackathon.pitbot.gg/ · PitBot Protests",
+        "parts": [
+          {
+            "part": "protest_choices",
+            "name": "Protest choices",
+            "says": "Choose which saved protest to inspect."
+          },
+          {
+            "part": "selected_protest",
+            "name": "Selected protest",
+            "says": "The page opened with Protest 18 selected by its default.",
+            "here": true
+          },
+          {
+            "part": "race_video",
+            "name": "Race footage",
+            "says": "A silent excerpt around the saved review window. Playback was not started."
+          },
+          {
+            "part": "source_link",
+            "name": "Original video on YouTube",
+            "says": "Opens the source video in another tab. I did not open it."
+          },
+          {
+            "part": "stored_ruling",
+            "name": "Steward ruling",
+            "says": "The saved ruling displayed for this protest."
+          },
+          {
+            "part": "model_reads",
+            "name": "Model reads",
+            "says": "Shown beside the steward ruling; the page says they do not decide it."
+          },
+          {
+            "part": "check_button",
+            "name": "Check nobody changed it",
+            "says": "Starts a server check of the saved record. I did not press it."
+          }
+        ]
+      },
+      "hidden": [
+        {
+          "name": "Load the case files",
+          "title": "Reads the saved protest details and media links.",
+          "why": "The page needs the case record and the path to its race footage.",
+          "here": "The browser fetches racing.json and racing/media.json, then renders the racing panel.",
+          "files": [
+            "browser",
+            "cases",
+            "media"
+          ],
+          "code": [
+            {
+              "file": "browser",
+              "start": 1399,
+              "end": 1401,
+              "marks": [
+                1399,
+                1400,
+                1401
+              ],
+              "plain": "These lines fetch the two saved racing data files and render the panel."
+            }
+          ],
+          "icon": "file",
+          "size": "small"
+        },
+        {
+          "name": "Choose the default case",
+          "title": "Builds the protest buttons and opens a saved case.",
+          "why": "A visitor can choose another protest, while the page still opens one by default.",
+          "here": "The page builds buttons from the saved protest list and calls showProtest for its first honesty entry; the live capture showed Protest 18 selected.",
+          "files": [
+            "page",
+            "browser",
+            "cases"
+          ],
+          "code": [
+            {
+              "file": "browser",
+              "start": 943,
+              "end": 952,
+              "marks": [
+                948,
+                950,
+                951
+              ],
+              "plain": "These lines choose the default entry and connect the protest card to it."
+            },
+            {
+              "file": "browser",
+              "start": 955,
+              "end": 964,
+              "marks": [
+                956,
+                960,
+                963,
+                964
+              ],
+              "plain": "These lines make the protest choices, open the default entry, and attach the check button."
+            }
+          ],
+          "icon": "list",
+          "size": "small"
+        },
+        {
+          "name": "Show the evidence",
+          "title": "Puts the video, steward ruling, and model reads on the page.",
+          "why": "The decision belongs to the steward; model reads are shown alongside it.",
+          "here": "The selected case gets the continuous excerpt and source link, then the saved steward_ruling and separate model reads.",
+          "files": [
+            "browser",
+            "cases",
+            "media"
+          ],
+          "code": [
+            {
+              "file": "browser",
+              "start": 747,
+              "end": 759,
+              "marks": [
+                749,
+                750,
+                752,
+                753,
+                754,
+                755
+              ],
+              "plain": "These lines attach the video, caption, and YouTube source link."
+            },
+            {
+              "file": "browser",
+              "start": 781,
+              "end": 794,
+              "marks": [
+                781,
+                782,
+                785,
+                786,
+                790
+              ],
+              "plain": "The saved steward ruling is displayed before the separate model reads."
+            }
+          ],
+          "icon": "eye"
+        }
+      ]
+    },
+    {
+      "state": "do",
+      "say": "You click the Check nobody changed it button.",
+      "unsure": "I did not press the button. This is the real pre-click screen; I did not observe a live match or mismatch result.",
+      "screen": {
+        "shot": "protest-panel",
+        "source": "The same live screen, captured before the click. The check request was deliberately not sent.",
+        "place": "https://metahackathon.pitbot.gg/ · PitBot Protests",
+        "parts": [
+          {
+            "here": false,
+            "part": "protest_choices",
+            "name": "Protest choices",
+            "says": "Choose which saved protest to inspect."
+          },
+          {
+            "here": false,
+            "part": "selected_protest",
+            "name": "Selected protest",
+            "says": "The page opened with Protest 18 selected by its default."
+          },
+          {
+            "here": false,
+            "part": "race_video",
+            "name": "Race footage",
+            "says": "A silent excerpt around the saved review window. Playback was not started."
+          },
+          {
+            "here": false,
+            "part": "source_link",
+            "name": "Original video on YouTube",
+            "says": "Opens the source video in another tab. I did not open it."
+          },
+          {
+            "here": false,
+            "part": "stored_ruling",
+            "name": "Steward ruling",
+            "says": "The saved ruling displayed for this protest."
+          },
+          {
+            "here": false,
+            "part": "model_reads",
+            "name": "Model reads",
+            "says": "Shown beside the steward ruling; the page says they do not decide it."
+          },
+          {
+            "here": true,
+            "part": "check_button",
+            "name": "Check nobody changed it",
+            "says": "Starts a server check of the saved record. I did not press it."
+          }
+        ]
+      },
+      "hidden": [
+        {
+          "name": "Start the check",
+          "title": "Sends the selected protest ID to the server.",
+          "why": "The server only accepts a protest already present in its public bundle.",
+          "here": "If clicked, the browser sends the selected ID to /api/racing/protest and opens an event stream for progress and the result.",
+          "files": [
+            "page",
+            "browser"
+          ],
+          "code": [
+            {
+              "file": "page",
+              "start": 210,
+              "end": 215,
+              "marks": [
+                211,
+                212
+              ],
+              "plain": "The button starts the check, and the text says the server replays the saved protest."
+            },
+            {
+              "file": "browser",
+              "start": 963,
+              "end": 967,
+              "marks": [
+                964
+              ],
+              "plain": "This click handler starts the check for the selected protest."
+            },
+            {
+              "file": "browser",
+              "start": 448,
+              "end": 459,
+              "marks": [
+                455,
+                456,
+                457,
+                458
+              ],
+              "plain": "The browser sends a POST with the protest ID."
+            },
+            {
+              "file": "browser",
+              "start": 461,
+              "end": 475,
+              "marks": [
+                464,
+                466,
+                472,
+                475
+              ],
+              "plain": "It opens an event stream and waits for the result or an error."
+            }
+          ],
+          "icon": "swap"
+        },
+        {
+          "name": "Queue the replay",
+          "title": "Checks the ID and starts the protest replay process.",
+          "why": "The browser sends an ID, not a file path to run on the server.",
+          "here": "The server refuses an unknown ID; for a known protest it queues replay_one with that ID.",
+          "files": [
+            "api",
+            "cases",
+            "replay"
+          ],
+          "code": [
+            {
+              "file": "api",
+              "start": 499,
+              "end": 514,
+              "marks": [
+                501,
+                502,
+                503,
+                506,
+                510,
+                514
+              ],
+              "plain": "The route validates the protest and queues the replay command."
+            }
+          ],
+          "icon": "lock",
+          "size": "small"
+        },
+        {
+          "name": "Find the saved lines",
+          "title": "Finds one stored protest line in each of two arms.",
+          "why": "Both saved versions have to reproduce for the page to show a full match.",
+          "here": "The replay process looks up the selected protest in each saved arm file and refuses if a line is missing or duplicated.",
+          "files": [
+            "replay"
+          ],
+          "code": [
+            {
+              "file": "replay",
+              "start": 132,
+              "end": 147,
+              "marks": [
+                135,
+                136,
+                137,
+                138,
+                141,
+                143,
+                146
+              ],
+              "plain": "The loop finds the protest in each arm and starts replaying each saved line."
+            }
+          ],
+          "icon": "search"
+        },
+        {
+          "name": "Copy the saved inputs",
+          "title": "Copies each record bundle, frame files, and saved model replies.",
+          "why": "Replay needs the same inputs that the stored ruling record names.",
+          "here": "For each arm, the worker copies the record bundle, the referenced frame images, and ledger replies into a temporary folder.",
+          "files": [
+            "replay"
+          ],
+          "code": [
+            {
+              "file": "replay",
+              "start": 75,
+              "end": 87,
+              "marks": [
+                75,
+                79,
+                83,
+                87
+              ],
+              "plain": "This part copies the saved ruling line and its bundle."
+            },
+            {
+              "file": "replay",
+              "start": 94,
+              "end": 109,
+              "marks": [
+                95,
+                98,
+                100,
+                104,
+                106,
+                108
+              ],
+              "plain": "These lines copy frame files and stored replies named by the bundle."
+            }
+          ],
+          "icon": "store",
+          "inside": true
+        },
+        {
+          "name": "Rebuild the stored ruling",
+          "title": "Replays each line from its bundle and compares the bytes.",
+          "why": "This checks that the saved record still matches its saved inputs and ruling.",
+          "here": "Faultline checks the bundle hash and that the line matches its saved ruling; replay_one then compares rebuilt output bytes with the original.",
+          "files": [
+            "replay",
+            "core",
+            "record"
+          ],
+          "code": [
+            {
+              "file": "replay",
+              "start": 115,
+              "end": 122,
+              "marks": [
+                118,
+                121,
+                122
+              ],
+              "plain": "This calls the offline replay and compares the rebuilt bytes with the stored line."
+            },
+            {
+              "file": "core",
+              "start": 123,
+              "end": 138,
+              "marks": [
+                123,
+                127,
+                133,
+                136,
+                138
+              ],
+              "plain": "The replay reads the saved bundle and checks its hash."
+            },
+            {
+              "file": "core",
+              "start": 140,
+              "end": 151,
+              "marks": [
+                143,
+                145,
+                147,
+                151
+              ],
+              "plain": "It also checks the saved ruling matches the line before writing the rebuilt output."
+            },
+            {
+              "file": "record",
+              "start": 91,
+              "end": 93,
+              "marks": [
+                91,
+                93
+              ],
+              "plain": "The record hash is a SHA-256 of canonical JSON."
+            }
+          ],
+          "icon": "lock",
+          "inside": true
+        },
+        {
+          "name": "Return the check result",
+          "title": "Compares both arms and returns a match or mismatch.",
+          "why": "The browser needs a plain result for the protest it checked.",
+          "here": "The worker reports match true only when both arms rebuild; code says the page then marks the pack same or different. This result screen was not observed.",
+          "files": [
+            "replay",
+            "browser"
+          ],
+          "code": [
+            {
+              "file": "replay",
+              "start": 157,
+              "end": 172,
+              "marks": [
+                157,
+                158,
+                160,
+                163,
+                167,
+                172
+              ],
+              "plain": "The worker reports whether every saved arm matched."
+            },
+            {
+              "file": "browser",
+              "start": 852,
+              "end": 858,
+              "marks": [
+                852,
+                854,
+                856,
+                857
+              ],
+              "plain": "The page changes the case status and displays the returned result."
+            }
+          ],
+          "icon": "swap",
+          "unsure": "No request was sent, so the live match or mismatch screen was not observed."
+        }
+      ]
+    }
+  ],
+  "silent": [
+    {
+      "title": "This is a record check, not a new ruling",
+      "text": "The live button rebuilds the saved records from their stored bundles and replies. It does not ask a steward or a model to make a new contact decision.",
+      "show": "What happens when a steward first turns a protest into a saved ruling?"
+    }
+  ],
+  "ask": [
+    "What happens when a steward first turns a protest into a saved ruling?",
+    "What does a mismatch on the protest replay mean?",
+    "What is the model read shown beside the steward ruling?"
+  ]
+}
