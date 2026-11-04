@@ -1374,6 +1374,7 @@ def _refine_scan_window(args, windows: list[dict]) -> dict | None:
 
 def cmd_scan(args) -> int:
     from faultline.adapters.video.racing import scan
+    from faultline.adapters.video.review_gate import assess_window
     from faultline.adapters.video.review_windows import build_windows
 
     source = Path(args.video)
@@ -1406,12 +1407,59 @@ def cmd_scan(args) -> int:
         return 2
     if refinement is not None:
         windows[args.candidate]["sam_refinement"] = refinement
+    for window in windows:
+        assessment = assess_window(window, video_duration_s=end_s)
+        window["reviewability"] = {
+            "disposition": assessment["disposition"],
+            "reason": assessment["reason"],
+            "explanation": assessment["explanation"],
+        }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", encoding="utf-8", newline="\n") as fh:
         for window in windows:
             fh.write(json.dumps(window, sort_keys=True) + "\n")
-    print(f"{len(windows)} video-only review window(s) to {out}; no verdict")
+    counts = {
+        status: sum(window["reviewability"]["disposition"] == status for window in windows)
+        for status in ("accept_for_review", "insufficient", "reject")
+    }
+    print(
+        f"{len(windows)} video-only review window(s) to {out}; "
+        f"{counts['accept_for_review']} eligible for review, "
+        f"{counts['insufficient']} insufficient, {counts['reject']} invalid; no verdict"
+    )
+    return 0
+
+
+def cmd_review_gate(args) -> int:
+    from faultline.adapters.video.review_gate import gate_document
+
+    source = Path(args.candidates)
+    out = Path(args.out)
+    try:
+        if source.resolve() == out.resolve():
+            print("review-gate refused: input and output paths must differ", file=sys.stderr)
+            return 2
+        windows = [
+            json.loads(line)
+            for line in source.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"review-gate refused: {exc}", file=sys.stderr)
+        return 2
+    if any(not isinstance(window, dict) for window in windows):
+        print("review-gate refused: each JSONL line must be an object", file=sys.stderr)
+        return 2
+    document = gate_document(windows, video_duration_s=args.duration_s)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    counts = document["counts"]
+    print(
+        "review-gate: "
+        f"{counts['accept_for_review']} eligible for review, "
+        f"{counts['insufficient']} insufficient, {counts['reject']} invalid; no verdict"
+    )
     return 0
 
 
@@ -1605,6 +1653,22 @@ def main(argv: list[str] | None = None) -> int:
         help="authorize the single paid SAM request requested by --sam-refine",
     )
     s.set_defaults(fn=cmd_scan)
+    g = sub.add_parser(
+        "review-gate",
+        help="classify existing review windows for reviewability; never decide an incident",
+    )
+    g.add_argument(
+        "candidates",
+        help="JSONL review-window candidates, such as faultline-video scan output",
+    )
+    g.add_argument("--out", required=True, help="write the reviewability results here")
+    g.add_argument(
+        "--duration-s",
+        type=float,
+        default=None,
+        help="source video duration; candidates extending beyond it are rejected as invalid",
+    )
+    g.set_defaults(fn=cmd_review_gate)
     args = ap.parse_args(argv)
     os.environ.setdefault("PYTHONHASHSEED", "0")
     return args.fn(args)

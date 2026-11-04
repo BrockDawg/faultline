@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "kind": "visual_moment_candidates",
+  "meaning": "SAM mask motion suggests where a steward should review; this is not a contact finding or verdict.",
+  "video": "C:\\glitch\\workspaces\\faultline\\site\\data\\video\\racing-protest-18.mp4",
+  "video_sha256": "033a29d718b5ce672fe223c2fd55a4cd02efab999ee704a42f6dbb7cfbe69cbb",
+  "sam_reply": "C:\\glitch\\workspaces\\faultline\\data\\racing\\sam-checks\\18\\sam-reply.txt",
+  "sam_reply_sha256": "1de5a587c59daecacb4d159fdd4afdca7fa2ab696136cada05b33e1c7cd081bd",
+  "prompt": "race car",
+  "roi_xywh": null,
+  "clip_start_s": 2378.0,
+  "clip_duration_s": 14.5,
+  "sam_frames_processed": null,
+  "sam_estimated_usd": null,
+  "sam_cache": null,
+  "candidate_count": 3,
+  "status": "candidates_ranked",
+  "candidates": [
+    {
+      "frame": 18,
+      "clip_time_s": 1.5,
+      "score": 701.981,
+      "mask_gap_px": 1,
+      "pre_distance_px": 160.0,
+      "distance_at_candidate_px": 76.7,
+      "post_distance_px": 181.7,
+      "relative_motion_change_px": 341.1,
+      "track_pair": [
+        "0",
+        "1"
+      ],
+      "review_frame_range": [
+        6,
+        30
+      ],
+      "source_time_s": 2379.5,
+      "review_source_time_range_s": [
+        2378.5,
+        2380.5
+      ],
+      "review_frame_times_source_s": [
+        2378.5,
+        2378.75,
+        2379.0,
+        2379.25,
+        2379.5,
+        2379.75,
+        2380.0,
+        2380.25,
+        2380.5
+      ]
+    },
+    {
+      "frame": 112,
+      "clip_time_s": 9.333,
+      "score": 458.52,
+      "mask_gap_px": 1,
+      "pre_distance_px": 139.3,
+      "distance_at_candidate_px": 115.9,
+      "post_distance_px": 196.7,
+      "relative_motion_change_px": 258.7,
+      "track_pair": [
+        "6",
+        "7"
+      ],
+      "review_frame_range": [
+        100,
+        124
+      ],
+      "source_time_s": 2387.333,
+      "review_source_time_range_s": [
+        2386.333,
+        2388.333
+      ],
+      "review_frame_times_source_s": [
+        2386.333,
+        2386.583,
+        2386.833,
+        2387.083,
+        2387.333,
+        2387.583,
+        2387.833,
+        2388.083,
+        2388.333
+      ]
+    },
+    {
+      "frame": 147,
+      "clip_time_s": 12.25,
+      "score": 230.248,
+      "mask_gap_px": 1,
+      "pre_distance_px": 307.3,
+      "distance_at_candidate_px": 232.6,
+      "post_distance_px": 235.7,
+      "relative_motion_change_px": 80.8,
+      "track_pair": [
+        "6",
+        "7"
+      ],
+      "review_frame_range": [
+        135,
+        159
+      ],
+      "source_time_s": 2390.25,
+      "review_source_time_range_s": [
+        2389.25,
+        2391.25
+      ],
+      "review_frame_times_source_s": [
+        2389.25,
+        2389.5,
+        2389.75,
+        2390.0,
+        2390.25,
+        2390.5,
+        2390.75,
+        2391.0,
+        2391.25
+      ]
+    }
+  ]
+}
