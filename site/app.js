@@ -749,7 +749,16 @@
       if (media.poster) v.poster = DATA + media.poster;
       v.src = DATA + media.video;
       fig.appendChild(v);
-      fig.appendChild(el("figcaption", null, "Silent replay from the stored review frames, sampled twice per second. The steward's ruling is shown below; model reads never decide it."));
+      const caption = el("figcaption", null, "Continuous, silent excerpt around the recorded review window, with extra context before and after. Broadcast graphics are masked. The steward's ruling is shown below; model reads never decide it.");
+      if (media.source_url) {
+        const source = el("a", "race-source", "Original video on YouTube");
+        source.href = media.source_url;
+        source.target = "_blank";
+        source.rel = "noopener noreferrer";
+        caption.appendChild(document.createTextNode(" "));
+        caption.appendChild(source);
+      }
+      fig.appendChild(caption);
       box.appendChild(fig);
     }
     if (!media) box.appendChild(protestTimeline(p));

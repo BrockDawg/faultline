@@ -123,6 +123,9 @@ _KEY_VALUE = re.compile(
     r"\b[A-Z][A-Z0-9_]*(?:API_KEY|_KEY|_TOKEN|_SECRET|PASSWORD)\b[\"']?\s*[:=]\s*[\"']?"
     r"[^\s\"',}]{8,}"
 )
+_YOUTUBE_SOURCE_LINK = re.compile(
+    r"https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}(?:&t=\d+s)?"
+)
 _MIN_SESSION_DIGITS = 6
 
 # The language's own words, blanked by `prose_view`: the standard HTML and SVG element names.
@@ -689,7 +692,11 @@ def check_models(
         for label, text in (("its path", f.rel), ("its text", f.text)):
             if text is None:
                 continue
-            hits = _name_hits(text, [], names.racing_ids)
+            # A clean source link is checked against the original-video manifest above. Its
+            # YouTube id can also be the source stream's local filename, which is otherwise
+            # forbidden in public page text.
+            text_without_source_links = _YOUTUBE_SOURCE_LINK.sub("", text)
+            hits = _name_hits(text_without_source_links, [], names.racing_ids)
             if hits:
                 yield Failure(
                     5, f.rel, f"{hits} session number, customer id or stream name(s) in {label}"
@@ -939,6 +946,11 @@ def check_videos(
         if isinstance(w, dict) and isinstance(w.get("window"), str)
     }
     racing = _read_json(bundle / "racing.json") if (bundle / "racing.json").is_file() else {}
+    racing_media = (
+        _read_json(bundle / "racing/media.json")
+        if (bundle / "racing/media.json").is_file()
+        else {}
+    )
     protests = {
         str(p.get("id")): p
         for p in (racing.get("protests") or [])
@@ -957,6 +969,7 @@ def check_videos(
         if row.get("kind") == "racing_review":
             pid = str(row.get("protest", ""))
             protest = protests.get(pid)
+            media = (racing_media.get("protests") or {}).get(pid)
             source = REPO / "data/site/racing/preds-arm2.jsonl"
             source_frames = REPO / "data/site/racing/preds-arm2.jsonl.frames"
             source_row = None
@@ -972,7 +985,10 @@ def check_videos(
                 except (OSError, json.JSONDecodeError):
                     source_row = None
             hashes = row.get("source_sha256")
-            expected = [x.get("sha256") for x in (source_row or {}).get("frames", [])]
+            source_frames_list = sorted(
+                (source_row or {}).get("frames", []), key=lambda x: float(x.get("stream_s", 0))
+            )
+            expected = [x.get("sha256") for x in source_frames_list]
             if not key.is_relative_to(video_dir) or key.name != f"racing-protest-{pid}.mp4":
                 yield Failure(6, f.rel, "a racing replay outside its numbered video path")
             if protest is None or not isinstance(protest.get("frames_checked"), int):
@@ -987,6 +1003,36 @@ def check_videos(
                     if not frame.is_file() or _file_sha(frame) != digest:
                         yield Failure(6, f.rel, "a source frame is missing or its hash changed")
                         break
+            source_url = row.get("source_url")
+            if not isinstance(source_url, str) or not re.fullmatch(
+                r"https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}(?:&t=\d+s)?",
+                source_url,
+            ):
+                yield Failure(6, f.rel, "a racing excerpt without a clean original YouTube link")
+            if media is None or media.get("source_url") != source_url:
+                yield Failure(6, f.rel, "its original source link differs from racing/media.json")
+            if source_frames_list:
+                times = [float(x["stream_s"]) for x in source_frames_list]
+                intervals = sorted(
+                    b - a for a, b in zip(times, times[1:], strict=False) if b > a
+                )
+                if intervals:
+                    review_start = times[0]
+                    review_duration = times[-1] - times[0] + intervals[len(intervals) // 2]
+                    expected_start = max(0.0, review_start - 3.0)
+                    expected_duration = review_duration + (review_start - expected_start) + 3.0
+                    for document, label in ((row, "video manifest"), (media or {}, "racing media")):
+                        if (
+                            abs(float(document.get("start_s", -999)) - expected_start) > 0.001
+                            or abs(float(document.get("duration_s", -999)) - expected_duration)
+                            > 0.001
+                            or abs(float(document.get("review_start_s", -999)) - review_start)
+                            > 0.001
+                            or abs(float(document.get("review_duration_s", -999)) - review_duration)
+                            > 0.001
+                        ):
+                            yield Failure(6, f.rel, f"its stream window differs from {label}")
+                            break
             streams = _video_streams(f.path, ffprobe)
             if isinstance(streams, str):
                 yield Failure(6, f.rel, streams)
@@ -994,6 +1040,38 @@ def check_videos(
                 yield Failure(6, f.rel, "a video with an audio track")
             elif streams != ["video"]:
                 yield Failure(6, f.rel, f"streams {streams}, not one video stream")
+            else:
+                try:
+                    duration = float(
+                        json.loads(
+                            subprocess.run(
+                                [
+                                    ffprobe,
+                                    "-v",
+                                    "error",
+                                    "-show_entries",
+                                    "format=duration",
+                                    "-of",
+                                    "json",
+                                    str(f.path),
+                                ],
+                                capture_output=True,
+                                check=True,
+                            ).stdout
+                        )["format"]["duration"]
+                    )
+                    if abs(duration - float(row.get("duration_s", -999))) > 0.15:
+                        yield Failure(
+                            6, f.rel, "the continuous excerpt duration differs from its window"
+                        )
+                except (
+                    OSError,
+                    ValueError,
+                    KeyError,
+                    json.JSONDecodeError,
+                    subprocess.CalledProcessError,
+                ):
+                    yield Failure(6, f.rel, "the continuous excerpt duration could not be checked")
             continue
         wid = row.get("window")
         window = windows.get(wid) if isinstance(wid, str) else None
