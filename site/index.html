@@ -9,7 +9,7 @@
 <meta name="description" content="faultline reads a site's written rules and its cameras, and rules on every rule, with the evidence. Open a case, then check nobody changed the ruling.">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="app.css">
-<script src="app.js" defer></script>
+<script src="app.js?v=20261104-evidence" defer></script>
 </head>
 <body>
 <a class="skip" href="#run">Skip to the case file</a>
@@ -20,7 +20,7 @@
       <path d="M3 22 L12 22 L16 12 L22 30 L26 18 L29 22 L37 22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <h1 class="wordmark">faultline</h1>
-    <p class="lede">On a warehouse site, forklifts hurt people, and nobody watches every camera. faultline reads the site's written rules and its cameras, and rules on every rule, with the evidence.</p>
+    <p class="lede">A rules judge for warehouse video and sim racing. Every ruling comes with the evidence behind it.</p>
     <ul class="who">
       <li><b>The safety lead</b> gets a short list to act on.</li>
       <li><b>The insurer</b> gets evidence instead of a form.</li>
@@ -30,22 +30,21 @@
 </header>
 
 <nav class="judgepath wrap" aria-label="Judge's path">
+  <a class="judgepath-primary" href="#pick-h">Open the live demo</a>
   <a href="faultline-film-web.mp4">Watch the film</a>
-  <a href="#pick-h">Live demo</a>
   <a href="#yours-h">Replay it yourself</a>
   <a href="https://github.com/BrockDawg/faultline">GitHub</a>
-  <span class="jp-nums"><b data-num="breach_found"></b> breach clips found · <b data-num="false_breach"></b> false breaches · offline replay verified</span>
+  <span class="jp-nums"><b data-num="breach_found"></b> breach clips found <span aria-hidden="true">/</span> <b data-num="false_breach"></b> false breaches <span aria-hidden="true">/</span> offline replay verified</span>
 </nav>
 
 <section class="hero wrap" aria-labelledby="hero-h">
-  <h2 id="hero-h">The hero case: a blind corner, no hi-vis</h2>
-  <p class="hero-lede">On a warehouse site, forklifts hurt people, and nobody watches every camera — faultline reads the site's written rules and its cameras, and rules on every rule, with the evidence.</p>
+  <h2 id="hero-h">A blind corner. No hi-vis.</h2>
   <div class="hero-case" id="hero-case">
     <img class="hero-poster" id="hero-poster" alt="The deciding frame of the blind-corner clip">
     <div class="hero-ruling">
       <p><span class="stamp v-breach">Breach</span> <b>Wear high-visibility clothing in a truck zone</b></p>
       <p class="hero-num" id="hero-num">Loading the ruling…</p>
-      <p class="fine">Scripts measure and decide. Meta models perceive and write words beside the ruling — never a verdict.</p>
+      <p class="fine">The script measures and decides. Meta models add a written read of the evidence.</p>
       <p><a href="#run" id="hero-open">Open this case</a> · <a href="faultline-film-web.mp4">Watch the film</a></p>
     </div>
   </div>
@@ -107,19 +106,21 @@
       </div>
       <div class="pick-racing" id="pick-racing">
         <div class="pick-head">
-          <h2 class="pick-title" id="racing-h">PitBot racing — proof</h2>
+          <h2 class="pick-title" id="racing-h">PitBot racing: proof</h2>
           <p class="pick-note">A real league, car numbers only</p>
         </div>
         <div class="tiles tiles-racing" role="group" aria-labelledby="racing-h">
           <button type="button" class="tile rtile" id="pick-protest" aria-pressed="false">
-            <span class="poster poster-svg" id="poster-protest"></span>
+            <span class="poster race-poster" id="poster-protest"></span>
             <span class="tile-name">A protest</span>
-            <span class="tile-hint" id="hint-protest">the steward's ruling, the models' reads beside it</span>
+            <span class="tile-hint" id="hint-protest">Human steward decision with AI steward analysis alongside it</span>
+            <span class="tile-open">Open protest evidence</span>
           </button>
           <button type="button" class="tile rtile" id="pick-limits" aria-pressed="false">
             <span class="poster poster-svg" id="poster-limits"></span>
             <span class="tile-name">The incident limit</span>
             <span class="tile-hint" id="hint-limits">every session, from the sim's feed</span>
+            <span class="tile-open">Open incident limits</span>
           </button>
         </div>
       </div>
@@ -136,18 +137,17 @@
       <h3 class="why-h">Rulings get disputed.</h3>
       <p class="why-text" id="why-text"></p>
     </div>
+    <div class="actionbar" id="actionbar">
+      <div class="actionbar-in">
+        <p class="go-what" id="go-what">Rebuild this case from its saved evidence, then compare it with the published record.</p>
+        <p class="sel" aria-live="polite"><span class="sel-label">Open case</span> <span class="sel-name" id="sel-name">nothing yet</span></p>
+        <button type="button" class="go" id="go" disabled>Replay and compare</button>
+      </div>
+    </div>
     <div class="progress" id="prog-run" hidden></div>
     <p class="busy" id="busy" role="status" hidden></p>
     <div class="seal" id="seal" aria-live="polite" hidden></div>
   </section>
-
-  <div class="actionbar" id="actionbar">
-    <div class="wrap actionbar-in">
-      <p class="go-what" id="go-what">Rulings get disputed. Prove nobody changed this one: our server re-runs the judge from scratch.</p>
-      <p class="sel" aria-live="polite"><span class="sel-label">Open case</span> <span class="sel-name" id="sel-name">nothing yet</span></p>
-      <button type="button" class="go" id="go" disabled>Check nobody changed it</button>
-    </div>
-  </div>
 
   <section class="panel wrap" aria-labelledby="how-h">
     <div class="panel-head"><h2 id="how-h">How it rules</h2></div>
@@ -160,17 +160,17 @@
 
   
 <section class="panel wrap" aria-labelledby="trace-h">
-  <div class="panel-head"><h2 id="trace-h">Meta models at work — inspectable, never deciding</h2></div>
+  <div class="panel-head"><h2 id="trace-h">Meta models at work, inspectable and never deciding</h2></div>
   <div class="panel-body">
-    <div id="trace-sam"><h3>SAM — finding people from text</h3><p>Loading the recorded trace…</p></div>
-    <div id="trace-spark"><h3>Muse Spark Open — compiling a plain-English rule</h3><p>Loading the recorded trace…</p></div>
+    <div id="trace-sam"><h3>SAM: finding people from text</h3><p>Loading the recorded trace…</p></div>
+    <div id="trace-spark"><h3>Muse Spark Open: compiling a plain-English rule</h3><p>Loading the recorded trace…</p></div>
   </div>
 </section>
 
 <section class="panel wrap" aria-labelledby="shift-h" id="shift-panel">
     <div class="panel-head"><h2 id="shift-h">A shift</h2><p class="panel-sub" data-needs="shift_windows shift_rulings"><span data-num="shift_windows"></span> windows of footage, <span data-num="shift_rulings"></span> rulings, every rule answered on every window.</p></div>
     <div class="panel-body">
-      <p class="shift-lead">Nobody watches a whole shift — here is the short list. The judge reads every window; To review shows the breaches first, and the full breakdown is one click deeper under All windows. Select a window below to open its evidence.</p>
+      <p class="shift-lead">Nobody watches a whole shift. Here is the short list. The judge reads every window; To review shows the breaches first, and the full breakdown is under All windows. Select a window below to open its evidence.</p>
       <p data-needs="shift_breach shift_clear shift_unable shift_camera_moved"><b class="t-breach" data-num="shift_breach"></b> breaches to review, <b class="t-clear" data-num="shift_clear"></b> clear and <b class="t-unable" data-num="shift_unable"></b> unable, <span data-num="shift_camera_moved"></span> of them because the camera moved or was never marked.</p>
       <figure class="shiftfig">
         <div class="shiftbar" id="shiftbar" aria-hidden="true"></div>
@@ -202,15 +202,14 @@
     <div class="panel-head"><h2 id="race-h">The same judge, on the author's own league</h2><p class="panel-sub">Proof, not a second hero: real PitBot protests, steward rulings, car numbers only.</p></div>
     <div class="panel-body">
       <h3>Protests</h3>
-      <p>A driver protests a move. A volunteer steward rules from the evidence pack. For a contact, the script never rules a breach: the steward rules, and the models' reads sit beside the evidence, never as a ruling. Select a protest to open its evidence pack and race evidence.</p>
-      <p class="fine">For a full recording, Faultline's experimental scan reads low-resolution frames for visual-change spikes and groups nearby spikes into review windows. When a scan block has no strong spike, it returns the largest sampled change as a low-confidence fallback; ordinary racing motion can trigger it too. Each window carries a reviewability label: eligible for inspection, insufficient, or invalid input. Fallback-only windows are marked insufficient and remain candidates; that does not mean no incident occurred. Telemetry is context only and cannot add, remove or reorder a candidate. This experimental path does not establish full-session contact recall. Soft cuts, smoke, and camera edits can hide the event.</p>
-      <p class="fine">This page is a curated stored-record demo, so it does not scan arbitrary sessions. A steward can optionally run SAM on one selected window after choosing the replay-view crop and confirming the paid call; its mask evidence is never a verdict.</p>
-      <p class="claim" data-needs-r="read_mark read_mark_target">The models' read did not pass its mark: <span data-rnum="read_mark"></span>, against <span data-rnum="read_mark_target"></span>.</p>
+      <p>A driver protests a move. A volunteer steward makes the ruling from the evidence pack. The models provide AI steward analysis alongside that decision; their output does not set the verdict. Select a protest to open its evidence pack and race footage.</p>
+      <p class="fine">The full-recording scan is experimental: it groups sampled visual-change spikes into review windows, and ordinary motion can trigger them. Low-confidence fallback windows stay marked insufficient; they do not establish full-session contact recall. Smoke, cuts, or camera edits can hide an incident. Telemetry is context only and cannot add, remove, or reorder candidates. This page shows stored records; optional SAM masks are evidence only, never a verdict.</p>
+      <p class="claim" data-needs-r="read_mark read_mark_target">AI steward analysis did not pass its mark: <span data-rnum="read_mark"></span>, against <span data-rnum="read_mark_target"></span>.</p>
       <p class="claim" data-needs-r="named_right">Every agreed read that named a car named the right one, <span data-rnum="named_right"></span> on each arm.</p>
       <div class="chips" id="protest-chips" role="group" aria-label="Pick a protest"></div>
       <div class="pack-out" id="protest-pack"></div>
       <div class="race-action">
-        <button type="button" class="btn" id="check-protest">Check nobody changed it</button>
+        <button type="button" class="btn" id="check-protest">Replay and compare</button>
         <p class="fine">Rulings get disputed, by the driver penalised. Our server replays this protest from scratch: if anyone had changed its record, it would not come out the same.</p>
       </div>
       <div class="progress" id="prog-protest" hidden></div>
@@ -305,21 +304,21 @@ uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl</co
   <span data-copy="for.person.b">A person checks it.</span>
   <span data-copy="for.person.bs">A person checks them.</span>
   <span data-copy="for.steward">For the steward</span>
-  <span data-copy="for.steward.what">The cars within reach and the facts the sim's feed gave. The steward makes the call; the models' reads sit beside it.</span>
+  <span data-copy="for.steward.what">The cars within reach and the facts the sim's feed gave. The human steward makes the decision. AI steward analysis appears alongside it and does not set the verdict.</span>
   <span data-copy="for.stewards">For the stewards</span>
   <span data-copy="for.stewards.what">Every car over the limit, including the ones with no ruling on record.</span>
   <span data-copy="why.clip">By the worker written up, the site or the insurer. So anyone can make our server re-run the judge from scratch. If anyone had changed a ruling, it would not come out the same.</span>
   <span data-copy="why.racing">By the driver penalised. So anyone can make our server replay the protest from scratch. If anyone had changed its record, it would not come out the same.</span>
   <span data-copy="why.limits">By the driver penalised. So anyone can make our server re-rule every session from the sim's feed. If anyone had changed a ruling, it would not come out the same.</span>
-  <span data-copy="go.clip">Check nobody changed it</span>
-  <span data-copy="go.protest">Check nobody changed it</span>
+  <span data-copy="go.clip">Replay and compare</span>
+  <span data-copy="go.protest">Replay and compare</span>
   <span data-copy="go.rerule">Re-rule every session from the feed</span>
   <span data-copy="go.checked">Check nobody changed them</span>
   <span data-copy="go.busy">Checking…</span>
   <span data-copy="sel.protest">A protest</span>
   <span data-copy="sel.limits">The incident limit</span>
-  <span data-copy="busy.clip">stored ruling — live check unavailable. The live rebuild is busy, try again in a minute.</span>
-  <span data-copy="busy.racing">stored ruling — live check unavailable. The live check is busy, try again in a minute.</span>
+  <span data-copy="busy.clip">Stored ruling. Live check unavailable. The live rebuild is busy, try again in a minute.</span>
+  <span data-copy="busy.racing">Stored ruling. Live check unavailable. The live check is busy, try again in a minute.</span>
   <span data-copy="frames.ruling">frames the ruling names</span>
   <span data-copy="frames.model">frames shown to the model</span>
   <span data-copy="frames.window">the window</span>
@@ -373,7 +372,7 @@ uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl</co
   <span data-copy="r.feed">feed seconds</span>
   <span data-copy="r.set">The cars within reach</span>
   <span data-copy="r.facts">What the sim's feed gave, blame-neutral</span>
-  <span data-copy="r.steward">The steward's ruling</span>
+  <span data-copy="r.steward">Human steward decision</span>
   <span data-copy="r.frames">masked frames checked</span>
   <span data-copy="r.arm">arm</span>
   <span data-copy="r.yes">yes</span>
@@ -416,10 +415,10 @@ uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl</co
   <span data-copy="wd.unable">unable</span>
   <span data-copy="wd.clear">All clear</span>
   <span data-copy="load.fail">The page data did not load. Reload in a moment.</span>
-  <span data-copy="what.clip">Rulings get disputed. Prove nobody changed this one: our server re-runs the judge from scratch.</span>
-  <span data-copy="what.protest">Rulings get disputed. Prove nobody changed this record: our server replays the protest from scratch.</span>
+  <span data-copy="what.clip">Replay this case from its saved evidence, then compare it with the published record.</span>
+  <span data-copy="what.protest">Replay this protest from its saved evidence, then compare it with the published record.</span>
   <span data-copy="what.rerule">Rulings get disputed. Prove nobody changed them: our server re-rules every session from the sim's feed.</span>
-  <span data-copy="what.checked">Rulings get disputed. Prove nobody changed them: our server replays every stored ruling from scratch.</span>
+  <span data-copy="what.checked">Replay every stored ruling, then compare the results with the published record.</span>
   <span data-copy="prog.head">Re-running the judge from scratch on our server</span>
   <span data-copy="prog.head.protest">Replaying the protest from scratch on our server</span>
   <span data-copy="prog.head.rerule">Re-ruling every session from scratch on our server</span>

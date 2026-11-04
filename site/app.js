@@ -75,19 +75,19 @@
       }
       const sam = $("#trace-sam");
       clear(sam);
-      sam.appendChild(el("h3", null, "SAM 3.1 (sam-3.1, Meta Model API) — finding people from text"));
+      sam.appendChild(el("h3", null, "SAM 3.1 (sam-3.1, Meta Model API): finding people from text"));
       sam.appendChild(el("p", null, "Text prompt \u201cperson\u201d \u2192 SAM 3.1 masks and video track \u2192 scripts measure the person in the truck zone. The model finds the person; it never rules."));
       if (r) sam.appendChild(el("p", "fine", "On this clip: " + (r.measurement || "")));
       const sp = $("#trace-spark");
       clear(sp);
-      sp.appendChild(el("h3", null, "Muse Spark Open (meta-models/muse-spark-open-1026, Baseten) — compiling a plain-English rule"));
+      sp.appendChild(el("h3", null, "Muse Spark Open (meta-models/muse-spark-open-1026, Baseten): compiling a plain-English rule"));
       sp.appendChild(el("p", null, "Plain-English rule \u2192 three compile runs \u2192 only what all three agree on ships as the predicate \u2192 scripts apply it and decide. On this ruling the recorded reads beside it: "));
       const reads = r && r.words && r.words.reads;
-      if (reads) sp.appendChild(el("p", "fine", reads.model + " on " + reads.where + ": " + reads.runs + " runs, agreed \u201c" + reads.agreed + "\u201d — words beside the ruling, never the verdict."));
+      if (reads) sp.appendChild(el("p", "fine", reads.model + " on " + reads.where + ": " + reads.runs + " runs, agreed \u201c" + reads.agreed + "\u201d. This read sits beside the ruling."));
       const note = r && r.words && r.words.note;
       if (note) sp.appendChild(el("p", "fine", note.model + " (" + note.where + ") wrote beside the ruling: " + note.text));
     } catch (e) {
-      const n = $("#hero-num"); if (n) n.textContent = "stored ruling — live check unavailable";
+      const n = $("#hero-num"); if (n) n.textContent = "Stored ruling. Live check unavailable.";
     }
   }
 
@@ -271,6 +271,20 @@
     if (w.lap == null) return t("story.protest.nolap");
     return t("story.protest") + " " + w.lap + (w.label ? ", " + t("story.in") + " " + w.label : "") + ".";
   }
+  function protestEvidenceSummary(p) {
+    if (!p.honesty) return null;
+    const facts = p.facts || [];
+    const selected = facts.filter((x) => /registered no contact pair|two closest of these cars|incident counter of car 899/.test(x));
+    const box = el("div", "evidence-summary");
+    box.appendChild(el("p", "evidence-summary-head", "What the footage and feed show"));
+    box.appendChild(el("p", null, "No contact is visible in this excerpt."));
+    if (selected.length) {
+      const list = el("ul");
+      selected.forEach((x) => list.appendChild(el("li", null, x)));
+      box.appendChild(list);
+    }
+    return box;
+  }
   function renderCase(c) {
     $("#run").hidden = false;
     $("#run-kicker").textContent = c.kicker;
@@ -411,9 +425,7 @@
   // Scroll only when the panel is off screen, so the button and the panel stay in view.
   function bringIntoView(node, anchor) {
     const r = node.getBoundingClientRect();
-    const bar = $("#actionbar").getBoundingClientRect();
-    const floor = Math.min(window.innerHeight, bar.top > 0 ? bar.top : window.innerHeight);
-    if (r.top < 0 || r.top > floor - 140) (anchor || node).scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "start" });
+    if (r.top < 0 || r.top > window.innerHeight - 140) (anchor || node).scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "start" });
   }
   // One quiet status line on a card: checking, unchanged, changed, or not checked this time.
   function cardState(c, state, words) {
@@ -430,9 +442,7 @@
   function showCheck() {
     const why = $("#why");
     const r = why.getBoundingClientRect();
-    const bar = $("#actionbar").getBoundingClientRect();
-    const floor = bar.top > 0 && bar.top < window.innerHeight ? bar.top : window.innerHeight;
-    if (r.top < 0 || r.top > floor - 220) why.scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "start" });
+    if (r.top < 0 || r.top > window.innerHeight - 220) why.scrollIntoView({ behavior: still() ? "auto" : "smooth", block: "start" });
     $("#run").focus({ preventScroll: true });
   }
   function setRunning(on) {
@@ -690,6 +700,45 @@
     });
     return g;
   }
+  function setProtestPreview(p) {
+    const host = clear($("#poster-protest"));
+    const media = (S.racingMedia || {}).protests && S.racingMedia.protests[String(p.id)];
+    if (!media || !media.video) {
+      host.classList.add("poster-svg");
+      host.appendChild(protestTimeline(p));
+      return;
+    }
+    host.classList.remove("poster-svg");
+    const img = el("img");
+    img.alt = "Race footage preview for " + p.label;
+    host.appendChild(img);
+    const video = el("video");
+    video.muted = true;
+    video.preload = "metadata";
+    video.src = DATA + media.video;
+    let captured = false;
+    const capture = () => {
+      if (captured || !video.videoWidth || !video.videoHeight) return;
+      captured = true;
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext("2d").drawImage(video, 0, 0);
+        img.src = canvas.toDataURL("image/jpeg", 0.82);
+      } catch (_) { host.classList.add("preview-missing"); }
+      video.removeAttribute("src");
+      video.load();
+    };
+    video.addEventListener("loadedmetadata", () => {
+      const fs = (p.window || {}).feed_s || [];
+      const moment = Number((p.window || {}).moment_feed_s);
+      const offset = Number.isFinite(moment) && fs.length ? Math.max(0, moment - Number(fs[0]) + 3) : 4;
+      video.currentTime = Math.min(Math.max(0, video.duration - 0.1), offset);
+    }, { once: true });
+    video.addEventListener("seeked", capture, { once: true });
+    video.addEventListener("error", () => host.classList.add("preview-missing"), { once: true });
+  }
   function limitsBars(rows) {
     const cars = rows.filter((r) => Number.isInteger(r.incidents) && Number.isInteger(r.limit));
     if (cars.length) return carBars(cars);
@@ -749,7 +798,7 @@
       if (media.poster) v.poster = DATA + media.poster;
       v.src = DATA + media.video;
       fig.appendChild(v);
-      const caption = el("figcaption", null, "Continuous, silent excerpt around the recorded review window, with extra context before and after. Broadcast graphics are masked. The steward's ruling is shown below; model reads never decide it.");
+      const caption = el("figcaption", null, "Continuous, silent excerpt around the recorded review window, with extra context before and after. Broadcast graphics are masked. The human steward decision is shown below. AI steward analysis appears alongside it and does not set the verdict.");
       if (media.source_url) {
         const source = el("a", "race-source", "Original video on YouTube");
         source.href = media.source_url;
@@ -761,6 +810,8 @@
       fig.appendChild(caption);
       box.appendChild(fig);
     }
+    const summary = protestEvidenceSummary(p);
+    if (summary) box.appendChild(summary);
     if (!media) box.appendChild(protestTimeline(p));
     if (!media) {
       box.appendChild(el("p", "label", t("r.window")));
@@ -778,26 +829,24 @@
       box.appendChild(f);
     }
     if (!media && p.evidence) { box.appendChild(el("p", "label", t("measurement"))); box.appendChild(el("p", "evidence", p.evidence)); }
-    box.appendChild(el("p", "label", media ? "Steward ruling" : t("r.steward")));
+    box.appendChild(el("p", "label", t("r.steward")));
     box.appendChild(el("p", "decided", p.steward_ruling || ""));
     const arms = el("div", "words");
-    arms.appendChild(el("p", "words-head", t("beside")));
+    arms.appendChild(el("p", "words-head", "AI steward analysis"));
+    arms.appendChild(el("p", "analysis-note", "This analysis sits alongside the human steward decision. It does not set the verdict."));
     (p.reads || []).forEach((rd) => {
       const line = readLine(rd, "racing", null);
       if (!rd.no_text) {
         clear(line);
         line.appendChild(el("b", null, modelBy(rd) + ", " + (rd.runs === 3 ? t("reads.racing") : words(rd.runs) + " " + t("reads.racing").split(" ").slice(1).join(" ")) + " "));
-        line.appendChild(document.createTextNode(rd.agreed && rd.offender ? t("reads.agreed") + " " + rd.offender : t("reads.none")));
+        const hasRead = rd.agreed && (rd.offender || rd.verdict);
+        line.appendChild(document.createTextNode(hasRead ? t("reads.agreed") + " " + (rd.offender || rd.verdict) : t("reads.none")));
       }
       arms.appendChild(line);
     });
+    if (p.honesty) arms.appendChild(el("p", "analysis-detail", "Muse Spark 1.3 agreed in all three runs that contact was not visible. Muse Spark Open named car 5 in one run, but its three runs did not agree, so that answer did not pass the gate."));
     box.appendChild(arms);
     if (p.frames_checked != null) box.appendChild(el("p", "fine", p.frames_checked + " " + t("r.frames")));
-    if (p.honesty && (p.honesty.lines || []).length) {
-      const h = el("div", "honesty");
-      p.honesty.lines.forEach((x) => h.appendChild(el("p", null, x)));
-      box.appendChild(h);
-    }
     return box;
   }
   function showProtest(id) {
@@ -807,7 +856,10 @@
     clear($("#protest-pack"));
     clear($("#protest-result"));
     if (!S.running) $("#prog-protest").hidden = true;
-    if (p) $("#protest-pack").appendChild(evidencePack(p));
+    if (p) {
+      setProtestPreview(p);
+      $("#protest-pack").appendChild(evidencePack(p));
+    }
   }
   function protestSeal(target, p, d, live) {
     const ok = d.match === true;
@@ -947,7 +999,7 @@
     const ps = R.protests || [];
     const first = ps.find((p) => p.honesty) || ps[0];
     if (first) {
-      clear($("#poster-protest")).appendChild(protestTimeline(first));
+      setProtestPreview(protestById(S.protest) || first);
       $("#pick-protest").addEventListener("click", () => select({ kind: "protest", id: S.protest || first.id }, true));
     } else $("#pick-protest").hidden = true;
     clear($("#poster-limits")).appendChild(limitsBars(R.limits || []));

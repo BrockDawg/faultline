@@ -1,6 +1,7 @@
 """Conservative, deterministic reviewability gate for video review windows.
 
-This gate decides only whether a candidate is structurally usable for a steward to inspect.
+This gate labels whether a candidate has the minimum structure and motion evidence for downstream
+processing.
 It does not decide whether an incident occurred, whether contact happened, or who is at fault.
 """
 
@@ -46,10 +47,10 @@ def assess_window(
 ) -> dict[str, Any]:
     """Classify one scan window as reviewable, rejected as invalid, or insufficient.
 
-    ``accept_for_review`` means a human can inspect a valid window containing at least one
-    thresholded motion spike away from a detected hard cut. It does not mean an incident was found.
-    Low-confidence fallback-only windows remain available as ``insufficient`` for human review;
-    the gate never throws them away merely because the signal is weak.
+    ``accept_for_review`` means a valid window contains at least one thresholded motion spike away
+    from a detected hard cut. It does not mean an incident was found or create a human-review task.
+    Low-confidence fallback-only windows remain in the output as ``insufficient`` for downstream
+    acceptance or rejection; the gate never throws them away merely because the signal is weak.
     """
     window = dict(value) if isinstance(value, Mapping) else {}
     if window.get("kind") != "review_window":
