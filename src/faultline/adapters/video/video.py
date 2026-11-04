@@ -5,6 +5,7 @@ pins it.
 from __future__ import annotations
 
 import hashlib
+import json
 import shutil
 import subprocess
 from pathlib import Path
@@ -42,37 +43,39 @@ def _run(cmd: list[str], timeout: int = 600) -> bytes:
 
 
 def probe(path: str | Path) -> dict:
-    out = (
-        subprocess.run(
-            [
-                "ffprobe",
-                "-v",
-                "error",
-                "-select_streams",
-                "v:0",
-                "-show_entries",
-                "stream=width,height,r_frame_rate,nb_frames,duration",
-                "-of",
-                "csv=p=0",
-                str(path),
-            ],
-            capture_output=True,
-            text=True,
-        )
-        .stdout.strip()
-        .split(",")
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-select_streams",
+            "v:0",
+            "-show_entries",
+            "stream=width,height,r_frame_rate,nb_frames,duration",
+            "-of",
+            "json",
+            str(path),
+        ],
+        capture_output=True,
+        text=True,
     )
+    streams = json.loads(result.stdout).get("streams", [])
+    stream = streams[0] if streams else {}
     try:
-        num, den = out[2].split("/")
+        num, den = stream["r_frame_rate"].split("/")
         fps = float(num) / float(den)
-    except (IndexError, ValueError, ZeroDivisionError):
+    except (KeyError, ValueError, ZeroDivisionError):
         fps = 0.0
     return {
-        "width": int(out[0]) if out and out[0] else 0,
-        "height": int(out[1]) if len(out) > 1 and out[1] else 0,
+        "width": int(stream["width"]) if stream.get("width") else 0,
+        "height": int(stream["height"]) if stream.get("height") else 0,
         "fps": fps,
-        "nb_frames": int(out[3]) if len(out) > 3 and out[3].isdigit() else None,
-        "duration": float(out[4]) if len(out) > 4 and out[4] not in ("", "N/A") else None,
+        "nb_frames": int(stream["nb_frames"])
+        if str(stream.get("nb_frames", "")).isdigit()
+        else None,
+        "duration": float(stream["duration"])
+        if stream.get("duration") not in (None, "N/A")
+        else None,
     }
 
 

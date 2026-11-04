@@ -654,8 +654,8 @@ The model's read named the offender on 4 of 8 on both arms against a mark of 8 o
 
 #### Identity and the moment
 
-- **The moment is found; identity is the hard part.**
-  Timing landed within 1 s on most clips, and the misses were identity: misread digits, on-screen labels trusted over the car, or a touch the camera never showed.
+- **A full-session scan now proposes windows; it has not proved contact recall.**
+  The scan reads the whole recording at low resolution for visual-change spikes, groups nearby spikes into padded review windows, and keeps that video-first order even when telemetry is quiet. Telemetry can be attached as context only. The racing pipeline's telemetry locator held the truth second within 2 s on 2 of 7 protests. The SAM contact experiment searched short windows whose times were already supplied, and its whole-frame prompt followed the onboard view instead of the incident replay on most cases. Neither result establishes a live, full-session contact locator.
 - **The report picks the incident.**
   Without one, a 50 s clip with five spins has no single answer, and on 18 human-steward windows with no report Spark scored 5 of 18.
 - **Identity comes from the screen.**
@@ -879,6 +879,14 @@ Hand-written commits say so in the message with `Built-With: <name> (by hand)`.
 The hackathon build stops on 4 November 2026.
 The work does not.
 This is what I build next, in the order I expect to do it, so a reader can see where the project is going and hold me to it.
+
+### Find racing moments across the full session
+
+The current demo uses a stored moment for each protest; a live session cannot depend on that hand-entered timestamp. Without one, the telemetry locator chooses a single candidate and held the truth second within 2 seconds on only 2 of 7 scored protests. SAM's contact measurements were run only on short, already-located windows, and the 58-case pass mostly tracked the onboard view rather than the replay pane. Native video from Spark Open found an incident inside a 16-second window on 4 of 21 events and raised false incidents on 5 of 18 controls.
+
+The repository now has an experimental full-session motion scan: it reads low-resolution thumbnails across a recording, groups nearby visual-change spikes into padded review windows, and keeps those video candidates in visual-score order. Telemetry can sit beside a candidate as context, but never adds, removes or reorders one. A steward reviews every returned window; a spike can be a pan or unrelated motion, the cut gate can miss a soft cut, and a contact can have no visible spike.
+
+For a steward-selected window only, an optional SAM pass can examine an explicitly supplied replay-view crop after an explicit paid-call confirmation. It supplies mask-motion evidence beside the window, never a contact finding or ruling. The scan still needs scoring on held-out full sessions, and still needs a reliable replay-view finder. Neither SAM nor a model decides the ruling.
 
 ### Racing truth from the sim's own replay
 

@@ -116,6 +116,7 @@ import argparse
 import contextlib
 import hashlib
 import json
+import math
 import os
 import re
 from collections.abc import Iterator, Sequence
@@ -1150,8 +1151,154 @@ def _cmd_judge(args: argparse.Namespace) -> int:
     return 0
 
 
+def _roi_arg(value: str) -> tuple[int, int, int, int]:
+    try:
+        parts = tuple(int(x.strip()) for x in value.split(","))
+    except ValueError:
+        parts = ()
+    if len(parts) != 4 or any(x < 0 for x in parts) or parts[2] < 2 or parts[3] < 2:
+        raise argparse.ArgumentTypeError("ROI must be x,y,width,height in source pixels")
+    return parts
+
+
+def _encode_moment_clip(path: Path, duration: float, out: Path, roi):
+    from faultline.adapters.video import video
+
+    if roi is None:
+        return video.encode_for_sam(path, 0.0, duration, out)
+    source = video.probe(path)
+    x, y, w, h = roi
+    if x + w > source["width"] or y + h > source["height"]:
+        raise RacingCliError(
+            f"{path}: ROI {roi} is outside the {source['width']}x{source['height']} frame."
+        )
+    scale = min(video.W / w, video.H / h)
+    rw = max(2, int(round(w * scale / 2)) * 2)
+    rh = max(2, int(round(h * scale / 2)) * 2)
+    px, py = (video.W - rw) // 2, (video.H - rh) // 2
+    vf = f"crop={w}:{h}:{x}:{y},scale={rw}:{rh},pad={video.W}:{video.H}:{px}:{py},fps={video.FPS}"
+    import subprocess
+
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-y",
+            "-i",
+            str(path),
+            "-t",
+            f"{duration:.3f}",
+            "-vf",
+            vf,
+            "-c:v",
+            "libx264",
+            "-crf",
+            "20",
+            "-pix_fmt",
+            "yuv420p",
+            "-movflags",
+            "+faststart",
+            "-an",
+            str(out),
+        ],
+        check=True,
+        capture_output=True,
+    )
+    return out.read_bytes()
+
+
+def _cmd_moments(args: argparse.Namespace) -> int:
+    from faultline.adapters.pitbot.moment_candidates import rank_moments
+    from faultline.adapters.video import client as sam_client
+    from faultline.adapters.video import sam, video
+
+    duration = video.probe(args.video).get("duration")
+    if not duration or duration <= 0:
+        raise RacingCliError(f"{args.video}: video duration could not be read.")
+    if duration > 60 and not args.sam_reply:
+        raise RacingCliError(
+            "SAM moment search is limited to 60-second clips; split the video first."
+        )
+    if not args.sam_reply and not args.confirm:
+        raise RacingCliError(
+            "a new SAM call costs money; pass --confirm or reuse a reply with --sam-reply."
+        )
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    reply_path = args.sam_reply or args.out.with_suffix(".sam.txt")
+    usage = None
+    estimated_usd = None
+    cache_status = None
+    if args.sam_reply:
+        try:
+            reply = args.sam_reply.read_text(encoding="utf-8")
+        except OSError as exc:
+            raise RacingCliError(
+                f"{args.sam_reply}: cannot read SAM reply ({exc.strerror or type(exc).__name__})."
+            ) from None
+    else:
+        encoded_path = args.out.with_suffix(".sam-input.mp4")
+        encoded = _encode_moment_clip(args.video, duration, encoded_path, args.roi)
+        source_hash = hashlib.sha256(args.video.read_bytes()).hexdigest()
+        try:
+            result = sam_client.sam_video(
+                encoded,
+                args.prompt,
+                tag=f"racing-moments:{source_hash[:12]}",
+                frames_hint=int(math.ceil(duration * video.FPS)),
+            )
+        finally:
+            encoded_path.unlink(missing_ok=True)
+        reply = result["text"]
+        usage = result.get("usage") or {}
+        estimated_usd = result.get("est_usd")
+        cache_status = result.get("cache")
+        reply_path.write_text(reply, encoding="utf-8", newline="\n")
+    cache_dir = args.out.parent / f"{args.out.stem}.sam-cache"
+    tracks = sam.track_stats(reply, cache_dir)
+    masks = sam.mask_crops(reply, cache_dir)
+    candidates = rank_moments(
+        tracks,
+        masks,
+        frame_count=int(math.ceil(duration * video.FPS)),
+    )
+    for item in candidates:
+        item["source_time_s"] = round(args.clip_start_s + item["clip_time_s"], 3)
+        item["review_source_time_range_s"] = [
+            round(args.clip_start_s + x / video.FPS, 3) for x in item["review_frame_range"]
+        ]
+        item["review_frame_times_source_s"] = [
+            round(args.clip_start_s + x, 3) for x in item.pop("review_frame_times_s")
+        ]
+    doc = {
+        "schema": 1,
+        "kind": "visual_moment_candidates",
+        "meaning": (
+            "SAM mask motion suggests where a steward should review; this is not a contact "
+            "finding or verdict."
+        ),
+        "video": str(args.video),
+        "video_sha256": hashlib.sha256(args.video.read_bytes()).hexdigest(),
+        "sam_reply": str(reply_path),
+        "sam_reply_sha256": hashlib.sha256(reply.encode("utf-8")).hexdigest(),
+        "prompt": args.prompt,
+        "roi_xywh": args.roi,
+        "clip_start_s": args.clip_start_s,
+        "clip_duration_s": round(duration, 3),
+        "sam_frames_processed": (usage or {}).get("video_frames_processed"),
+        "sam_estimated_usd": estimated_usd,
+        "sam_cache": cache_status,
+        "candidate_count": len(candidates),
+        "status": "candidates_ranked" if candidates else "no_candidate_detected",
+        "candidates": candidates,
+    }
+    args.out.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8", newline="\n")
+    print(f"faultline {DOMAIN} moments: {len(candidates)} visual candidate(s); no verdict")
+    return 0
+
+
 def register(parser: argparse.ArgumentParser) -> None:
-    """Add `limits` and `judge` to the `racing` parser."""
+    """Add `limits`, `judge` and visual moment proposals to the `racing` parser."""
     sub = parser.add_subparsers(dest="racing_command", required=True, metavar="command")
     lp = sub.add_parser("limits", help="incident-limit rulings for every session")
     lp.add_argument("--league", type=Path, required=True, help="league.json")
@@ -1183,6 +1330,21 @@ def register(parser: argparse.ArgumentParser) -> None:
         f"the centre (rule stage; default {DEFAULT_IMAGES}; every cut frame stays on the line)",
     )
     jp.set_defaults(func=_cmd_judge)
+    mp = sub.add_parser(
+        "moments", help="rank possible contact moments from SAM masks for human review"
+    )
+    mp.add_argument("video", type=Path, help="a short racing video window")
+    mp.add_argument(
+        "--out", type=Path, required=True, help="candidate JSON; SAM reply is saved beside it"
+    )
+    mp.add_argument("--sam-reply", type=Path, help="reuse a saved SAM reply without a paid call")
+    mp.add_argument("--confirm", action="store_true", help="authorize a new paid SAM video call")
+    mp.add_argument("--prompt", default="race car", help="SAM object prompt")
+    mp.add_argument(
+        "--clip-start-s", type=float, default=0.0, help="source-video time at clip frame zero"
+    )
+    mp.add_argument("--roi", type=_roi_arg, help="optional x,y,width,height crop in source pixels")
+    mp.set_defaults(func=_cmd_moments)
     bp = sub.add_parser("bundle", help="the demo page's racing.json and the server's session map")
     bp.add_argument("--racing", type=Path, required=True, help="the server copy of the record")
     bp.add_argument("--out", type=Path, required=True, help="where racing.json goes")
