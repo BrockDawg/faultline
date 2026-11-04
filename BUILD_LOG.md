@@ -131,3 +131,5 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `7798e6c` | 2026-11-03T12:47:53-0600 | docs: tally and build log include the corrected usage record | muse-wonder-1.0 via Muse Code | muse-wonder-1.0 |
 | `6bb9f65` | 2026-11-03T13:22:14-0600 | docs: foreground the live demo link | claude-opus-5-5 via Claude Code | none |
 | `b6f3897` | 2026-11-03T16:05:15-0600 | feat: show sampled race footage in protest reviews | claude-opus-5-5 via Claude Code | none |
+| `b0f541c` | 2026-11-03T16:13:41-0600 | docs: refresh submission totals | claude-opus-5-5 via Claude Code | none |
+| `840a51f` | 2026-11-04T08:35:49-0600 | use-continuous-original-racing-video-in: commit before closing | claude-opus-5-5 via Claude Code | none |
