@@ -72,22 +72,24 @@ The car behind runs into the car ahead on the exit of a corner
 
 | What | Count |
 |---|--:|
-| Commits in this repo | 143 |
+| Commits in this repo | 147 |
 | Experiment logs published here | 37 |
 | Experiment records in the working repo | 40 |
 | Experiment scripts in the working repo | 227 |
 | Experiment data files in the working repo | 671 |
 | Design notes published here | 5 |
-| Design notes in the working repo | 9 |
-| Build plans in the working repo | 9 |
+| Design notes in the working repo | 10 |
+| Build plans in the working repo | 15 |
 | Rules packs | 8 |
 | Rules | 110 |
 | Tests | 909 |
-| Paid calls to Meta models | 9362 |
-| Dollars metered on Meta models | $139.51 |
+| Paid model calls through project proxy | 9469 |
+| Project proxy spend (Meta API + Baseten) | $143.68 |
+| Direct Meta API via Muse Code CLI (estimated) | $29.56 |
+| Combined proxy spend + direct Meta estimate | $173.24 |
 
-Counted by `scripts/tally.py` from this repo and from the working repo's own count, last run Saturday 31 Oct 2026, 15:37 UTC; every item is dated at or after the kickoff on 26 Oct 2026.
-The meter covers the Meta Model API and Baseten; Modal GPU time is billed by the hour and the coding tools run on a subscription, so neither is in it.
+Counted by `scripts/tally.py` from this repo and from the working repo's own count, last run Thursday 5 Nov 2026, 00:05 UTC; every item is dated at or after the kickoff on 26 Oct 2026.
+The project proxy total covers the Meta Model API and Baseten. The Muse Code CLI's direct Meta API estimate is listed separately and added once in the combined row; Modal GPU charges and subscription-only coding-tool costs are excluded.
 The working repo holds the scripts, data and notes behind every experiment, and this repo keeps the logs, the packs and the loader, so it stays small and readable; PROVENANCE.md says what the working tooling is.
 <!-- tally:end -->
 

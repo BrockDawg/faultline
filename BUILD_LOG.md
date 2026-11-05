@@ -141,9 +141,13 @@ Generated from git by `scripts/build_log.py`; covers every commit up to the one 
 | `9b97a78` | 2026-11-04T14:12:05-0600 | yes-exactly-i-m-pretty-sure-that-s-what: commit before closing | claude-opus-5-5 via Claude Code | none |
 | `b9d1741` | 2026-11-04T14:14:43-0600 | checkpoint master before closing yes-exactly-i-m-pretty-sure-that-s-what | claude-opus-5-5 via Claude Code | none |
 | `f79c538` | 2026-11-04T14:14:44-0600 | Merge branch 'master' into task/yes-exactly-i-m-pretty-sure-that-s-what | claude-opus-5-5 via Claude Code | none |
+| `def8d36` | 2026-11-04T14:36:35-0600 | Update problem statements and hero domain in README | (before the hook) | (before the hook) |
 | `6cd8707` | 2026-11-04T16:57:11-0600 | update-after-hackathon-roadmap-to-reflec: commit before closing | claude-opus-5-5 via Claude Code | none |
 | `c32f1c4` | 2026-11-04T16:57:11-0600 | checkpoint master before closing update-after-hackathon-roadmap-to-reflec | claude-opus-5-5 via Claude Code | none |
 | `0a50abf` | 2026-11-04T16:57:12-0600 | Merge branch 'master' into task/update-after-hackathon-roadmap-to-reflec | claude-opus-5-5 via Claude Code | none |
 | `b065841` | 2026-11-04T16:59:57-0600 | docs: refresh running count and roadmap | claude-opus-5-5 via Claude Code | none |
 | `d3b2116` | 2026-11-04T17:14:16-0600 | judge-facing-site-design-improvements: commit before closing | claude-opus-5-5 via Claude Code | none |
 | `beb400d` | 2026-11-04T17:15:29-0600 | merge master into judge-facing site work | claude-opus-5-5 via Claude Code | none |
+| `086b001` | 2026-11-04T17:17:23-0600 | docs: refresh running counts after site update | claude-opus-5-5 via Claude Code | none |
+| `de7fb1b` | 2026-11-04T17:32:39-0600 | merge local master with origin/master | claude-opus-5-5 via Claude Code | none |
+| `d535486` | 2026-11-04T18:09:53-0600 | docs: account for direct Muse CLI API use | claude-opus-5-5 via Claude Code | none |

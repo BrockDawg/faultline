@@ -24,9 +24,9 @@ This session's own model use was Meta API use all the same: Muse Wonder 1.0 thro
 The private ledger counter was refreshed on 4 Nov. It now reports 9,469 paid model calls and $143.68 through the project proxy. The README count keeps that proxy amount separate from the $29.56 direct Muse Code CLI estimate and shows their combined total, $173.24. The generated `tally.json` remains the proxy-ledger total; the adjustment file carries the separately sourced direct estimate.
 The Meta models named in the new site traces (SAM 3.1 `sam-3.1`, Muse Spark Open `meta-models/muse-spark-open-1026`, Muse Spark 1.3, Muse Wonder 1.0) are read from the recorded replies already in the record; surfacing them made no new call.
 
-One correction to the record: the four commits of this pass (`0d5539b`, `11e12cf`, `2331cdf`, `819d039`) carry the trailer `Built-With: claude-opus-5-5 via Claude Code`, filled in by the commit hook from a stale `faultline.builtWith` git config left by an earlier session.
+One correction to the record: the four commits of this pass (`0d5539b`, `11e12cf`, `2331cdf`, `819d039`) carry the trailer `Built-With: claude-opus-5-5 via Claude Code`, filled in by a stale `faultline.builtWith` git config left by an earlier session.
 They were in fact built by Muse Wonder 1.0 via Muse Code.
-History is not rewritten to fix this; this log is the correction, and the commit that carries this log carries the right trailer itself.
+The 4 Nov accounting commit `d535486` was authored by GPT-6 via Codex, but the hook also appended the stale Claude trailer because the explicit trailers were separated into paragraphs. History is not rewritten; this log records both corrections.
 
 ## 1. The work, by fix-list item
 
