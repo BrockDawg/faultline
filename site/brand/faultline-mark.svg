@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-labelledby="title">
+  <title id="title">faultline mark</title>
+  <rect width="48" height="48" rx="13" fill="#14252b"/>
+  <g fill="none" stroke-linecap="round" stroke-width="2.8">
+    <path d="M8 14h10m12 0h10" stroke="#79d4c2"/>
+    <path d="M8 24h8m16 0h8" stroke="#e7eee9"/>
+    <path d="M8 34h10m12 0h10" stroke="#79d4c2"/>
+    <path d="m24 7-3 8 5 5-5 7 5 5-3 9" stroke="#f18a74" stroke-width="2.4"/>
+  </g>
+  <circle cx="24" cy="24" r="2.1" fill="#f18a74"/>
+</svg>

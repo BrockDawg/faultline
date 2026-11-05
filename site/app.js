@@ -63,6 +63,68 @@
   }
   const still = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  function startEvidenceField() {
+    const canvas = $("#evidence-field");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+    let width = 0, height = 0, raf = 0;
+    const colors = ["#79d4c2", "#dce9e3", "#79d4c2"];
+    function size() {
+      const box = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = box.width; height = box.height;
+      canvas.width = Math.max(1, Math.round(width * dpr));
+      canvas.height = Math.max(1, Math.round(height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      paint(performance.now());
+    }
+    function paint(now) {
+      if (!width || !height) return;
+      ctx.clearRect(0, 0, width, height);
+      const dprScale = Math.min(width / 520, height / 250);
+      const seam = width * .63, center = height * .52;
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(180,213,201,.10)";
+      for (let x = 0; x < width; x += 38) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke(); }
+      for (let y = 0; y < height; y += 38) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke(); }
+      const offsets = [-.27, 0, .27];
+      offsets.forEach((offset, i) => {
+        const y = center + height * offset;
+        ctx.beginPath(); ctx.moveTo(width * .06, y); ctx.lineTo(seam - 14, y);
+        ctx.strokeStyle = colors[i]; ctx.globalAlpha = i === 1 ? .78 : .64;
+        ctx.lineWidth = 2 * dprScale; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(seam + 15, y + (i === 1 ? 8 : -5)); ctx.lineTo(width * .96, y + (i === 1 ? 8 : -5));
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        const travel = still() ? .78 : ((now / 5200 + i / 3) % 1);
+        const dotX = width * .06 + (seam - width * .06 - 14) * travel;
+        ctx.beginPath(); ctx.arc(dotX, y, 3 * dprScale, 0, Math.PI * 2);
+        ctx.fillStyle = colors[i]; ctx.fill();
+      });
+      ctx.beginPath();
+      ctx.moveTo(seam, center - height * .43);
+      ctx.lineTo(seam - 8, center - height * .2); ctx.lineTo(seam + 7, center - height * .03);
+      ctx.lineTo(seam - 6, center + height * .13); ctx.lineTo(seam + 8, center + height * .3);
+      ctx.lineTo(seam, center + height * .44);
+      ctx.strokeStyle = "#f18a74"; ctx.lineWidth = 2.5 * dprScale; ctx.stroke();
+      ctx.beginPath(); ctx.arc(seam, center, 5 * dprScale, 0, Math.PI * 2);
+      ctx.fillStyle = "#f18a74"; ctx.fill();
+      ctx.beginPath(); ctx.arc(seam, center, 13 * dprScale, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(241,138,116,.44)"; ctx.lineWidth = 1.2 * dprScale; ctx.stroke();
+    }
+    function animate(now) {
+      if (document.visibilityState === "hidden" || still()) { raf = 0; paint(now); return; }
+      paint(now);
+      raf = requestAnimationFrame(animate);
+    }
+    function resume() { if (!still() && !raf && document.visibilityState !== "hidden") raf = requestAnimationFrame(animate); }
+    new ResizeObserver(size).observe(canvas);
+    document.addEventListener("visibilitychange", resume);
+    matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", () => { size(); resume(); });
+    size(); resume();
+  }
+  startEvidenceField();
 
   async function renderHeroTraces() {
     try {

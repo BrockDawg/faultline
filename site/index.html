@@ -7,25 +7,27 @@
 <meta name="referrer" content="no-referrer">
 <title>faultline · rulings with the evidence</title>
 <meta name="description" content="faultline reads a site's written rules and its cameras, and rules on every rule, with the evidence. Open a case, then check nobody changed the ruling.">
-<link rel="icon" href="data:,">
-<link rel="stylesheet" href="app.css">
-<script src="app.js?v=20261104-evidence" defer></script>
+<link rel="icon" type="image/svg+xml" href="brand/faultline-mark.svg">
+<link rel="stylesheet" href="app.css?v=20261104-brand">
+<script src="app.js?v=20261104-brand" defer></script>
 </head>
 <body>
 <a class="skip" href="#run">Skip to the case file</a>
 
 <header class="masthead">
   <div class="wrap masthead-in">
-    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-      <path d="M3 22 L12 22 L16 12 L22 30 L26 18 L29 22 L37 22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <h1 class="wordmark">faultline</h1>
+    <div class="brand-lockup">
+      <img class="mark" src="brand/faultline-mark.svg" alt="" width="48" height="48">
+      <h1 class="wordmark">faultline</h1>
+      <span class="brand-note">evidence → ruling</span>
+    </div>
     <p class="lede">A rules judge for warehouse video and sim racing. Every ruling comes with the evidence behind it.</p>
     <ul class="who">
       <li><b>The safety lead</b> gets a short list to act on.</li>
       <li><b>The insurer</b> gets evidence instead of a form.</li>
       <li><b>In racing,</b> a driver protests, and a volunteer steward rules from the evidence.</li>
     </ul>
+    <div class="evidence-field" aria-hidden="true"><canvas id="evidence-field"></canvas></div>
   </div>
 </header>
 

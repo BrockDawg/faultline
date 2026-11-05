@@ -10,6 +10,8 @@ Give it a rules pack and footage, and it says for each rule whether it was follo
 Every output is a ruling: the rule, the offender and the evidence, never tips or statistics.
 It covers two domains today: warehouse forklifts, under OSHA 29 CFR 1910.178 and each site's own rules, and sim-racing leagues on PitBot (pitbot.gg), my league management platform.
 
+<p align="center"><img src="site/brand/faultline-banner.svg" alt="faultline — a rules judge for video. Scripts measure and decide; models perceive and describe." width="100%"></p>
+
 ## Judge's path (10 minutes)
 
 - **Problem:** on a warehouse site, forklifts hurt people, and nobody watches every second of every camera.
