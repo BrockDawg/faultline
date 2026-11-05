@@ -84,8 +84,10 @@ def test_render_formats_dollars_and_the_run_time() -> None:
     public = dict.fromkeys(
         ("public_commits", "public_experiment_logs", "public_design_notes", "rules_packs"), 2
     ) | {"rules": 3, "tests": 4}
-    block = tally.render_block(data, public)
-    assert "| Dollars metered on Meta models | $1,234.50 |" in block
+    block = tally.render_block(data, public, direct_meta_usd=29.56)
+    assert "| Project proxy spend (Meta API + Baseten) | $1,234.50 |" in block
+    assert "| Direct Meta API via Muse Code CLI (estimated) | $29.56 |" in block
+    assert "| Combined proxy spend + direct Meta estimate | $1,264.06 |" in block
     assert "last run Tuesday 27 Oct 2026, 19:30 UTC;" in block
 
 

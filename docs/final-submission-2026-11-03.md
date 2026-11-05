@@ -16,8 +16,12 @@ It follows `docs/drop-2026-10-31.md`: one dated log per landing, with the spend 
 | Server-side script replays run (no model call in any of them) | 1 live worker check (screen capture), 1 shipped-set replay on the box, 2 graded-set replays on the box, 1 shipped-set replay locally |
 | Site deploys to brockdev | 2 (the second with `--record`) |
 
-The running count's meter (`tally.json`: 9,362 paid calls, $139.51) counts only calls routed through this project's metering proxy, and this session made none, so the proxy total is unchanged.
-This session's own model use was Meta API use all the same: Muse Wonder 1.0 through Muse, Meta's CLI tool, billed by the API and bypassing the proxy, so the proxy never saw it. The estimated $29.56 (74,494,998 tokens) is therefore real Meta spend for the totals, recorded here precisely so it can be added to them: project-metered $139.51 plus this session's direct-API $29.56 is $169.07 of Meta spend to date, before any later reconciliation. It is not written into `tally.json`'s paid dollars by hand, because `tally.json` is written by the working repo's own counter from the proxy ledger; the owner's counter is the place to fold this figure in, and this log is its source.
+At the time of this 3 Nov report, the running count's meter (`tally.json`) showed 9,362 paid calls and $139.51. It counts only calls routed through this project's metering proxy, and this session made none, so the proxy total was unchanged by this session.
+This session's own model use was Meta API use all the same: Muse Wonder 1.0 through Muse, Meta's CLI tool, billed by the API and bypassing the proxy, so the proxy never saw it. The estimated $29.56 (74,494,998 tokens) is recorded separately in `meta-usage-adjustments.json`, sourced from this report.
+
+## 4 Nov running-total update
+
+The private ledger counter was refreshed on 4 Nov. It now reports 9,469 paid model calls and $143.68 through the project proxy. The README count keeps that proxy amount separate from the $29.56 direct Muse Code CLI estimate and shows their combined total, $173.24. The generated `tally.json` remains the proxy-ledger total; the adjustment file carries the separately sourced direct estimate.
 The Meta models named in the new site traces (SAM 3.1 `sam-3.1`, Muse Spark Open `meta-models/muse-spark-open-1026`, Muse Spark 1.3, Muse Wonder 1.0) are read from the recorded replies already in the record; surfacing them made no new call.
 
 One correction to the record: the four commits of this pass (`0d5539b`, `11e12cf`, `2331cdf`, `819d039`) carry the trailer `Built-With: claude-opus-5-5 via Claude Code`, filled in by the commit hook from a stale `faultline.builtWith` git config left by an earlier session.

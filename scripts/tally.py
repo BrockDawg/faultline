@@ -1,11 +1,12 @@
-"""Render the running count of the hackathon work into README.md, from tally.json and this repo.
+"""Render the running count into README.md from tally.json, logged Meta usage, and this repo.
 
 Run from the repo root:  uv run python scripts/tally.py [--write | --check]
 
 No flag prints the block. --write writes it into README.md between the tally markers.
 --check exits 1 when the block in README.md differs from a fresh render, and 0 when it matches.
 
-The working-repo counts come from tally.json, which the working repo's own counter writes.
+The proxy-ledger counts come from tally.json, which the working repo's own counter writes.
+Direct Meta API estimates come from meta-usage-adjustments.json and must cite a source note.
 The public counts are read live from this repo: every commit up to the one before the commit
 that wrote the block (the build log's rule, so later commits never make it stale), the
 experiment logs, the design notes, the rules packs and their rules, and the tests.
@@ -17,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import subprocess
 import sys
@@ -26,6 +28,7 @@ from typing import Any
 
 README = "README.md"
 TALLY = "tally.json"
+META_USAGE = "meta-usage-adjustments.json"
 MARK_START = "<!-- tally:start -->"
 MARK_END = "<!-- tally:end -->"
 PRIVATE_KEYS = (
@@ -130,12 +133,45 @@ def load_tally(root: Path) -> dict[str, Any]:
     return data
 
 
+def direct_meta_api_usd(root: Path) -> float:
+    """Sum separately logged direct Meta API estimates, validating their source notes."""
+    path = root / META_USAGE
+    if not path.is_file():
+        raise TallyError(f"{META_USAGE} is missing.")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    entries = data.get("direct_meta_api_usage") if isinstance(data, dict) else None
+    if not isinstance(entries, list):
+        raise TallyError(f"{META_USAGE} has no direct_meta_api_usage list.")
+    amounts: list[float] = []
+    for index, entry in enumerate(entries, 1):
+        if not isinstance(entry, dict):
+            raise TallyError(f"{META_USAGE} entry {index} is not an object.")
+        amount = entry.get("usd")
+        source = entry.get("source")
+        if isinstance(amount, bool) or not isinstance(amount, (int, float)):
+            raise TallyError(f"{META_USAGE} entry {index} has no numeric usd amount.")
+        if entry.get("estimated") is not True:
+            raise TallyError(
+                f"{META_USAGE} entry {index} must explicitly mark its amount estimated."
+            )
+        if not math.isfinite(amount) or amount < 0:
+            raise TallyError(f"{META_USAGE} entry {index} has an invalid usd amount.")
+        if not isinstance(source, str) or not source or not (root / source).is_file():
+            raise TallyError(f"{META_USAGE} entry {index} has no readable source note.")
+        note = (root / source).read_text(encoding="utf-8")
+        if f"${amount:,.2f}" not in note:
+            raise TallyError(f"{META_USAGE} entry {index} amount is absent from {source}.")
+        amounts.append(float(amount))
+    return round(math.fsum(amounts), 2)
+
+
 def _when(value: str) -> str:
     stamp = datetime.fromisoformat(value)
     return f"{stamp:%A} {stamp.day} {stamp:%b %Y}, {stamp:%H:%M} UTC"
 
 
-def render_block(tally: dict[str, Any], public: dict[str, int]) -> str:
+def render_block(tally: dict[str, Any], public: dict[str, int], direct_meta_usd: float) -> str:
+    proxy_usd = float(tally["paid_dollars"])
     rows = (
         ("Commits in this repo", public["public_commits"]),
         ("Experiment logs published here", public["public_experiment_logs"]),
@@ -148,8 +184,10 @@ def render_block(tally: dict[str, Any], public: dict[str, int]) -> str:
         ("Rules packs", public["rules_packs"]),
         ("Rules", public["rules"]),
         ("Tests", public["tests"]),
-        ("Paid calls to Meta models", tally["paid_calls"]),
-        ("Dollars metered on Meta models", f"${float(tally['paid_dollars']):,.2f}"),
+        ("Paid model calls through project proxy", tally["paid_calls"]),
+        ("Project proxy spend (Meta API + Baseten)", f"${proxy_usd:,.2f}"),
+        ("Direct Meta API via Muse Code CLI (estimated)", f"${direct_meta_usd:,.2f}"),
+        ("Combined proxy spend + direct Meta estimate", f"${proxy_usd + direct_meta_usd:,.2f}"),
     )
     lines = ["#### The running count", "", "| What | Count |", "|---|--:|"]
     lines += [f"| {what} | {count} |" for what, count in rows]
@@ -158,9 +196,9 @@ def render_block(tally: dict[str, Any], public: dict[str, int]) -> str:
         "Counted by `scripts/tally.py` from this repo and from the working repo's own count, "
         f"last run {_when(str(tally['as_of']))}; "
         "every item is dated at or after the kickoff on 26 Oct 2026.",
-        "The meter covers the Meta Model API and Baseten; "
-        "Modal GPU time is billed by the hour and the coding tools run on a subscription, "
-        "so neither is in it.",
+        "The project proxy total covers the Meta Model API and Baseten. The Muse Code CLI's "
+        "direct Meta API estimate is listed separately and added once in the combined row; "
+        "Modal GPU charges and subscription-only coding-tool costs are excluded.",
         "The working repo holds the scripts, data and notes behind every experiment, "
         "and this repo keeps the logs, the packs and the loader, so it stays small and readable; "
         "PROVENANCE.md says what the working tooling is.",
@@ -169,7 +207,11 @@ def render_block(tally: dict[str, Any], public: dict[str, int]) -> str:
 
 
 def fresh_block(root: Path, working_block: str | None) -> str:
-    return render_block(load_tally(root), public_counts(root, count_ref(root, working_block)))
+    return render_block(
+        load_tally(root),
+        public_counts(root, count_ref(root, working_block)),
+        direct_meta_api_usd(root),
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -187,7 +229,9 @@ def main(argv: list[str] | None = None) -> int:
         if current is None and (args.write or args.check):
             raise TallyError(f"{README} has no {MARK_START} ... {MARK_END} markers.")
         if args.write:
-            block = render_block(load_tally(root), public_counts(root, "HEAD"))
+            block = render_block(
+                load_tally(root), public_counts(root, "HEAD"), direct_meta_api_usd(root)
+            )
         else:
             block = fresh_block(root, current)
     except (TallyError, OSError, ValueError) as err:
