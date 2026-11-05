@@ -65,42 +65,42 @@ MODELS = [
 
 # (key, README line, pattern): the text is the pattern's first group, or the whole match
 NUMBERS = [
-    ("breach_found", 285, r"Breach clips found \| (\d+ of \d+)"),
-    ("false_breach", 286, r"False breaches on the compliant clips \| (\d+ of \d+)"),
-    ("unable", 287, r"Unable to rule \| (\d+ of \d+) rulings"),
+    ("breach_found", 288, r"Breach clips found \| (\d+ of \d+)"),
+    ("false_breach", 289, r"False breaches on the compliant clips \| (\d+ of \d+)"),
+    ("unable", 290, r"Unable to rule \| (\d+ of \d+) rulings"),
     (
         "replay",
-        288,
+        291,
         r"Replay \| (byte-identical on Windows and in a Linux container with no network)",
     ),
-    ("shift_windows", 298, r"(\d+) windows and \d+ rulings"),
-    ("shift_rulings", 298, r"\d+ windows and (\d+) rulings"),
-    ("shift_breach", 298, r"(\d+) breaches to review"),
-    ("shift_clear", 298, r"(\d+) clear and \d+ unable"),
-    ("shift_unable", 298, r"(\d+) unable, \d+ of them"),
-    ("shift_camera_moved", 298, r"(\d+) of them because the camera moved or was never marked"),
-    ("real_camera_line", 326, r"(the line is [\d.]+ m)"),
+    ("shift_windows", 301, r"(\d+) windows and \d+ rulings"),
+    ("shift_rulings", 301, r"\d+ windows and (\d+) rulings"),
+    ("shift_breach", 301, r"(\d+) breaches to review"),
+    ("shift_clear", 301, r"(\d+) clear and \d+ unable"),
+    ("shift_unable", 301, r"(\d+) unable, \d+ of them"),
+    ("shift_camera_moved", 301, r"(\d+) of them because the camera moved or was never marked"),
+    ("real_camera_line", 329, r"(the line is [\d.]+ m)"),
     (
         "real_floor_unable",
-        327,
+        330,
         r"(every rule that reads the truck's floor position \([^)]*\) is unable to rule)",
     ),
-    ("real_hi_vis", 327, r"(the hi-vis rule reads the torso, not the floor, and is still ruled)"),
-    ("words_spend", 340, r"spent (\$[\d.]+) in all"),
-    ("words_spend_meta", 340, r"(\$[\d.]+) on the Meta Model API over \d+ calls"),
-    ("words_spend_baseten", 340, r"(\$[\d.]+) on Baseten over \d+ calls"),
-    ("words_cap", 340, r"under a (\$\d+) cap in code"),
-    ("notes_passed", 341, r"wrote a note on (\d+ of \d+) rulings"),
-    ("reads_agreed", 342, r"the three runs agreed on (\d+ of \d+) reads"),
+    ("real_hi_vis", 330, r"(the hi-vis rule reads the torso, not the floor, and is still ruled)"),
+    ("words_spend", 343, r"spent (\$[\d.]+) in all"),
+    ("words_spend_meta", 343, r"(\$[\d.]+) on the Meta Model API over \d+ calls"),
+    ("words_spend_baseten", 343, r"(\$[\d.]+) on Baseten over \d+ calls"),
+    ("words_cap", 343, r"under a (\$\d+) cap in code"),
+    ("notes_passed", 344, r"wrote a note on (\d+ of \d+) rulings"),
+    ("reads_agreed", 345, r"the three runs agreed on (\d+ of \d+) reads"),
 ]
 OPEN_WEIGHT = (
-    769,
+    772,
     re.escape(
         "Muse Spark Open is a Meta open-weight model, served by Baseten (partner inference, "
         "model id `meta-models/muse-spark-open-1026`)."
     ),
 )
-SHIPPED_REPLAY_LINE = 823
+SHIPPED_REPLAY_LINE = 826
 
 DRIVE_PATH = re.compile(r"(?<![A-Za-z])[A-Za-z]:[\\/]|\\\\|/Users/|/home/")
 

@@ -1,4 +1,4 @@
-# faultline
+<h1 align="center"><img src="site/brand/faultline-banner.svg" alt="faultline — a rules judge for video. Scripts measure and decide; models perceive and describe." width="100%"></h1>
 
 [![Licence: Apache-2.0](https://img.shields.io/badge/licence-Apache--2.0-blue)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)](pyproject.toml)
@@ -9,8 +9,6 @@ faultline is a rules-compliance judge for video.
 Give it a rules pack and footage, and it says for each rule whether it was followed and who broke it.
 Every output is a ruling: the rule, the offender and the evidence, never tips or statistics.
 It covers two domains today: warehouse forklifts, under OSHA 29 CFR 1910.178 and each site's own rules, and sim-racing leagues on PitBot (pitbot.gg), my league management platform.
-
-<p align="center"><img src="site/brand/faultline-banner.svg" alt="faultline — a rules judge for video. Scripts measure and decide; models perceive and describe." width="100%"></p>
 
 ## Judge's path (10 minutes)
 

@@ -88,8 +88,8 @@ def test_shipped_three_from_demo_record_alone(tmp_path):
     assert {c["group"] for c in index["clips"]} == {"shipped"}
     assert [g["id"] for g in index["groups"]] == ["shipped"]
     assert index["graded_replay"] is None
-    assert index["shipped_replay"] == {"lines": 3, "sha256": SHIPPED_SHA, "readme_line": 823}
-    assert index["numbers"]["breach_found"] == {"text": "12 of 14", "readme_line": 285}
+    assert index["shipped_replay"] == {"lines": 3, "sha256": SHIPPED_SHA, "readme_line": 826}
+    assert index["numbers"]["breach_found"] == {"text": "12 of 14", "readme_line": 288}
     assert index["numbers"]["shift_rulings"]["text"] == "240"
     assert "meta-models/muse-spark-open-1026" in index["open_weight_line"]
     hints = {c["id"]: c["hint"] for c in index["clips"]}
@@ -133,20 +133,20 @@ def test_real_footage_numbers_on_their_lines(tmp_path):
     out = tmp_path / "data"
     bundle.build_bundle(_sources(tmp_path), out)
     n = json.loads((out / "index.json").read_text(encoding="utf-8"))["numbers"]
-    assert n["real_camera_line"] == {"text": "the line is 1.5 m", "readme_line": 326}
-    assert n["real_floor_unable"]["readme_line"] == 327
+    assert n["real_camera_line"] == {"text": "the line is 1.5 m", "readme_line": 329}
+    assert n["real_floor_unable"]["readme_line"] == 330
     assert n["real_floor_unable"]["text"].startswith("every rule that reads the truck's floor")
     assert n["real_floor_unable"]["text"].endswith("is unable to rule")
     assert n["real_hi_vis"] == {
         "text": "the hi-vis rule reads the torso, not the floor, and is still ruled",
-        "readme_line": 327,
+        "readme_line": 330,
     }
     # the camera-height sentence moved one line down fails the build
     lines = README.read_text(encoding="utf-8").splitlines()
     lines.insert(315, "")
     moved = tmp_path / "README.md"
     moved.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    with pytest.raises(bundle.BundleError, match="line 326"):
+    with pytest.raises(bundle.BundleError, match="line 329"):
         bundle.build_bundle(_sources(tmp_path), out, readme=moved)
 
 
