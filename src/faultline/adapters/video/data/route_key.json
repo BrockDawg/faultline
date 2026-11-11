@@ -1,0 +1,483 @@
+{
+ "note": "The hand route key, fixed before any model run (30 Oct 2026). One entry per rule id across the eight packs in faultline/packs (79 distinct ids, 110 rule files; the racing ids repeat across oval, road-gt and open-wheel with identical text). route is what video judges: window (a fixed-camera clip window), scan (a contact scan over a broadcast recording), out (nothing in the closed vocabulary measures it). A window or scan rule names its fields; every number in a predicate carries the span of rule text it came from, or the site key that sets it. An out rule names, in words, the fact video would need. Thresholds (from): no number sits in a predicate; each threshold is a `line` (or `within`, `min`) of {site, span}: the site.json key that holds the value and the rule words it came from. provenance by content. Every span is the rule's own words, case kept; a threshold span names its quantity (the number as written or the word its site key stands for); a number is a {value, span} of its own; a boolean site setting is a switch from site.json, never a threshold. A span given as a list is one alternative per copy of the rule text; the compiled row carries the one verbatim in the text compiled. the three thresholds whose value no rule's words hold (hivis_rule_share, rear_cone_half_angle_deg, structure_strip_m) are explicit site values, {site, explicit} with no span; the checker counts and lists them. (rulings 2 and 6): the moving line (moving_mps), the 0.30 m strip and the 70% share leave every rule text; they are declared in assets/site_values.json, and the checker lists a declared key as an explicit site value and counts an undeclared one (the rear cone) weak.",
+ "rules": {
+  "hi_vis_in_truck_zone": {
+   "route": "window",
+   "predicates": [
+    {
+     "all": [
+      {
+       "field": "person.on_foot",
+       "is": true,
+       "span": "Anyone on foot inside a truck-operating zone"
+      },
+      {
+       "field": "person.vested",
+       "is": false,
+       "line": {
+        "site": "hivis_rule_share",
+        "explicit": "the share of read frames that must lack the band; no rule's words hold 0.7 (declared in assets/site_values.json, ruling 2)"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "spotter_when_reversing": {
+   "route": "window",
+   "predicates": [
+    {
+     "all": [
+      {
+       "field": "truck.reversing",
+       "is": true,
+       "span": "travels against its fork end",
+       "min": {
+        "site": "moving_window_s",
+        "span": "for a second or more"
+       }
+      },
+      {
+       "field": "person.in_rear_cone",
+       "count_vested": {
+        "value": 0,
+        "span": "no vested person"
+       },
+       "span": [
+        "no vested person behind it",
+        "no vested person on foot inside the rear cone"
+       ],
+       "line": {
+        "site": "rear_cone_half_angle_deg",
+        "explicit": "the rear cone's half angle; the graded pack's words say 'behind it' and hold no angle"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "pedestrian_separation": {
+   "route": "window",
+   "predicates": [
+    {
+     "all": [
+      {
+       "field": "truck.moving",
+       "is": true,
+       "span": "A moving truck",
+       "line": {
+        "site": "moving_mps",
+        "explicit": "the moving line; no rule's words hold 0.1 m/s (declared in assets/site_values.json, ruling 2)"
+       }
+      },
+      {
+       "field": "person.on_foot",
+       "is": true,
+       "span": "any person on foot"
+      },
+      {
+       "field": "person.distance_m",
+       "band": "under",
+       "line": {
+        "site": "pedestrian_separation_m",
+        "span": [
+         "keeps at least [3] metres",
+         "keeps at least [3.0] metres"
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "unless": [
+    {
+     "field": "person.still",
+     "is": true,
+     "switch": {
+      "site": "still_spotter_exempt",
+      "from": "site.json",
+      "why": "a site setting, not pack text: a vested person standing still in the rear cone of a reversing truck is its spotter"
+     }
+    }
+   ]
+  },
+  "structure_contact": {
+   "route": "window",
+   "predicates": [
+    {
+     "all": [
+      {
+       "field": "truck.front_in_strip",
+       "is": true,
+       "line": {
+        "site": "structure_strip_m",
+        "explicit": "how near a structure counts as a touch; no rule's words hold 0.3 m (declared in assets/site_values.json, ruling 2)"
+       }
+      },
+      {
+       "field": "contact.consequence",
+       "is": true,
+       "within": {
+        "site": "consequence_window_s",
+        "span": [
+         "A consequence within half a second",
+         "a consequence follows within [0.5] seconds"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "site_speed_limit": {
+   "route": "window",
+   "predicates": [
+    {
+     "all": [
+      {
+       "field": "truck.speed_mps",
+       "band": "high",
+       "line": {
+        "site": "speed_limit_mps",
+        "span": "at or under [2.2] metres per second"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "travel_speed": {
+   "route": "window",
+   "predicates": [
+    {
+     "all": [
+      {
+       "field": "truck.speed_mps",
+       "band": "high",
+       "line": {
+        "site": "speed_limit_mps",
+        "span": "Keep to the site's authorised speed limits"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "racecraft": {
+   "route": "scan",
+   "predicates": [
+    {
+     "all": [
+      {
+       "field": "contact.consequence",
+       "is": true,
+       "span": "no slide-jobs that end in contact, no using the bumper to move a car"
+      }
+     ]
+    }
+   ]
+  },
+  "conduct_general": {
+   "route": "scan",
+   "predicates": [
+    {
+     "all": [
+      {
+       "field": "contact.consequence",
+       "is": true,
+       "span": "No intentional wrecking, brake-checking, or causing a deliberate caution"
+      }
+     ]
+    }
+   ]
+  },
+  "stable_load": {
+   "route": "out",
+   "why": "whether the load leans, shifts or falls from the forks; no load field exists"
+  },
+  "rated_capacity": {
+   "route": "out",
+   "why": "the load's weight against the nameplate, and rear-wheel lift; no load or wheel field exists"
+  },
+  "long_or_high_loads": {
+   "route": "out",
+   "why": "load sway and overhang; no load field exists"
+  },
+  "forks_fully_under": {
+   "route": "out",
+   "why": "fork depth under the load and mast tilt; no fork or mast field exists"
+  },
+  "no_forward_tilt_when_raised": {
+   "route": "out",
+   "why": "mast tilt and load height; no mast field exists"
+  },
+  "load_backrest": {
+   "route": "out",
+   "why": "items falling back over the carriage; no load field exists"
+  },
+  "overhead_clearance": {
+   "route": "out",
+   "why": "a strike overhead; the structure strip is drawn on the floor, not overhead"
+  },
+  "following_distance": {
+   "route": "out",
+   "why": "the gap to a second moving truck in truck lengths; distance is measured to people only"
+  },
+  "no_passing_at_blind_spots": {
+   "route": "out",
+   "why": "an overtake at a marked blind spot; no second-truck or blind-spot field exists"
+  },
+  "slow_and_horn_at_cross_aisles": {
+   "route": "out",
+   "why": "a horn heard before a blind corner; no sound or blind-corner field exists"
+  },
+  "watch_travel_path": {
+   "route": "out",
+   "why": "where the operator is looking; no gaze field exists"
+  },
+  "load_blocks_view": {
+   "route": "out",
+   "why": "whether the load hides the path ahead; no load-height field exists"
+  },
+  "smooth_turns": {
+   "route": "out",
+   "why": "turn rate, wheel lift or a tip; no turn field exists"
+  },
+  "ramps_and_grades": {
+   "route": "out",
+   "why": "the grade of the floor and which side the load is on; the floor plane is flat by design"
+  },
+  "wet_floor_speed": {
+   "route": "out",
+   "why": "whether the floor is wet; speed is measured but the wet floor is not"
+  },
+  "avoid_loose_objects": {
+   "route": "out",
+   "why": "debris on the truck's path; no debris field exists"
+  },
+  "no_horseplay": {
+   "route": "out",
+   "why": "intent to show off; no field measures intent"
+  },
+  "limbs_inside_truck": {
+   "route": "out",
+   "why": "an arm or leg outside the truck frame; the operator is set aside, not measured"
+  },
+  "parked_truck": {
+   "route": "out",
+   "why": "fork height and the operator walking away from a parked truck; no fork or operator-leaves field exists"
+  },
+  "yield_to_emergency_vehicles": {
+   "route": "out",
+   "why": "an emergency vehicle with lights on; no such field exists"
+  },
+  "no_driving_at_trapped_person": {
+   "route": "out",
+   "why": "a fixed object behind the person; distance is measured but what stands behind the person is not"
+  },
+  "no_one_under_forks": {
+   "route": "out",
+   "why": "raised forks over a person; no fork-height field exists"
+  },
+  "no_riders": {
+   "route": "out",
+   "why": "a person riding on the truck; people on the truck are set aside as operators, not measured"
+  },
+  "dock_edge_distance": {
+   "route": "out",
+   "why": "the truck's distance to a dock edge; the dock zone is drawn for people, not the truck"
+  },
+  "trailer_secured": {
+   "route": "out",
+   "why": "chocks or a trailer restraint; no trailer field exists"
+  },
+  "railcar_secured": {
+   "route": "out",
+   "why": "a rail car moving during loading; no rail car field exists"
+  },
+  "dockboard_secured": {
+   "route": "out",
+   "why": "a dockboard shifting under the truck; no dockboard field exists"
+  },
+  "rail_track_crossing": {
+   "route": "out",
+   "why": "the crossing angle to rails and the parked distance to their centre; no rail field exists"
+  },
+  "elevator_entry": {
+   "route": "out",
+   "why": "a lift's floor level and the truck's power state; no lift field exists"
+  },
+  "fire_access_clear": {
+   "route": "out",
+   "why": "a fire aisle, stair or extinguisher blocked; no fire-access zone is drawn"
+  },
+  "unsafe_truck_out_of_service": {
+   "route": "out",
+   "why": "damage, a leak or a fault on the truck; no truck-condition field exists"
+  },
+  "pre_shift_check": {
+   "route": "out",
+   "why": "the start of a shift and a fault a check would catch; no shift or condition field exists"
+  },
+  "overhead_guard": {
+   "route": "out",
+   "why": "whether the overhead guard is fitted; no guard field exists"
+  },
+  "truck_lighting": {
+   "route": "out",
+   "why": "scene light level and the truck's own lights; no light field exists"
+  },
+  "no_unapproved_changes": {
+   "route": "out",
+   "why": "added weight or home-made parts on the truck; no truck-modification field exists"
+  },
+  "exhaust_sparks_or_overheating": {
+   "route": "out",
+   "why": "sparks, smoke or steam from the truck; no such field exists"
+  },
+  "refuel_engine_off": {
+   "route": "out",
+   "why": "fuelling while the engine runs; no fuelling or engine field exists"
+  },
+  "fuel_spill_cleared": {
+   "route": "out",
+   "why": "pooled fuel or a missing cap; no spill field exists"
+  },
+  "no_fuel_leak": {
+   "route": "out",
+   "why": "fuel dripping from the truck; no leak field exists"
+  },
+  "no_open_flame_checks": {
+   "route": "out",
+   "why": "a flame near a tank or battery; no flame field exists"
+  },
+  "battery_change_position": {
+   "route": "out",
+   "why": "a battery change and the parking brake; no battery field exists"
+  },
+  "battery_handling_equipment": {
+   "route": "out",
+   "why": "a battery lifted by hand; no battery or hoist field exists"
+  },
+  "charging_area_no_flames": {
+   "route": "out",
+   "why": "smoking or flame near charging batteries; no flame or charging-area field exists"
+  },
+  "battery_top_clear": {
+   "route": "out",
+   "why": "metal resting on an open battery; no battery field exists"
+  },
+  "electrolyte_mixing": {
+   "route": "out",
+   "why": "the order acid and water are poured; no pouring field exists"
+  },
+  "conduct_zero_tolerance": {
+   "route": "out",
+   "why": "harassment, chat, social media and liveries; conduct off the track, not contact"
+  },
+  "communication": {
+   "route": "out",
+   "why": "voice and text channels; nothing on the track video"
+  },
+  "membership": {
+   "route": "out",
+   "why": "who may join the league; paperwork"
+  },
+  "schedule_attendance": {
+   "route": "out",
+   "why": "race dates and attendance; paperwork"
+  },
+  "substitutions": {
+   "route": "out",
+   "why": "relief driver approval; paperwork"
+  },
+  "blue_flags": {
+   "route": "out",
+   "why": "a lapped car holding up a faster one; needs lap counts and car identity the vocabulary lacks"
+  },
+  "track_limits": {
+   "route": "out",
+   "why": "wheels beyond the white lines; no wheel or track-line field exists"
+  },
+  "incident_reporting": {
+   "route": "out",
+   "why": "how drivers file a report; paperwork"
+  },
+  "stewarding_review": {
+   "route": "out",
+   "why": "how stewards review; procedure"
+  },
+  "penalties": {
+   "route": "out",
+   "why": "the penalty table; applied after a ruling, not judged on video"
+  },
+  "appeals": {
+   "route": "out",
+   "why": "the appeal process; procedure"
+  },
+  "fair_play": {
+   "route": "out",
+   "why": "cheating and exploits; not visible on broadcast"
+  },
+  "fuel_tyre": {
+   "route": "out",
+   "why": "fuel and tyre settings; set in the sim, not seen on video"
+  },
+  "driving_aids": {
+   "route": "out",
+   "why": "which aids are allowed; set in the sim, not seen on video"
+  },
+  "qualifying_format": {
+   "route": "out",
+   "why": "the qualifying format; a setting"
+  },
+  "race_start_ow": {
+   "route": "out",
+   "why": "a jumped start or weaving in formation; needs grid slots and car identity the vocabulary lacks"
+  },
+  "playoff_format": {
+   "route": "out",
+   "why": "championship format; a setting"
+  },
+  "superspeedway": {
+   "route": "out",
+   "why": "below the yellow line and blocking moves; no track-line or lane field exists"
+  },
+  "pit_road": {
+   "route": "out",
+   "why": "pit lanes and stall counts; no pit-lane field exists"
+  },
+  "caution_procedure": {
+   "route": "out",
+   "why": "position under caution; needs running order the vocabulary lacks"
+  },
+  "restart_procedure": {
+   "route": "out",
+   "why": "lane choice and passing before the line on a restart; needs running order the vocabulary lacks"
+  },
+  "race_settings_oval": {
+   "route": "out",
+   "why": "server settings; not judged on video"
+  },
+  "stages_cautions": {
+   "route": "out",
+   "why": "stage and caution toggles; settings"
+  },
+  "oval_qualifying": {
+   "route": "out",
+   "why": "qualifying and lineup format; a setting"
+  },
+  "race_format_road": {
+   "route": "out",
+   "why": "race format; a setting"
+  },
+  "driver_swaps": {
+   "route": "out",
+   "why": "driver swap timing in endurance races; needs driver identity the vocabulary lacks"
+  },
+  "bop_eligibility": {
+   "route": "out",
+   "why": "balance of performance and car eligibility; a setting"
+  }
+ }
+}

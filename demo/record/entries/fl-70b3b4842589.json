@@ -1,0 +1,111 @@
+{
+ "clip_sha256": "534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25",
+ "constants_blob": "56276223c7cd79618f239bfb9ef85d6c93fe002728cb17b97ab02e9c3a26e50c",
+ "empty_admitted_blob": "a9849b506d52f65f476be9163318e5a041119afbbdc7e06b79cae5f2300c2a7c",
+ "empty_read": {
+  "person": {
+   "empty": true,
+   "person_run": {
+    "frames_processed": 60,
+    "how": "first ask",
+    "reply_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "window": [
+     "0.000",
+     "5.000"
+    ]
+   },
+   "reads": [
+    {
+     "frames_processed": 60,
+     "frames_with_objects": 0,
+     "prompt": "person",
+     "read": true
+    },
+    {
+     "frames_processed": 60,
+     "frames_with_objects": 0,
+     "prompt": "pedestrian",
+     "read": true
+    },
+    {
+     "frames_processed": 60,
+     "frames_with_objects": 0,
+     "prompt": "worker",
+     "read": true
+    }
+   ]
+  },
+  "truck": {
+   "admitted": 2,
+   "empty": false,
+   "reads": []
+  }
+ },
+ "entry": "fl-70b3b4842589",
+ "gates": {
+  "camera": {
+   "held_frames": 60,
+   "shift_px": 0.53,
+   "static": true
+  },
+  "cuts": [],
+  "fired": "truck.moving",
+  "frames": 60,
+  "truck_frames": 0,
+  "view_share": 1.0,
+  "window_s": 5.0
+ },
+ "host_paths": {
+  "clip": "clips/idle_empty_aisle_40.mp4",
+  "rules_dir": "packs/forklift-site-rules",
+  "site": "site.json"
+ },
+ "inputs": {
+  "clip": "534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/empty/0.000_5.000/person-pedestrian.json": "b23f28d2402bd0c9881fe3b15b9e2aed78ff1ff9ef8d2a1c751cbe70ea1e56d4",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/empty/0.000_5.000/person-pedestrian.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/empty/0.000_5.000/person-person.json": "5eb63e289bdc6f762c9cac740bcf4adfd8b92bc27bbcb88154f2830451cb4c7d",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/empty/0.000_5.000/person-person.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/empty/0.000_5.000/person-worker.json": "cddef61a7d2247c4b569bf5e000994855f92883a220a893376b1af5bf60c80ce",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/empty/0.000_5.000/person-worker.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/encode.mp4.sha256": "3e2dfb2e7fe928a8a19d6a90ebc037b3faf7798f6c89429b6efc29016e4c606d",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/gates/d9ce79c5249f4a761b8bacbb040e04181135a0ba03bf1921d774cfb6fc809041.json": "9e408fbca7f3b6645ee0c47b507ba7d64c8ba9a1e736d548f6d44be15ebbecc6",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/person_run.json": "ca6371169e520f533364fa71b678f71e785674e57804ff0f538ed7b0d759f1a8",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/person_track.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/truck_box.json": "d958f20fa7fdf770343df26640355c54e803cf465ad6a5b134f3e7ad66313208",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/truck_box_f0.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/truck_box_f12.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/truck_box_f24.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/truck_box_f36.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "clips/534298846a541f6fe410bbc45551c19547a9cadafc8509e9e88e81ea66b2da25/truck_box_f48.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "constants": "56276223c7cd79618f239bfb9ef85d6c93fe002728cb17b97ab02e9c3a26e50c",
+  "empty_admitted": "a9849b506d52f65f476be9163318e5a041119afbbdc7e06b79cae5f2300c2a7c",
+  "pack/01-hi-vis-in-truck-zone.md": "2b622a2bbe4301527d21c4d3367161f98e0ce39a3eb345344bf85a693f7da997",
+  "pack/02-spotter-when-reversing.md": "319a2d9d4e1100d2137ab823c661b7448ef52697f12753581c2482a49a41294b",
+  "pack/03-pedestrian-separation.md": "f5881c1c0d42c9fb51d365ed532b7b9e83d861584393e9b1b457e1cc3dc5f70d",
+  "pack/04-structure-contact.md": "594e774b8f7638d6bb2f72451256ea2ef2c5ad15bd8903281ac6bc5dd3f44a63",
+  "pack/pack.json": "0a9aa3e306a7585edc06b188e342a6d7f431f998c5c6b07f3cd186ca0d6d3bf1",
+  "rule_constants": "dc6afabf1782654ddbe11d069686469ed535ffe9baf56b668dbe0309c39c79c1",
+  "site.json": "eec07cabc14e5ca5850c5494cbb55fd62aeb5364945e887ddd47c4b294ac89b6"
+ },
+ "item": {
+  "clip": "clips/idle_empty_aisle_40.mp4",
+  "end_s": 5.0,
+  "id": "idle_empty_aisle_40",
+  "site": "site.json",
+  "start_s": 0.0
+ },
+ "marks_direct": true,
+ "notes": [],
+ "pack": {
+  "files": {
+   "01-hi-vis-in-truck-zone.md": "2b622a2bbe4301527d21c4d3367161f98e0ce39a3eb345344bf85a693f7da997",
+   "02-spotter-when-reversing.md": "319a2d9d4e1100d2137ab823c661b7448ef52697f12753581c2482a49a41294b",
+   "03-pedestrian-separation.md": "f5881c1c0d42c9fb51d365ed532b7b9e83d861584393e9b1b457e1cc3dc5f70d",
+   "04-structure-contact.md": "594e774b8f7638d6bb2f72451256ea2ef2c5ad15bd8903281ac6bc5dd3f44a63",
+   "pack.json": "0a9aa3e306a7585edc06b188e342a6d7f431f998c5c6b07f3cd186ca0d6d3bf1"
+  },
+  "kind": "dir"
+ },
+ "site_blob": "eec07cabc14e5ca5850c5494cbb55fd62aeb5364945e887ddd47c4b294ac89b6"
+}

@@ -1,0 +1,6 @@
+{
+  "note": "The explicit site table: every threshold whose value the pack text does not hold, with the pack sentence that leaves the value to the site. The compiled threshold's span is that sentence; dev/compile/check_spans.py checks the sentence is verbatim in the rule and holds 'site', and that every entry is used.",
+  "entries": [
+    {"rule": "travel_speed", "site": "speed_limit_mps", "sentence": "Keep to the site's authorised speed limits", "why": "the rule names no number; the speed limit is the site's"}
+  ]
+}

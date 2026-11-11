@@ -1,0 +1,71 @@
+# Provenance
+
+This file says what in this repo was built during the hackathon, what existed before it, and which models were used.
+
+## How to read this repo
+
+The hackathon window opened at kickoff on 26 Oct 2026, 12:00 ET (11:00 Chicago).
+It closes at the deadline on 4 Nov 2026, 9:00 PM ET (8:00 PM Chicago).
+Every commit after the first two carries three trailers: `Built-With`, `Meta-Models` and `Built-On`.
+The trailers are enforced on each commit by `.githooks/commit-msg` and checked over the whole history by `scripts/check_provenance.py`.
+The first two commits, `3c19d45` (the workspace scaffold) and `11ea3dc` (the publish boundary), predate the hook and carry no trailers, but both are dated after kickoff.
+The trailers record the models the build session declared.
+`BUILD_LOG.md` is the dated log of every commit, generated from git.
+
+## What existed before the hackathon
+
+- The task router.
+  Pre-existing tooling I'd built, which already routed to Meta models. During the hackathon I extended it to:
+  - turn off Muse Glimmer's thinking mode on local calls, so it returns an answer instead of spending its whole budget thinking;
+  - serve Muse Glimmer from a Modal L40S as tier 1, through the metering proxy, with local Ollama as the fallback;
+  - remeasure its 220 routing labels against Glimmer with a local judge.
+- PitBot (pitbot.gg), my sim-racing league management platform, with its paying leagues.
+- Race telemetry and results data from PitBot leagues.
+- Steward-report video footage and the human steward decisions from PitBot leagues.
+- PitBot's Rule Library, the source of the `oval`, `road-gt` and `open-wheel` packs.
+- The four OSHA `forklift-*` packs, based on OSHA 29 CFR 1910.178.
+- The rules-pack format (a folder of markdown rule files plus `pack.json`) and an earlier private loader for it.
+- My development workflows (Claude Code with my own skills and orchestration).
+- Private tooling I built, not in this repo:
+  - a tournament harness that runs many coding agents on one brief and grades them against held-out human steward decisions;
+  - an evaluation and scoring kit;
+  - a capability probe for vision models, including a contact detector built on SAM;
+  - a metering proxy that holds the API key and enforces spend caps;
+  - a corpus scraper for steward footage and comments.
+- The synthetic forklift clips the smoke tests ran against, 47 short AI-made videos generated on Higgsfield with Kling 3.0 Turbo, a few of them with Seedance; frames of them appear in the demo page and the stills, and the clips themselves stay out of this repo.
+
+## Built during the hackathon
+
+- This repo.
+- The provenance hook (`.githooks/commit-msg`), its installer, and the history check (`scripts/check_provenance.py`).
+- The loader in this repo (`src/faultline/pack.py`), rewritten from a written contract during the hackathon.
+- Pack metadata edited to drop dates and internal file names; no rule text changed.
+- The `forklift-site-rules` pack, four rules a site sets for itself: high-visibility clothing in a truck zone, a spotter when reversing, a set distance from people on foot, and no contact with racking or stock.
+- Fifteen measured experiments, logged under `experiments/`, 26 and 27 Oct: seven model experiments and eight smoke tests of the scripted pieces, four of them on scripts alone, three with SAM masks or tracks, and one with a pinned Meta person detector and six Spark Open calls.
+- The forklift scan route design note (`docs/forklift-scan-route.md`), 27 Oct.
+- The nine scenes in `assets/scenes/`, 27 Oct.
+  Each piece in them was generated on Higgsfield with Nano Banana 2, then vectorized with Ideogram Vector: forklift, worker, rack bay, pallet, race car, CCTV pole, dock door, crane hook with load, scaffold, worker in a harness, barrier set, press with a guard, lockout station, operator, traffic light, saloon car, cyclist, aircraft, baggage tug and marshaller.
+  The pieces were cleaned and composed into the scenes by private scripts written the same day, which also draw the floors, the track and the junction.
+- The licence files `LICENSE` and `NOTICE`, and `assets/NOTICE.md`, 27 Oct.
+- The racing judge, 29 Oct onward.
+  The core every data source shares: `src/faultline/record.py`, `ledger.py`, `roster.py`, `lint.py`, `client.py`, `frames.py`, `ruling.py` and `cli.py`.
+  The PitBot adapter, `src/faultline/adapters/pitbot/`: the feed, its events, the protest normaliser, the locator, the facts, the incident limit and the `faultline racing` commands.
+  The scripts `scripts/racing_prep.py`, `scripts/racing_score.py` and `scripts/racing_card.py`.
+  It reuses designs from private experiments before it was written.
+  The paired +4 contact pairing (two cars each gaining 4 incident points or more within 8 m of each other) and the feed event thresholds came from private experiments on 27 and 28 Oct.
+  The shape of the record and the reply ledger came from a tournament candidate on 28 Oct.
+  The code was written new in this repo, and its log is `experiments/2026-10-29-racing-pipeline/LOG.md`.
+- The forklift judge, 31 Oct: the video adapter (`src/faultline/adapters/video/`), its copy of the site pack (`demo/pack/`), the demo in `demo/` and its tests in `tests/adapters/video/`.
+  It was built in the private tournament and landed here on 31 Oct, and its results, on the 26 graded fixed-camera clips against a key I reviewed by hand, are in the README's forklift judge section.
+
+## Models used
+
+- Building: `claude-opus-5-5` and `claude-fable-5-1` via Claude Code, on my subscription.
+- Images: Nano Banana 2 (`nano_banana_flash`) and Ideogram Vector (`ideogram_vector`), both on Higgsfield.
+- Measured in the experiments (`experiments/`): Muse Spark 1.3 (`muse-spark-1.3`), Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten), Muse Wonder 1.0 (`muse-wonder-1.0`), Muse Glimmer (`muse-glimmer:30b`, open weights on Ollama, on this machine and on a Modal L40S), SAM 3.1 (`sam-3.1`) and Muse Voice Transcribe 1.0 (`muse-voice-transcribe-1.0`).
+  Llama 3.2 1B (`llama3.2:1b`) was measured as a router tier and dropped.
+  The local judge in those experiments is Qwen 2.5 7B (`qwen2.5:7b`), which is not a Meta model and never answers a prompt.
+- At runtime in this repo: Meta models, listed here as each is first used.
+  Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten) and Muse Spark 1.3 (`muse-spark-1.3`), called by the racing judge for the model's read, from 30 Oct.
+  SAM 3.1 (`sam-3.1`), for the masks and the empty-window read, Muse Wonder 1.0 (`muse-wonder-1.0`), for the hi-vis vest read and the words beside a ruling, and Muse Spark Open (`meta-models/muse-spark-open-1026`, served by Baseten), for compiling the packs and the three-run checks, called by the forklift judge, from 30 Oct.
+  Every reply is recorded, so a replay makes no call.

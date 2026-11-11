@@ -1,0 +1,9 @@
+{
+  "moments": {
+    "1": {"te": 120, "source": "synthetic: a made-up steward second"},
+    "3": {"te": 100, "source": "synthetic: a session with no feed"},
+    "4": {"te": 155, "source": "synthetic: near the end of the test video"},
+    "5": {"te": 125, "source": "synthetic: the locator refuses this report"}
+  },
+  "note": "Synthetic moments for the test world; feed seconds, made up."
+}

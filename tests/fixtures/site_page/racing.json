@@ -1,0 +1,413 @@
+{
+ "schema": 1,
+ "limits_mode": "checked",
+ "protests": [
+  {
+   "id": "1",
+   "label": "Protest 1",
+   "rule": "S21",
+   "clause": "Avoidable contact: a driver who causes contact that a reasonable driver would have avoided.",
+   "kind": "contact",
+   "window": {
+    "race": "Race 1",
+    "session": "HEAT 1",
+    "label": "Race 1 · HEAT 1",
+    "lap": 1,
+    "feed_s": [
+     172,
+     177
+    ],
+    "moment_feed_s": 174
+   },
+   "candidates": [
+    "car 12",
+    "car 18",
+    "car 44",
+    "car 111"
+   ],
+   "facts": [
+    "The feed registered a contact pair between two of the cars in the window.",
+    "One car lost more than a second on the next lap."
+   ],
+   "evidence": "Within the window the closed set holds the cars within the reach of the contact.",
+   "missing_fact": null,
+   "steward_ruling": "Penalty, car 18 (contact with car 12)",
+   "verdict": "steward_review",
+   "reads": [
+    {
+     "arm": 1,
+     "model": "Muse Spark Open",
+     "where": "Baseten",
+     "runs": 3,
+     "agreed": true,
+     "offender": "car 18",
+     "verdict": null,
+     "no_text": false
+    },
+    {
+     "arm": 2,
+     "model": "Muse Spark 1.3",
+     "where": "Meta Model API",
+     "runs": 3,
+     "agreed": false,
+     "offender": null,
+     "verdict": null,
+     "no_text": false
+    }
+   ],
+   "frames_checked": 17,
+   "record": {
+    "arm1": "1111111111111111111111111111111111111111111111111111111111111111",
+    "arm2": "2222222222222222222222222222222222222222222222222222222222222222"
+   },
+   "honesty": null
+  },
+  {
+   "id": "7",
+   "label": "Protest 7",
+   "rule": "S21",
+   "clause": "Avoidable contact: a driver who causes contact that a reasonable driver would have avoided.",
+   "kind": "contact",
+   "window": {
+    "race": "Race 2",
+    "session": "FEATURE",
+    "label": "Race 2 · FEATURE",
+    "lap": 6,
+    "feed_s": [
+     904,
+     909
+    ],
+    "moment_feed_s": 906
+   },
+   "candidates": [
+    "car 5",
+    "car 70"
+   ],
+   "facts": [
+    "The feed registered a contact pair between two of the cars in the window.",
+    "One car lost more than a second on the next lap."
+   ],
+   "evidence": "Within the window the closed set holds the cars within the reach of the contact.",
+   "missing_fact": null,
+   "steward_ruling": "Penalty, car 70 (contact with car 5)",
+   "verdict": "steward_review",
+   "reads": [
+    {
+     "arm": 1,
+     "model": "Muse Spark Open",
+     "where": "Baseten",
+     "runs": 3,
+     "agreed": true,
+     "offender": "car 70",
+     "verdict": null,
+     "no_text": false
+    },
+    {
+     "arm": 2,
+     "model": "Muse Spark 1.3",
+     "where": "Meta Model API",
+     "runs": 3,
+     "agreed": true,
+     "offender": "car 70",
+     "verdict": null,
+     "no_text": false
+    }
+   ],
+   "frames_checked": 17,
+   "record": {
+    "arm1": "1111111111111111111111111111111111111111111111111111111111111111",
+    "arm2": "2222222222222222222222222222222222222222222222222222222222222222"
+   },
+   "honesty": null
+  },
+  {
+   "id": "18",
+   "label": "Protest 18",
+   "rule": "S21",
+   "clause": "Avoidable contact: a driver who causes contact that a reasonable driver would have avoided.",
+   "kind": "contact",
+   "window": {
+    "race": "Race 3",
+    "session": "HEAT 2",
+    "label": "Race 3 · HEAT 2",
+    "lap": 3,
+    "feed_s": [
+     411,
+     416
+    ],
+    "moment_feed_s": 413
+   },
+   "candidates": [
+    "car 9",
+    "car 21",
+    "car 33"
+   ],
+   "facts": [
+    "The feed registered a contact pair between two of the cars in the window.",
+    "One car lost more than a second on the next lap."
+   ],
+   "evidence": "Within the window the closed set holds the cars within the reach of the contact.",
+   "missing_fact": null,
+   "steward_ruling": "Penalty, car 21 (contact with car 9)",
+   "verdict": "steward_review",
+   "reads": [
+    {
+     "arm": 1,
+     "model": "Muse Spark Open",
+     "where": "Baseten",
+     "runs": 3,
+     "agreed": false,
+     "offender": null,
+     "verdict": null,
+     "no_text": false
+    },
+    {
+     "arm": 2,
+     "model": "Muse Spark 1.3",
+     "where": "Meta Model API",
+     "runs": 3,
+     "agreed": false,
+     "offender": null,
+     "verdict": null,
+     "no_text": false
+    }
+   ],
+   "frames_checked": 17,
+   "record": {
+    "arm1": "1111111111111111111111111111111111111111111111111111111111111111",
+    "arm2": "2222222222222222222222222222222222222222222222222222222222222222"
+   },
+   "honesty": {
+    "lines": [
+     "On decision 18 the steward ruled on a moment the feed does not place, so the window here is the steward's own.",
+     "The model's read is shown beside it and was not counted."
+    ],
+    "readme_line": 190
+   }
+  }
+ ],
+ "limits": [
+  {
+   "id": "s1",
+   "race": "Race 1",
+   "session": "HEAT 1",
+   "label": "Race 1 · HEAT 1",
+   "verdict": "breach",
+   "offender": "car 5",
+   "clause": "9.2.1",
+   "evidence": "car 5 reached the session's incident limit in the feed.",
+   "facts": [],
+   "missing_fact": null,
+   "ruling_on_record": false,
+   "record": "3333333333333333333333333333333333333333333333333333333333333333",
+   "limit": 17,
+   "incidents": 18
+  },
+  {
+   "id": "s2",
+   "race": "Race 1",
+   "session": "HEAT 1",
+   "label": "Race 1 · HEAT 1",
+   "verdict": "breach",
+   "offender": "car 12",
+   "clause": "9.2.1",
+   "evidence": "car 12 reached the session's incident limit in the feed.",
+   "facts": [],
+   "missing_fact": null,
+   "ruling_on_record": true,
+   "record": "3333333333333333333333333333333333333333333333333333333333333333",
+   "limit": 17,
+   "incidents": 19
+  },
+  {
+   "id": "s3",
+   "race": "Race 1",
+   "session": "FEATURE",
+   "label": "Race 1 · FEATURE",
+   "verdict": "breach",
+   "offender": "car 44",
+   "clause": "9.2.1",
+   "evidence": "car 44 reached the session's incident limit in the feed.",
+   "facts": [],
+   "missing_fact": null,
+   "ruling_on_record": false,
+   "record": "3333333333333333333333333333333333333333333333333333333333333333",
+   "limit": 17,
+   "incidents": 20
+  },
+  {
+   "id": "s4",
+   "race": "Race 2",
+   "session": "HEAT 1",
+   "label": "Race 2 · HEAT 1",
+   "verdict": "clear",
+   "offender": null,
+   "clause": "9.2.1",
+   "evidence": "No car reached the incident limit.",
+   "facts": [],
+   "missing_fact": null,
+   "ruling_on_record": null,
+   "record": "3333333333333333333333333333333333333333333333333333333333333333",
+   "limit": 21,
+   "incidents": 9
+  },
+  {
+   "id": "s5",
+   "race": "Race 2",
+   "session": "FEATURE",
+   "label": "Race 2 · FEATURE",
+   "verdict": "breach",
+   "offender": "car 7",
+   "clause": "9.2.1",
+   "evidence": "car 7 reached the session's incident limit in the feed.",
+   "facts": [],
+   "missing_fact": null,
+   "ruling_on_record": false,
+   "record": "3333333333333333333333333333333333333333333333333333333333333333",
+   "limit": 21,
+   "incidents": 26
+  },
+  {
+   "id": "s6",
+   "race": "Race 2",
+   "session": "FEATURE",
+   "label": "Race 2 · FEATURE",
+   "verdict": "breach",
+   "offender": "car 18",
+   "clause": "9.2.1",
+   "evidence": "car 18 reached the session's incident limit in the feed.",
+   "facts": [],
+   "missing_fact": null,
+   "ruling_on_record": true,
+   "record": "3333333333333333333333333333333333333333333333333333333333333333",
+   "limit": 21,
+   "incidents": 27
+  },
+  {
+   "id": "s7",
+   "race": "Race 2",
+   "session": "FEATURE",
+   "label": "Race 2 · FEATURE",
+   "verdict": "breach",
+   "offender": "car 70",
+   "clause": "9.2.1",
+   "evidence": "car 70 reached the session's incident limit in the feed.",
+   "facts": [],
+   "missing_fact": null,
+   "ruling_on_record": false,
+   "record": "3333333333333333333333333333333333333333333333333333333333333333",
+   "limit": 21,
+   "incidents": 28
+  }
+ ],
+ "numbers": {
+  "read_mark": {
+   "text": "4 of 8 on both arms",
+   "readme_line": 175
+  },
+  "read_mark_target": {
+   "text": "a mark of 8 of 8",
+   "readme_line": 175
+  },
+  "named_right": {
+   "text": "4 of 4",
+   "readme_line": 177
+  },
+  "over_limit": {
+   "text": "29 cars over the limit",
+   "readme_line": 188
+  },
+  "on_record": {
+   "text": "8 match a ruling on record",
+   "readme_line": 188
+  },
+  "no_ruling": {
+   "text": "21 are over the limit, no ruling on record",
+   "readme_line": 188
+  },
+  "spend": {
+   "text": "$1.76",
+   "readme_line": 186
+  },
+  "limit_found": {
+   "text": "7 of 7 decisions found, byte-identical over two runs",
+   "verdict": "pass",
+   "readme_line": 181
+  },
+  "locator": {
+   "text": "2 of 7 windows hold the truth second ±2 s",
+   "verdict": "fail",
+   "readme_line": 182
+  },
+  "closed_set": {
+   "text": "the truth parties inside on 8 of 10, median size 3.5 over all 10 and 4 over the 8 located",
+   "verdict": "pass",
+   "readme_line": 183
+  },
+  "read_offender": {
+   "text": "4 of 8 on each arm",
+   "verdict": "fail",
+   "readme_line": 184
+  },
+  "replay": {
+   "text": "byte-identical with the network blocked, on both arms",
+   "verdict": "pass",
+   "readme_line": 185
+  },
+  "spend_mark": {
+   "text": "$1.76 on the metering proxy",
+   "verdict": "pass",
+   "readme_line": 186
+  }
+ },
+ "scoreboard": [
+  {
+   "key": "limit_found",
+   "mark": "Rule A, incident limit",
+   "result": "7 of 7 decisions found, byte-identical over two runs",
+   "pass_mark": "7 of 7",
+   "verdict": "pass",
+   "readme_line": 181
+  },
+  {
+   "key": "locator",
+   "mark": "Locator",
+   "result": "2 of 7 windows hold the truth second ±2 s",
+   "pass_mark": "5 of 7",
+   "verdict": "fail",
+   "readme_line": 182
+  },
+  {
+   "key": "closed_set",
+   "mark": "Closed set",
+   "result": "the truth parties inside on 8 of 10, median size 3.5 over all 10 and 4 over the 8 located",
+   "pass_mark": "7 of 10, median 4 or fewer",
+   "verdict": "pass",
+   "readme_line": 183
+  },
+  {
+   "key": "read_offender",
+   "mark": "Model's read, offender",
+   "result": "4 of 8 on each arm",
+   "pass_mark": "8 of 8",
+   "verdict": "fail",
+   "readme_line": 184
+  },
+  {
+   "key": "replay",
+   "mark": "Replay",
+   "result": "byte-identical with the network blocked, on both arms",
+   "pass_mark": "byte-identical",
+   "verdict": "pass",
+   "readme_line": 185
+  },
+  {
+   "key": "spend_mark",
+   "mark": "Spend",
+   "result": "$1.76 on the metering proxy",
+   "pass_mark": "$5",
+   "verdict": "pass",
+   "readme_line": 186
+  }
+ ]
+}

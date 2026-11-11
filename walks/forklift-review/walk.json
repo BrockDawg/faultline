@@ -1,0 +1,673 @@
+{
+  "question": "What happens when I open the featured forklift case and check its ruling?",
+  "shape": "C",
+  "place": "metahackathon.pitbot.gg",
+  "root": "../..",
+  "run": "Read the live page and project code on 4 November 2026. The final check state uses a local offline replay; nothing was sent.",
+  "about": {
+    "what": "The live page for reviewing forklift rulings.",
+    "who": "A site's safety lead or insurer can inspect the case and evidence.",
+    "on": "The featured blind-corner case and its stored rulings.",
+    "address": "https://metahackathon.pitbot.gg/"
+  },
+  "files": [
+    {
+      "id": "page",
+      "path": "site/index.html",
+      "kind": "runs in your browser",
+      "says": "The case link and the check button."
+    },
+    {
+      "id": "browser",
+      "path": "site/app.js",
+      "kind": "runs in your browser",
+      "says": "Loads the case, starts the check flow and shows its result."
+    },
+    {
+      "id": "index",
+      "path": "site/data/index.json",
+      "kind": "served site data",
+      "says": "Lists clips and names the featured one."
+    },
+    {
+      "id": "case",
+      "path": "site/data/clips/blind_corner_no_vest_07.json",
+      "kind": "served site data",
+      "says": "Stores this case's rulings, evidence and frames."
+    },
+    {
+      "id": "worker",
+      "path": "src/faultline/adapters/video/serve.py",
+      "kind": "runs on the web server",
+      "says": "Receives a clip id and queues its replay."
+    },
+    {
+      "id": "replay",
+      "path": "src/faultline/adapters/video/replay_one.py",
+      "kind": "runs in a replay process",
+      "says": "Reads the stored entry, rebuilds it and compares the result."
+    },
+    {
+      "id": "judge",
+      "path": "src/faultline/adapters/video/cli.py",
+      "kind": "runs in a replay process",
+      "says": "Rebuilds rulings from the record with model calls disabled."
+    },
+    {
+      "id": "record",
+      "path": "src/faultline/adapters/video/record.py",
+      "kind": "runs in a replay process",
+      "says": "Reads the saved entry and its hashed inputs."
+    }
+  ],
+  "moments": [
+    {
+      "state": "see",
+      "say": "The page opens on the featured blind-corner case and its stored ruling.",
+      "screen": {
+        "shot": "home",
+        "source": "Captured from the live site. Nothing was sent.",
+        "parts": [
+          {
+            "part": "site_name",
+            "name": "faultline",
+            "says": "The project name."
+          },
+          {
+            "part": "nav_film",
+            "name": "Watch the film",
+            "says": "Opens the film; separate from this walk."
+          },
+          {
+            "part": "nav_demo",
+            "name": "Live demo",
+            "says": "Jumps to the case picker."
+          },
+          {
+            "part": "nav_replay",
+            "name": "Replay it yourself",
+            "says": "Jumps to the local replay instructions."
+          },
+          {
+            "part": "nav_github",
+            "name": "GitHub",
+            "says": "Opens the project repository."
+          },
+          {
+            "part": "hero_title",
+            "name": "The hero case",
+            "says": "Names the featured warehouse case.",
+            "here": true
+          },
+          {
+            "part": "hero_image",
+            "name": "Deciding frame",
+            "says": "Shows the frame used in the case summary."
+          },
+          {
+            "part": "open_case",
+            "name": "Open this case",
+            "says": "Jumps down to the case file."
+          },
+          {
+            "part": "hero_film",
+            "name": "Watch the film",
+            "says": "Opens the film; separate from this walk."
+          }
+        ]
+      },
+      "hidden": [
+        {
+          "name": "Choose the featured case",
+          "title": "Loads the featured clip from the site's data.",
+          "why": "So the page can show the saved case without running the judge.",
+          "here": "The page reads the index, draws its clip list and selects the first featured id. It then loads that clip's stored case JSON.",
+          "files": [
+            "browser",
+            "index",
+            "case"
+          ],
+          "code": [
+            {
+              "file": "browser",
+              "start": 38,
+              "end": 41,
+              "marks": [
+                39
+              ],
+              "plain": "This fetch reads one JSON file from the site."
+            },
+            {
+              "file": "browser",
+              "start": 1341,
+              "end": 1346,
+              "marks": [
+                1344,
+                1346
+              ],
+              "plain": "The index is turned into a list of clip buttons."
+            },
+            {
+              "file": "browser",
+              "start": 1381,
+              "end": 1381,
+              "marks": [
+                1381
+              ],
+              "plain": "The first featured clip is selected on page load."
+            }
+          ],
+          "size": "small",
+          "icon": "file",
+          "unsure": ""
+        }
+      ]
+    },
+    {
+      "state": "do",
+      "say": "You choose the Blind corner card under Open a case.",
+      "screen": {
+        "shot": "case",
+        "source": "Captured from the live site after selecting the featured card. No replay request was sent.",
+        "parts": [
+          {
+            "part": "site_name",
+            "name": "faultline",
+            "says": "The project name."
+          },
+          {
+            "part": "nav_film",
+            "name": "Watch the film",
+            "says": "Opens the film; separate from this walk."
+          },
+          {
+            "part": "nav_demo",
+            "name": "Live demo",
+            "says": "Jumps to the case picker."
+          },
+          {
+            "part": "nav_replay",
+            "name": "Replay it yourself",
+            "says": "Jumps to the local replay instructions."
+          },
+          {
+            "part": "nav_github",
+            "name": "GitHub",
+            "says": "Opens the project repository."
+          },
+          {
+            "part": "hero_open",
+            "name": "Open this case",
+            "says": "Jumps to the case file."
+          },
+          {
+            "part": "hero_film",
+            "name": "Watch the film",
+            "says": "Opens the film; separate from this walk."
+          },
+          {
+            "part": "replay_shipped",
+            "name": "Replay the shipped clips here",
+            "says": "Replays the whole shipped set; separate from this walk."
+          },
+          {
+            "part": "command_link",
+            "name": "The command is below",
+            "says": "Jumps to replay instructions; separate from this walk."
+          },
+          {
+            "part": "featured_case_1",
+            "name": "Blind corner",
+            "says": "The featured case selected in this walk.",
+            "here": true
+          },
+          {
+            "part": "featured_case_2",
+            "name": "Spotter ahead",
+            "says": "Another shipped forklift case."
+          },
+          {
+            "part": "featured_case_3",
+            "name": "Empty aisle",
+            "says": "Another shipped forklift case."
+          },
+          {
+            "part": "more_clips",
+            "name": "More clips",
+            "says": "Opens the graded forklift clips."
+          },
+          {
+            "part": "real_footage",
+            "name": "Real footage",
+            "says": "Opens the real warehouse clips."
+          },
+          {
+            "part": "protest_tile",
+            "name": "A protest",
+            "says": "Opens the separate PitBot racing example."
+          },
+          {
+            "part": "limits_tile",
+            "name": "The incident limit",
+            "says": "Opens the separate PitBot racing example."
+          },
+          {
+            "part": "case_title",
+            "name": "Blind corner",
+            "says": "The case file title."
+          },
+          {
+            "part": "rulings",
+            "name": "Stored rulings",
+            "says": "The saved verdicts, evidence and deciding measurements."
+          },
+          {
+            "part": "why",
+            "name": "Rulings get disputed",
+            "says": "Explains what the safety lead or insurer can do."
+          },
+          {
+            "part": "check_button",
+            "name": "Check nobody changed it",
+            "says": "Starts the replay check shown in the next step."
+          },
+          {
+            "part": "selected_case",
+            "name": "Blind corner",
+            "says": "Names the case selected in the action bar."
+          }
+        ]
+      },
+      "hidden": [
+        {
+          "name": "Open the case file",
+          "title": "Shows the stored story and four rulings.",
+          "why": "The check begins with the record the site already serves.",
+          "here": "Selecting the clip loads its case JSON and renders the saved ruling cards. This click does not send a replay request.",
+          "files": [
+            "browser",
+            "case"
+          ],
+          "code": [
+            {
+              "file": "browser",
+              "start": 178,
+              "end": 186,
+              "marks": [
+                180,
+                185
+              ],
+              "plain": "The selected clip is saved in page state and opened as a case."
+            },
+            {
+              "file": "browser",
+              "start": 310,
+              "end": 320,
+              "marks": [
+                314,
+                319,
+                320
+              ],
+              "plain": "The page loads the clip JSON and renders its stored story and rulings."
+            },
+            {
+              "file": "browser",
+              "start": 482,
+              "end": 484,
+              "marks": [
+                483
+              ],
+              "plain": "The clip data comes from the site's clips folder."
+            }
+          ],
+          "size": "small",
+          "icon": "file",
+          "unsure": ""
+        }
+      ]
+    },
+    {
+      "state": "do",
+      "say": "You press Check nobody changed it.",
+      "screen": {
+        "shot": "checked",
+        "source": "Captured from the live page. The request was intercepted locally and the result was set by hand from the offline replay output; nothing was sent.",
+        "parts": [
+          {
+            "part": "site_name",
+            "name": "faultline",
+            "says": "The project name."
+          },
+          {
+            "part": "nav_film",
+            "name": "Watch the film",
+            "says": "Opens the film; separate from this walk."
+          },
+          {
+            "part": "nav_demo",
+            "name": "Live demo",
+            "says": "Jumps to the case picker."
+          },
+          {
+            "part": "nav_replay",
+            "name": "Replay it yourself",
+            "says": "Jumps to the local replay instructions."
+          },
+          {
+            "part": "nav_github",
+            "name": "GitHub",
+            "says": "Opens the project repository."
+          },
+          {
+            "part": "hero_open",
+            "name": "Open this case",
+            "says": "Jumps to the case file."
+          },
+          {
+            "part": "hero_film",
+            "name": "Watch the film",
+            "says": "Opens the film; separate from this walk."
+          },
+          {
+            "part": "replay_shipped",
+            "name": "Replay the shipped clips here",
+            "says": "Replays the whole shipped set; separate from this walk."
+          },
+          {
+            "part": "command_link",
+            "name": "The command is below",
+            "says": "Jumps to replay instructions; separate from this walk."
+          },
+          {
+            "part": "featured_case_1",
+            "name": "Blind corner",
+            "says": "The featured case selected in this walk."
+          },
+          {
+            "part": "featured_case_2",
+            "name": "Spotter ahead",
+            "says": "Another shipped forklift case."
+          },
+          {
+            "part": "featured_case_3",
+            "name": "Empty aisle",
+            "says": "Another shipped forklift case."
+          },
+          {
+            "part": "more_clips",
+            "name": "More clips",
+            "says": "Opens the graded forklift clips."
+          },
+          {
+            "part": "real_footage",
+            "name": "Real footage",
+            "says": "Opens the real warehouse clips."
+          },
+          {
+            "part": "protest_tile",
+            "name": "A protest",
+            "says": "Opens the separate PitBot racing example."
+          },
+          {
+            "part": "limits_tile",
+            "name": "The incident limit",
+            "says": "Opens the separate PitBot racing example."
+          },
+          {
+            "part": "case_title",
+            "name": "Blind corner",
+            "says": "The case file title."
+          },
+          {
+            "part": "rulings",
+            "name": "Stored rulings",
+            "says": "The saved verdicts, evidence and deciding measurements."
+          },
+          {
+            "part": "why",
+            "name": "Rulings get disputed",
+            "says": "Explains what the safety lead or insurer can do."
+          },
+          {
+            "part": "check_button",
+            "name": "Check nobody changed it",
+            "says": "The button whose request is shown in the code.",
+            "here": true
+          },
+          {
+            "part": "selected_case",
+            "name": "Blind corner",
+            "says": "Names the case selected in the action bar."
+          },
+          {
+            "part": "result",
+            "name": "Same ruling. Nobody edited it.",
+            "says": "The replay result shown by the page."
+          }
+        ]
+      },
+      "hidden": [
+        {
+          "name": "Ask the server to check",
+          "title": "Sends the selected clip id and listens for progress.",
+          "why": "The browser needs the server to rebuild the record.",
+          "here": "On a real click the browser posts the clip id to /api/rule and listens for job events. This walk intercepted the request, so no live job was started.",
+          "files": [
+            "browser",
+            "page"
+          ],
+          "code": [
+            {
+              "file": "browser",
+              "start": 453,
+              "end": 466,
+              "marks": [
+                455,
+                456,
+                458,
+                466
+              ],
+              "plain": "The browser posts the id, then opens an event stream for the returned job."
+            },
+            {
+              "file": "browser",
+              "start": 467,
+              "end": 477,
+              "marks": [
+                472,
+                473,
+                475,
+                476
+              ],
+              "plain": "The page listens for queued, stage, result and error events."
+            }
+          ],
+          "size": "small",
+          "icon": "swap",
+          "unsure": ""
+        },
+        {
+          "name": "Queue one replay",
+          "title": "Maps the clip id to its record and starts a replay job.",
+          "why": "The page sends an id, not a file path.",
+          "here": "The server refuses an unknown id. For a known clip it chooses the record root and runs replay_one for that entry.",
+          "files": [
+            "worker",
+            "replay"
+          ],
+          "code": [
+            {
+              "file": "worker",
+              "start": 462,
+              "end": 477,
+              "marks": [
+                462,
+                463,
+                467,
+                472,
+                477
+              ],
+              "plain": "The server checks the id, builds a replay job and queues it."
+            }
+          ],
+          "size": "small",
+          "icon": "list",
+          "unsure": ""
+        },
+        {
+          "name": "Read the saved record",
+          "title": "Loads the stored line and its hashed entry.",
+          "why": "Replay uses the record made when the ruling was first built.",
+          "here": "The replay process reads the entry from the selected record folder. It rebuilds the line from the recorded item, pack, site and pixel facts; it does not decode the original video or call a model again.",
+          "files": [
+            "replay",
+            "judge",
+            "record"
+          ],
+          "code": [
+            {
+              "file": "replay",
+              "start": 82,
+              "end": 95,
+              "marks": [
+                85,
+                86,
+                89,
+                94
+              ],
+              "plain": "The process selects the existing line, reads its entry and rebuilds it."
+            },
+            {
+              "file": "record",
+              "start": 303,
+              "end": 304,
+              "marks": [
+                304
+              ],
+              "plain": "The entry is read from the record folder."
+            },
+            {
+              "file": "judge",
+              "start": 876,
+              "end": 888,
+              "marks": [
+                876,
+                885,
+                887
+              ],
+              "plain": "The saved pack and site are loaded, then the rule is rebuilt with model calls off."
+            },
+            {
+              "file": "judge",
+              "start": 336,
+              "end": 342,
+              "marks": [
+                341,
+                342
+              ],
+              "plain": "Replay disables model calls and video decoding."
+            }
+          ],
+          "size": "small",
+          "icon": "file",
+          "unsure": ""
+        },
+        {
+          "name": "Compare the rebuilt ruling",
+          "title": "Checks whether the rebuilt line matches the stored line.",
+          "why": "The button is a reproducibility check on the saved record.",
+          "here": "For this clip the offline rebuild matched the stored line and all four verdicts. The local replay took 17.19 seconds.",
+          "files": [
+            "replay"
+          ],
+          "code": [
+            {
+              "file": "replay",
+              "start": 98,
+              "end": 109,
+              "marks": [
+                98,
+                100,
+                102,
+                106
+              ],
+              "plain": "The rebuilt bytes are compared with the stored line and a result is emitted."
+            }
+          ],
+          "size": "small",
+          "icon": "search",
+          "unsure": "The live web request was not run. The match and elapsed time came from the local offline replay."
+        },
+        {
+          "name": "Show the match",
+          "title": "Displays the result and updates each ruling card.",
+          "why": "The reader can see whether each stored verdict stayed the same.",
+          "here": "The page shows Same ruling. Nobody edited it. If the request fails, it keeps the saved rulings and shows that a live check was unavailable.",
+          "files": [
+            "browser"
+          ],
+          "code": [
+            {
+              "file": "browser",
+              "start": 501,
+              "end": 507,
+              "marks": [
+                503,
+                506
+              ],
+              "plain": "The result is sealed, then the visible verdicts are compared one by one."
+            },
+            {
+              "file": "browser",
+              "start": 509,
+              "end": 514,
+              "marks": [
+                510,
+                512,
+                513
+              ],
+              "plain": "When the request fails the page keeps the stored result and says so."
+            },
+            {
+              "file": "browser",
+              "start": 541,
+              "end": 548,
+              "marks": [
+                543,
+                545,
+                548
+              ],
+              "plain": "A matching result gets the plain same-ruling message and rebuilt hash."
+            },
+            {
+              "file": "browser",
+              "start": 567,
+              "end": 576,
+              "marks": [
+                572,
+                573,
+                576
+              ],
+              "plain": "Each card shows whether its verdict matches the rebuilt one."
+            }
+          ],
+          "size": "small",
+          "icon": "eye",
+          "unsure": "The result screen was set by hand from the local offline result; the live button was not pressed."
+        }
+      ]
+    }
+  ],
+  "silent": [
+    {
+      "title": "The live request was not sent",
+      "text": "The result screenshot was filled from the local offline replay output. The local run matched the stored entry and took 17.19 seconds; the page display rounds that to 17.2. No POST was sent to the site.",
+      "show": "What would the real button send to the server?"
+    }
+  ],
+  "ask": [
+    "What happens when a rebuilt ruling differs from the stored one?",
+    "What happens when the live replay is unavailable or cannot read its saved record?",
+    "What happens when I choose one of the real warehouse clips instead?"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+ "cache": null,
+ "est_usd": 0.07846,
+ "finish": "stop",
+ "frames": [
+  12,
+  60,
+  76,
+  100,
+  108,
+  112
+ ],
+ "images_sha256": [
+  "61b52bc5fc6020aaa6f8814d3c6b32916596b9d3a6215f9f26ebab4e90abe094",
+  "6592165b862e6be16a5a3f761307d84efe9a10d56665964c69facf223442b91a",
+  "da90b62e733bfbcfc8ba1704ebc62233129f68fe86e7c07f6fe1eaea48ce43ee",
+  "61f5a768e1e5a5c9916fc297a9b7de44a7649213a3eeaa56afaaa787c0d9bb82",
+  "f0d561db49f67c5455c1e9c2dfaf313fc7ac9cfe5f34c970b775467efba7c4ad",
+  "67211d07eaf0ceb90b7e9d13c15de0991dd19803dfbc2f5caa6bc11e3d749e3c"
+ ],
+ "max_tokens": 6000,
+ "model": "muse-wonder-1.0",
+ "prompt": "A fixed warehouse camera, one window of 5.0 s. The images that follow are frames [12, 60, 76, 100, 108, 112] (24 frames a second), in that order.\nFor each ruling below write a note of exactly two sentences, 60 to 400 characters in all.\nSentence 1: what the frames show that bears on the rule; it must contain the rule's title exactly as quoted below.\nSentence 2: the measured fact that decided the script's verdict, taken from the script's evidence (for unable_to_rule, the fact that could not be measured).\nDescribe only: give no verdict of your own and do not dispute the script's. Never use the words compliant, collision, scrape, speeding. Name no file.\n\nRulings:\n- id: hi_vis_in_truck_zone; title: \"Wear high-visibility clothing in a truck zone\"; on video: A person inside a marked truck zone has no fluorescent yellow-green or orange-red band on the torso. A person who is too small to read, cut by the frame edge, mostly hidden or in low light is not ruled.; script verdict: breach; missing fact: none; ruled frames: [76, 88, 100, 112]; script evidence: \"person 0 on foot reads no hi-vis band on the torso on 100% of 22 read frames (vested 0%, unreadable 0%); the site line is 70%.\"\n- id: spotter_when_reversing; title: \"Reverse with a spotter where the site requires one\"; on video: Inside such a zone, the truck travels against its fork end for a second or more with no vested person behind it.; script verdict: clear; missing fact: none; ruled frames: none; script evidence: \"The truck never reversed for a second: forward 2.0 s, reversing 0.0 s, moving 2.0 s of 4.0 s in frame.\"\n- id: pedestrian_separation; title: \"Keep the site distance between a moving truck and a person on foot\"; on video: A person's feet come within the site distance of a moving truck's footprint, with the site's own distance.; script verdict: clear; missing fact: none; ruled frames: none; script evidence: \"No one on foot was near the truck: 1 person track(s), 1 set aside as operator or too short.\"\n- id: structure_contact; title: \"Do not touch racking or other structures\"; on video: The truck or its load meets racking, an upright, a guard, a column or stacked stock. A consequence within half a second (the structure shifts, something falls, the truck stops abruptly) is the evidence that the touch was real; a touch with no visible consequence is still a breach of this rule.; script verdict: clear; missing fact: none; ruled frames: none; script evidence: \"The truck's footprint never held within 0.30 m of a marked structure base for 3 frames: closest 0.38 m to the left rack end, hazard-taped base base, longest run 0 frame(s); 0 consequence event(s) seen.\"\n\nAnswer with one JSON object only, keyed by rule id: {\"<rule id>\": \"<note>\", ...}.",
+ "reply": "{\"hi_vis_in_truck_zone\": \"For Wear high-visibility clothing in a truck zone, the frames show a person on foot beside the right racking near the yellow truck, with no bright band visible on the torso. Person 0 on foot reads no hi-vis band on the torso on 100% of 22 read frames (vested 0%, unreadable 0%), against the site line of 70%.\", \"spotter_when_reversing\": \"For Reverse with a spotter where the site requires one, the frames show the yellow truck moving forward up the central aisle between racking, forks leading. The truck never reversed for a second, with forward 2.0 s, reversing 0.0 s, and moving 2.0 s of 4.0 s in frame.\", \"pedestrian_separation\": \"For Keep the site distance between a moving truck and a person on foot, the frames show the yellow truck moving up the central aisle while a person on foot appears from the right racking. No one on foot was measured near the truck, with 1 person track and 1 set aside as operator or too short.\", \"structure_contact\": \"For Do not touch racking or other structures, the frames show the yellow truck travelling up the central aisle with red racking and stacked stock on both sides. The truck footprint never held within 0.30 m of a marked structure base for 3 frames: closest 0.38 m to the left rack end hazard-taped base, longest run 0 frames, and 0 consequence events seen.\"}",
+ "rulings_sha256": "98e220bdf387a2868850da7cdb0d263253ac63d9f767a6096a43feea24736279",
+ "system": "You write short factual notes beside forklift safety rulings that a measuring script has already made. You describe; you never give, change or question a verdict.",
+ "temperature": 0.0,
+ "usage": {
+  "completion_tokens": 3415,
+  "completion_tokens_details": {
+   "reasoning_tokens": 3080
+  },
+  "prompt_tokens": 2540,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  },
+  "total_tokens": 5955
+ }
+}

@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+<title>faultline · rulings with the evidence</title>
+<meta name="description" content="faultline reads a site's written rules and its cameras, and rules on every rule, with the evidence. Open a case, then check nobody changed the ruling.">
+<link rel="icon" type="image/svg+xml" href="brand/faultline-mark.svg">
+<link rel="stylesheet" href="app.css?v=20261104-brand">
+<script src="app.js?v=20261104-brand" defer></script>
+</head>
+<body>
+<a class="skip" href="#run">Skip to the case file</a>
+
+<header class="masthead">
+  <div class="wrap masthead-in">
+    <div class="brand-lockup">
+      <img class="mark" src="brand/faultline-mark.svg" alt="" width="48" height="48">
+      <h1 class="wordmark">faultline</h1>
+      <span class="brand-note">evidence → ruling</span>
+    </div>
+    <p class="lede">A rules judge for warehouse video and sim racing. Every ruling comes with the evidence behind it.</p>
+    <ul class="who">
+      <li><b>The safety lead</b> gets a short list to act on.</li>
+      <li><b>The insurer</b> gets evidence instead of a form.</li>
+      <li><b>In racing,</b> a driver protests, and a volunteer steward rules from the evidence.</li>
+    </ul>
+    <div class="evidence-field" aria-hidden="true"><canvas id="evidence-field"></canvas></div>
+  </div>
+</header>
+
+<nav class="judgepath wrap" aria-label="Judge's path">
+  <a class="judgepath-primary" href="#pick-h">Open the live demo</a>
+  <a href="faultline-film-web.mp4">Watch the film</a>
+  <a href="#yours-h">Replay it yourself</a>
+  <a href="https://github.com/BrockDawg/faultline">GitHub</a>
+  <span class="jp-nums"><b data-num="breach_found"></b> breach clips found <span aria-hidden="true">/</span> <b data-num="false_breach"></b> false breaches <span aria-hidden="true">/</span> offline replay verified</span>
+</nav>
+
+<section class="hero wrap" aria-labelledby="hero-h">
+  <h2 id="hero-h">A blind corner. No hi-vis.</h2>
+  <div class="hero-case" id="hero-case">
+    <img class="hero-poster" id="hero-poster" alt="The deciding frame of the blind-corner clip">
+    <div class="hero-ruling">
+      <p><span class="stamp v-breach">Breach</span> <b>Wear high-visibility clothing in a truck zone</b></p>
+      <p class="hero-num" id="hero-num">Loading the ruling…</p>
+      <p class="fine">The script measures and decides. Meta models add a written read of the evidence.</p>
+      <p><a href="#run" id="hero-open">Open this case</a> · <a href="faultline-film-web.mp4">Watch the film</a></p>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section class="panel wrap" aria-labelledby="score-h">
+    <div class="panel-head"><h2 id="score-h">The scoreboard</h2><p class="panel-sub">On the graded fixed-camera clips, against a key reviewed by hand.</p></div>
+    <div class="panel-body">
+      <dl class="board">
+        <div data-needs="breach_found"><dt>Breach clips found</dt><dd data-num="breach_found"></dd></div>
+        <div data-needs="false_breach"><dt>False breaches on the compliant clips</dt><dd data-num="false_breach"></dd></div>
+        <div data-needs="unable"><dt>Rulings unable to rule, each naming its missing fact</dt><dd data-num="unable"></dd></div>
+        <div data-needs="replay"><dt>Replay</dt><dd data-num="replay"></dd></div>
+      </dl>
+      <div class="replay-box">
+        <div class="replay-live">
+          <h3>Check it at home</h3>
+          <p>You don't have to trust our server either. Run one command on your own machine, and the shipped record gives you this hash:</p>
+          <p class="mono-line"><code class="hash" id="shipped-sha"></code></p>
+          <p class="fine"><a href="#yours-h">The command is below.</a> Or watch our server do the same from scratch now.</p>
+          <button type="button" class="btn" id="replay-shipped">Replay the shipped <span data-count="shipped"></span> clips here</button>
+          <div class="progress" id="prog-shipped" hidden></div>
+          <ol class="replay-lines" id="replay-lines"></ol>
+          <p class="replay-end" id="replay-end" hidden></p>
+        </div>
+        <div class="replay-set" id="graded-set" hidden>
+          <h3>The graded set, replayed at deploy</h3>
+          <p class="fine">Every graded clip replayed on this server when it was deployed. A full live run takes minutes, too long to wait for here.</p>
+          <p class="mono-line"><span class="k">set</span> <code class="hash" id="graded-sha"></code></p>
+          <p class="mono-line"><span class="k">when</span> <span id="graded-when"></span></p>
+          <p class="mono-line" id="graded-match"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+<section class="pick wrap" aria-labelledby="pick-h">
+    <div class="pick-grid">
+      <div class="pick-forklift">
+        <div class="pick-head">
+          <h2 id="pick-h" class="pick-title">Open a case</h2>
+          <p class="pick-note">Forklift site · its record is public</p>
+        </div>
+        <div class="tiles" id="featured" role="group" aria-labelledby="pick-h"></div>
+        <div class="more">
+          <button type="button" class="more-btn" id="more-graded-btn" aria-expanded="false" aria-controls="more-graded">More clips <span class="count" data-count="graded"></span></button>
+          <button type="button" class="more-btn" id="more-real-btn" aria-expanded="false" aria-controls="more-real">Real footage <span class="count" data-count="real"></span></button>
+        </div>
+        <div class="drawer" id="more-graded" hidden>
+          <p class="drawer-note">Graded clips, each judged against a key reviewed by hand.</p>
+          <ul class="rows" id="list-graded"></ul>
+        </div>
+        <div class="drawer" id="more-real" hidden>
+          <p class="drawer-note">Real warehouse footage, faces blurred.</p>
+          <ul class="rows" id="list-real"></ul>
+        </div>
+      </div>
+      <div class="pick-racing" id="pick-racing">
+        <div class="pick-head">
+          <h2 class="pick-title" id="racing-h">PitBot racing: proof</h2>
+          <p class="pick-note">A real league, car numbers only</p>
+        </div>
+        <div class="tiles tiles-racing" role="group" aria-labelledby="racing-h">
+          <button type="button" class="tile rtile" id="pick-protest" aria-pressed="false">
+            <span class="poster race-poster" id="poster-protest"></span>
+            <span class="tile-name">A protest</span>
+            <span class="tile-hint" id="hint-protest">Human steward decision with AI steward analysis alongside it</span>
+            <span class="tile-open">Open protest evidence</span>
+          </button>
+          <button type="button" class="tile rtile" id="pick-limits" aria-pressed="false">
+            <span class="poster poster-svg" id="poster-limits"></span>
+            <span class="tile-name">The incident limit</span>
+            <span class="tile-hint" id="hint-limits">every session, from the sim's feed</span>
+            <span class="tile-open">Open incident limits</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="run wrap" id="run" aria-labelledby="run-h" hidden tabindex="-1">
+    <p class="kicker" id="run-kicker"></p>
+    <h2 class="run-title" id="run-h"></h2>
+    <div class="story" id="story"></div>
+    <dl class="for" id="for"></dl>
+    <div class="out" id="out" aria-live="polite"></div>
+    <div class="why" id="why">
+      <h3 class="why-h">Rulings get disputed.</h3>
+      <p class="why-text" id="why-text"></p>
+    </div>
+    <div class="actionbar" id="actionbar">
+      <div class="actionbar-in">
+        <p class="go-what" id="go-what">Rebuild this case from its saved evidence, then compare it with the published record.</p>
+        <p class="sel" aria-live="polite"><span class="sel-label">Open case</span> <span class="sel-name" id="sel-name">nothing yet</span></p>
+        <button type="button" class="go" id="go" disabled>Replay and compare</button>
+      </div>
+    </div>
+    <div class="progress" id="prog-run" hidden></div>
+    <p class="busy" id="busy" role="status" hidden></p>
+    <div class="seal" id="seal" aria-live="polite" hidden></div>
+  </section>
+
+  <section class="panel wrap" aria-labelledby="how-h">
+    <div class="panel-head"><h2 id="how-h">How it rules</h2></div>
+    <div class="panel-body">
+      <p>Scripts measure and decide. A fact the scripts could not measure makes the ruling “unable to rule”, and the ruling names that fact. Each Meta model is named where it is used.</p>
+      <ol class="steps" id="models"></ol>
+      <p class="openweight" id="open-weight"></p>
+    </div>
+  </section>
+
+  
+<section class="panel wrap" aria-labelledby="trace-h">
+  <div class="panel-head"><h2 id="trace-h">Meta models at work, inspectable and never deciding</h2></div>
+  <div class="panel-body">
+    <div id="trace-sam"><h3>SAM: finding people from text</h3><p>Loading the recorded trace…</p></div>
+    <div id="trace-spark"><h3>Muse Spark Open: compiling a plain-English rule</h3><p>Loading the recorded trace…</p></div>
+  </div>
+</section>
+
+<section class="panel wrap" aria-labelledby="shift-h" id="shift-panel">
+    <div class="panel-head"><h2 id="shift-h">A shift</h2><p class="panel-sub" data-needs="shift_windows shift_rulings"><span data-num="shift_windows"></span> windows of footage, <span data-num="shift_rulings"></span> rulings, every rule answered on every window.</p></div>
+    <div class="panel-body">
+      <p class="shift-lead">Nobody watches a whole shift. Here is the short list. The judge reads every window; To review shows the breaches first, and the full breakdown is under All windows. Select a window below to open its evidence.</p>
+      <p data-needs="shift_breach shift_clear shift_unable shift_camera_moved"><b class="t-breach" data-num="shift_breach"></b> breaches to review, <b class="t-clear" data-num="shift_clear"></b> clear and <b class="t-unable" data-num="shift_unable"></b> unable, <span data-num="shift_camera_moved"></span> of them because the camera moved or was never marked.</p>
+      <figure class="shiftfig">
+        <div class="shiftbar" id="shiftbar" aria-hidden="true"></div>
+        <figcaption class="shiftkey">Every ruling on the shift: <span class="key v-breach">breach</span> <span class="key v-clear">clear</span> <span class="key v-unable_to_rule">unable to rule</span></figcaption>
+      </figure>
+      <div class="wfilter" role="group" aria-label="Show windows">
+        <button type="button" class="chip" data-wfilter="review" aria-pressed="true">To review <span class="count" id="wf-review"></span></button>
+        <button type="button" class="chip" data-wfilter="unable" aria-pressed="false">Nothing ruled <span class="count" id="wf-unable"></span></button>
+        <button type="button" class="chip" data-wfilter="all" aria-pressed="false">All windows <span class="count" id="wf-all"></span></button>
+      </div>
+      <p class="wcaption" id="wcaption" aria-live="polite"></p>
+      <div class="wlist" id="windows"></div>
+      <section class="wdetail" id="wdetail" hidden aria-label="The window you picked"></section>
+    </div>
+  </section>
+
+  <section class="panel wrap" aria-labelledby="real-h">
+    <div class="panel-head"><h2 id="real-h">Real footage</h2><p class="panel-sub">Two aisle clips from free-licence warehouse video, faces blurred.</p></div>
+    <div class="panel-body">
+      <p>The first real cameras taught the judge something. A camera near the floor made it see a touch that never happened.</p>
+      <p>Both structure-contact breaches were false: the frames show the truck crossing side-on in front of the camera, clear of both rack ends. The camera sits near the floor at the end of the aisle, and the floor plane assumed a raised camera.</p>
+      <p>The judge now has a gate for this, <code>camera.height</code>. It reads the camera's height above the floor from the four floor marks alone, before any model call<span data-needs="real_camera_line">, and <span data-num="real_camera_line"></span></span>. Under it, <span data-num="real_floor_unable">every rule that reads the truck's floor position (separation, spotter, structure contact and speed) is unable to rule</span>, and the ruling gives the height and the line. And <span data-num="real_hi_vis">the hi-vis rule reads the torso, not the floor, and is still ruled</span>.</p>
+      <p>A three-run model read, in the optional words beside a ruling, took a person in a pink shirt for someone with no hi-vis. That changes no verdict, and it shows why a model's words never decide one.</p>
+      <div class="tiles tiles-real" id="real-tiles"></div>
+    </div>
+  </section>
+
+  <section class="panel wrap" aria-labelledby="race-h" id="racing-panel">
+    <div class="panel-head"><h2 id="race-h">The same judge, on the author's own league</h2><p class="panel-sub">Proof, not a second hero: real PitBot protests, steward rulings, car numbers only.</p></div>
+    <div class="panel-body">
+      <h3>Protests</h3>
+      <p>A driver protests a move. A volunteer steward makes the ruling from the evidence pack. The models provide AI steward analysis alongside that decision; their output does not set the verdict. Select a protest to open its evidence pack and race footage.</p>
+      <p class="fine">The full-recording scan is experimental: it groups sampled visual-change spikes into review windows, and ordinary motion can trigger them. Low-confidence fallback windows stay marked insufficient; they do not establish full-session contact recall. Smoke, cuts, or camera edits can hide an incident. Telemetry is context only and cannot add, remove, or reorder candidates. This page shows stored records; optional SAM masks are evidence only, never a verdict.</p>
+      <p class="claim" data-needs-r="read_mark read_mark_target">AI steward analysis did not pass its mark: <span data-rnum="read_mark"></span>, against <span data-rnum="read_mark_target"></span>.</p>
+      <p class="claim" data-needs-r="named_right">Every agreed read that named a car named the right one, <span data-rnum="named_right"></span> on each arm.</p>
+      <div class="chips" id="protest-chips" role="group" aria-label="Pick a protest"></div>
+      <div class="pack-out" id="protest-pack"></div>
+      <div class="race-action">
+        <button type="button" class="btn" id="check-protest">Replay and compare</button>
+        <p class="fine">Rulings get disputed, by the driver penalised. Our server replays this protest from scratch: if anyone had changed its record, it would not come out the same.</p>
+      </div>
+      <div class="progress" id="prog-protest" hidden></div>
+      <div class="race-result" id="protest-result" aria-live="polite"></div>
+
+      <h3>The incident limit</h3>
+      <p>The league's rules set a limit on incident points in each session. The judge reads every session from the sim's own feed and rules on each car against that limit.</p>
+      <p class="claim" data-needs-r="over_limit on_record no_ruling">It found <span data-rnum="over_limit"></span>: <span data-rnum="on_record"></span>, and <span data-rnum="no_ruling"></span>. Only reported incidents are ruled, and only the stewards can say why no ruling exists.</p>
+      <div class="race-action">
+        <button type="button" class="btn" id="check-limits">Re-rule every session from the feed</button>
+        <p class="fine" id="limits-fine"></p>
+      </div>
+      <div class="progress" id="prog-limits" hidden></div>
+      <div class="table-scroll"><table class="limits" id="limits-table">
+        <thead><tr><th scope="col">Session</th><th scope="col">Car</th><th scope="col">Ruling</th><th scope="col">On record</th><th scope="col" class="col-live">Checked</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <p class="race-sum" id="limits-sum" aria-live="polite"></p>
+
+      <h3>The racing scoreboard</h3>
+      <p>The fails show as plainly as the passes.</p>
+      <div class="table-scroll"><table class="rboard" id="rboard">
+        <thead><tr><th scope="col">Mark</th><th scope="col">Result</th><th scope="col">Pass mark</th><th scope="col">Verdict</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="panel wrap" aria-labelledby="yours-h">
+    <div class="panel-head"><h2 id="yours-h">Run it yourself</h2></div>
+    <div class="panel-body">
+      <p>You don't have to trust our server either. Clone the repo and replay the shipped record on your own machine. It prints the same hash.</p>
+<pre class="cmd"><code>git clone https://github.com/BrockDawg/faultline
+cd faultline
+uv run faultline-video replay demo/record/preds.jsonl --out /tmp/check.jsonl</code></pre>
+      <p class="mono-line">Expected <code class="hash" id="home-sha"></code></p>
+      <p><a class="repo" href="https://github.com/BrockDawg/faultline">github.com/BrockDawg/faultline</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot wrap">
+  <p>Every static number on this page comes from the project README. Record hashes, rebuild seconds and queue positions come from this server's own run, labelled live.</p>
+</footer>
+
+<dialog class="lightbox" id="lightbox" aria-label="Frame">
+  <figure><img id="lightbox-img" alt=""><figcaption id="lightbox-cap"></figcaption></figure>
+  <form method="dialog"><button class="btn" type="submit">Close</button></form>
+</dialog>
+
+<div id="copy" hidden>
+  <span data-copy="verdict.breach">Breach</span>
+  <span data-copy="verdict.clear">Clear</span>
+  <span data-copy="verdict.unable_to_rule">Unable to rule</span>
+  <span data-copy="hint.breach">a breach</span>
+  <span data-copy="hint.clear">all clear</span>
+  <span data-copy="hint.mixed">mixed</span>
+  <span data-copy="hint.unable">all unable</span>
+  <span data-copy="case.title.blind_corner_no_vest_07">Blind corner</span>
+  <span data-copy="case.story.blind_corner_no_vest_07">A truck came round a blind corner. A man walked into the truck zone with no hi-vis.</span>
+  <span data-copy="case.title.spotter_ahead_01">Spotter ahead</span>
+  <span data-copy="case.story.spotter_ahead_01">A truck drove forward with two people ahead of it. Both wore hi-vis.</span>
+  <span data-copy="case.title.idle_empty_aisle_40">Empty aisle</span>
+  <span data-copy="case.story.idle_empty_aisle_40">An empty aisle. Nobody walked into view, and no truck showed up, so it would not guess on the truck's rules.</span>
+  <span data-copy="case.title.real-aisle-a-truck">Real aisle camera, clip A</span>
+  <span data-copy="case.title.real-aisle-b-truck">Real aisle camera, clip B</span>
+  <span data-copy="case.real">Real footage. The camera sits near the floor at the end of the aisle.</span>
+  <span data-copy="kicker.clip">Case file</span>
+  <span data-copy="kicker.real">Case file · real footage, faces blurred</span>
+  <span data-copy="kicker.protest">Case file · a protest</span>
+  <span data-copy="kicker.limits">Case file · every session</span>
+  <span data-copy="story.breach">The judge ruled a breach on</span>
+  <span data-copy="story.nobreach">It found no breach.</span>
+  <span data-copy="story.allclear">It found no breach: every rule ruled clear.</span>
+  <span data-copy="story.unable">It would not guess on</span>
+  <span data-copy="story.rule">rule</span>
+  <span data-copy="story.rules">rules</span>
+  <span data-copy="story.protest">A driver protested a move on lap</span>
+  <span data-copy="story.protest.nolap">A driver protested a move.</span>
+  <span data-copy="story.in">in</span>
+  <span data-copy="story.limits">The league's rules set a limit on incident points in each session. The judge reads every session from the sim's own feed and rules on each car against that limit.</span>
+  <span data-copy="and">and</span>
+  <span data-copy="for.lead">For the safety lead</span>
+  <span data-copy="for.item">item to act on:</span>
+  <span data-copy="for.items">items to act on:</span>
+  <span data-copy="for.lead.none">Nothing to act on.</span>
+  <span data-copy="for.insurer">For the insurer</span>
+  <span data-copy="for.insurer.breach">The frames and the number that decided it.</span>
+  <span data-copy="for.insurer.none">The measurement behind every ruling.</span>
+  <span data-copy="for.person">For a person to check</span>
+  <span data-copy="for.unable">It could not rule on</span>
+  <span data-copy="for.person.b">A person checks it.</span>
+  <span data-copy="for.person.bs">A person checks them.</span>
+  <span data-copy="for.steward">For the steward</span>
+  <span data-copy="for.steward.what">The cars within reach and the facts the sim's feed gave. The human steward makes the decision. AI steward analysis appears alongside it and does not set the verdict.</span>
+  <span data-copy="for.stewards">For the stewards</span>
+  <span data-copy="for.stewards.what">Every car over the limit, including the ones with no ruling on record.</span>
+  <span data-copy="why.clip">By the worker written up, the site or the insurer. So anyone can make our server re-run the judge from scratch. If anyone had changed a ruling, it would not come out the same.</span>
+  <span data-copy="why.racing">By the driver penalised. So anyone can make our server replay the protest from scratch. If anyone had changed its record, it would not come out the same.</span>
+  <span data-copy="why.limits">By the driver penalised. So anyone can make our server re-rule every session from the sim's feed. If anyone had changed a ruling, it would not come out the same.</span>
+  <span data-copy="go.clip">Replay and compare</span>
+  <span data-copy="go.protest">Replay and compare</span>
+  <span data-copy="go.rerule">Re-rule every session from the feed</span>
+  <span data-copy="go.checked">Check nobody changed them</span>
+  <span data-copy="go.busy">Checking…</span>
+  <span data-copy="sel.protest">A protest</span>
+  <span data-copy="sel.limits">The incident limit</span>
+  <span data-copy="busy.clip">Stored ruling. Live check unavailable. The live rebuild is busy, try again in a minute.</span>
+  <span data-copy="busy.racing">Stored ruling. Live check unavailable. The live check is busy, try again in a minute.</span>
+  <span data-copy="frames.ruling">frames the ruling names</span>
+  <span data-copy="frames.model">frames shown to the model</span>
+  <span data-copy="frames.window">the window</span>
+  <span data-copy="frames.none">no frame named</span>
+  <span data-copy="frames.missing">frame not on this server</span>
+  <span data-copy="frame">frame</span>
+  <span data-copy="decided">The number that decided it</span>
+  <span data-copy="measurement">The measurement</span>
+  <span data-copy="why.unable">Why it could not rule</span>
+  <span data-copy="needs">It needs:</span>
+  <span data-copy="needs.contact.consequence">It needs: a consequence within half a second (the structure shifts, something falls, the truck stops abruptly) to prove the touch was real.</span>
+  <span data-copy="pack">The pack's own words</span>
+  <span data-copy="wrote">wrote:</span>
+  <span data-copy="reads.forklift">three reads:</span>
+  <span data-copy="reads.racing">three runs:</span>
+  <span data-copy="reads.agreed">agreed on</span>
+  <span data-copy="reads.none">no agreed read</span>
+  <span data-copy="reads.notext">no readable reply</span>
+  <span data-copy="beside">Beside the ruling, never in place of it</span>
+  <span data-copy="seal.match">same</span>
+  <span data-copy="seal.nomatch">not the same</span>
+  <span data-copy="seal.same.one">Same ruling. Nobody edited it.</span>
+  <span data-copy="seal.same.all">Same rulings. Nobody edited them.</span>
+  <span data-copy="seal.diff.one">Not the same: this ruling does not match its published record.</span>
+  <span data-copy="seal.diff.all">Not the same: these rulings do not match their published record.</span>
+  <span data-copy="seal.how.clip">Re-ran the judge from scratch on our server, no internet.</span>
+  <span data-copy="seal.how.protest">Replayed the protest from scratch on our server, no internet.</span>
+  <span data-copy="seal.how.rerule">Re-ruled every session from the sim's feed on our server, no internet.</span>
+  <span data-copy="seal.how.checked">Replayed every stored ruling from scratch on our server, no internet.</span>
+  <span data-copy="seal.record">record</span>
+  <span data-copy="seal.pub">published</span>
+  <span data-copy="seal.reb">rebuilt</span>
+  <span data-copy="seal.notrun">not re-run this time</span>
+  <span data-copy="seal.secs">s on our server</span>
+  <span data-copy="nomatch.why">The rebuild did not match the stored record.</span>
+  <span data-copy="card.wait">checking…</span>
+  <span data-copy="card.stored">published ruling, not checked this time</span>
+  <span data-copy="live.same">unchanged</span>
+  <span data-copy="live.diff">changed</span>
+  <span data-copy="live.samev">same verdict, but the record differs</span>
+  <span data-copy="live.missing">not in the rebuilt record</span>
+  <span data-copy="live.wait">checking…</span>
+  <span data-copy="live.stored">stored</span>
+  <span data-copy="pack.wait">checking…</span>
+  <span data-copy="pack.same">unchanged</span>
+  <span data-copy="pack.diff">changed</span>
+  <span data-copy="pack.stored">published record, not checked this time</span>
+  <span data-copy="r.rule">Rule</span>
+  <span data-copy="r.window">The window</span>
+  <span data-copy="r.lap">lap</span>
+  <span data-copy="r.feed">feed seconds</span>
+  <span data-copy="r.set">The cars within reach</span>
+  <span data-copy="r.facts">What the sim's feed gave, blame-neutral</span>
+  <span data-copy="r.steward">Human steward decision</span>
+  <span data-copy="r.frames">masked frames checked</span>
+  <span data-copy="r.arm">arm</span>
+  <span data-copy="r.yes">yes</span>
+  <span data-copy="r.no">none</span>
+  <span data-copy="r.na">·</span>
+  <span data-copy="r.lines.rerule">sessions re-ruled from the sim's feed</span>
+  <span data-copy="r.lines.checked">sessions checked against the published record</span>
+  <span data-copy="r.fine.rerule">Rulings get disputed, by the driver penalised. Our server re-rules every session from the sim's feed: if anyone had changed a ruling, it would not come out the same.</span>
+  <span data-copy="r.fine.checked">Rulings get disputed, by the driver penalised. Our server replays every stored ruling from scratch: if anyone had changed one, it would not come out the same.</span>
+  <span data-copy="replay.ok">same</span>
+  <span data-copy="replay.bad">not the same</span>
+  <span data-copy="replay.end">Our server got</span>
+  <span data-copy="replay.busy">The live replay is busy, try again in a minute.</span>
+  <span data-copy="replay.wait">replaying…</span>
+  <span data-copy="replay.skip">not replayed this time</span>
+  <span data-copy="replay.home">the same hash you get at home</span>
+  <span data-copy="replay.nothome">not the hash you get at home</span>
+  <span data-copy="graded.match">matches the hash the README states</span>
+  <span data-copy="graded.nomatch">differs from the hash the README states</span>
+  <span data-copy="window">Window</span>
+  <span data-copy="window.of">of</span>
+  <span data-copy="wcap.review">windows hold the breaches to review. Start here.</span>
+  <span data-copy="wcap.review.n">breaches sit in</span>
+  <span data-copy="wcap.review.tail">windows. Start here.</span>
+  <span data-copy="wcap.unable">windows where no rule could be ruled. Each one says why, so nobody has to watch it.</span>
+  <span data-copy="wcap.all">windows, in shift order.</span>
+  <span data-copy="wcap.empty">No window in this list.</span>
+  <span data-copy="wcap.hint">Pick one to see what each rule found.</span>
+  <span data-copy="wd.close">Close</span>
+  <span data-copy="wd.shared.all">on every rule</span>
+  <span data-copy="wd.shared.these">on the rules marked unable</span>
+  <span data-copy="wd.poster">The window's first frame</span>
+  <span data-copy="wd.video">The footage of this window</span>
+  <span data-copy="wd.video.cap">The footage the judge read for this window. Tap a frame on any rule to jump to it.</span>
+  <span data-copy="wd.jump">Jump the footage to</span>
+  <span data-copy="wd.lacked">Could not rule without</span>
+  <span data-copy="wd.decided">Decided by</span>
+  <span data-copy="wd.breach">breach</span>
+  <span data-copy="wd.breaches">breaches</span>
+  <span data-copy="wd.unable">unable</span>
+  <span data-copy="wd.clear">All clear</span>
+  <span data-copy="load.fail">The page data did not load. Reload in a moment.</span>
+  <span data-copy="what.clip">Replay this case from its saved evidence, then compare it with the published record.</span>
+  <span data-copy="what.protest">Replay this protest from its saved evidence, then compare it with the published record.</span>
+  <span data-copy="what.rerule">Rulings get disputed. Prove nobody changed them: our server re-rules every session from the sim's feed.</span>
+  <span data-copy="what.checked">Replay every stored ruling, then compare the results with the published record.</span>
+  <span data-copy="prog.head">Re-running the judge from scratch on our server</span>
+  <span data-copy="prog.head.protest">Replaying the protest from scratch on our server</span>
+  <span data-copy="prog.head.rerule">Re-ruling every session from scratch on our server</span>
+  <span data-copy="prog.head.checked">Replaying every stored ruling from scratch on our server</span>
+  <span data-copy="prog.head.shipped">Replaying the shipped clips from scratch on our server</span>
+  <span data-copy="prog.running">Running for</span>
+  <span data-copy="prog.done">Finished in</span>
+  <span data-copy="prog.stopped">Stopped after</span>
+  <span data-copy="prog.unit">s</span>
+  <span data-copy="st.queued">Waiting in line</span>
+  <span data-copy="st.start">Starting the judge</span>
+  <span data-copy="st.record">Reading what was measured</span>
+  <span data-copy="st.rebuild">Ruling again</span>
+  <span data-copy="st.seal">Comparing with the published record</span>
+  <span data-copy="st.inline">in line</span>
+  <span data-copy="st.queued.what">Checks take turns on our server. Yours starts when the one ahead of it finishes.</span>
+  <span data-copy="st.start.what">The judge's own code starts on our server, with no internet and no key.</span>
+  <span data-copy="st.record.what.clip">It reads this clip's stored measurements: what the camera's frames gave.</span>
+  <span data-copy="st.rebuild.what.clip">It rules on every rule again, from those measurements alone.</span>
+  <span data-copy="st.seal.what.clip">If anyone had edited a ruling, the two would not match.</span>
+  <span data-copy="st.record.what.shipped">It reads the stored record of every shipped clip.</span>
+  <span data-copy="st.rebuild.what.shipped">It rules on every clip again, one line per clip.</span>
+  <span data-copy="st.seal.what.shipped">It hashes the rebuilt set: the hash you get at home.</span>
+  <span data-copy="st.record.what.protest">It reads this protest's stored record on both arms: the feed's facts, the frame hashes and the models' stored replies.</span>
+  <span data-copy="st.rebuild.what.protest">It replays the protest and rebuilds the models' read from those stored replies.</span>
+  <span data-copy="st.seal.what.protest">If anyone had edited the record, the two would not match.</span>
+  <span data-copy="st.record.what.rerule">It reads the sim's own feed for every session.</span>
+  <span data-copy="st.rebuild.what.rerule">It runs the incident-limit rule on every session's feed.</span>
+  <span data-copy="st.seal.what.rerule">If anyone had edited a ruling, its line would not match.</span>
+  <span data-copy="st.record.what.checked">It reads every stored incident-limit ruling.</span>
+  <span data-copy="st.rebuild.what.checked">It replays each ruling from its record.</span>
+  <span data-copy="st.seal.what.checked">If anyone had edited a ruling, its line would not match.</span>
+</div>
+</body>
+</html>

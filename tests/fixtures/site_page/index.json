@@ -1,0 +1,223 @@
+{
+ "schema": 1,
+ "featured": [
+  "blind_corner_no_vest_07",
+  "spotter_ahead_01",
+  "idle_empty_aisle_40"
+ ],
+ "groups": [
+  {
+   "id": "shipped",
+   "title": "Pick a clip"
+  },
+  {
+   "id": "graded",
+   "title": "More clips"
+  },
+  {
+   "id": "real",
+   "title": "Real footage, faces blurred"
+  }
+ ],
+ "clips": [
+  {
+   "id": "blind_corner_no_vest_07",
+   "group": "shipped",
+   "root": "shipped",
+   "kind": "synthetic",
+   "hint": "breach",
+   "poster": "frames/blind_corner_no_vest_07/poster.jpg",
+   "record": "c82ca137cb2c1b8b9415e7a0bd6befa344554dea8fbb30c44fef7c22d08c5044",
+   "stamps": {
+    "hi_vis_in_truck_zone": "breach",
+    "spotter_when_reversing": "clear",
+    "pedestrian_separation": "clear",
+    "structure_contact": "clear"
+   },
+   "live": true
+  },
+  {
+   "id": "spotter_ahead_01",
+   "group": "shipped",
+   "root": "shipped",
+   "kind": "synthetic",
+   "hint": "clear",
+   "poster": "frames/spotter_ahead_01/poster.jpg",
+   "record": "95c515a68b709ec3721590429e6feac36584c24a5f708bd0547a8f720ff8b696",
+   "stamps": {
+    "hi_vis_in_truck_zone": "clear",
+    "spotter_when_reversing": "clear",
+    "pedestrian_separation": "clear",
+    "structure_contact": "clear"
+   },
+   "live": true
+  },
+  {
+   "id": "idle_empty_aisle_40",
+   "group": "shipped",
+   "root": "shipped",
+   "kind": "synthetic",
+   "hint": "mixed",
+   "poster": "frames/idle_empty_aisle_40/poster.jpg",
+   "record": "0ee61eb14dfb4e4662ae96597ccc311a559ff53342229264cfa835895b03bc90",
+   "stamps": {
+    "hi_vis_in_truck_zone": "clear",
+    "spotter_when_reversing": "unable_to_rule",
+    "pedestrian_separation": "clear",
+    "structure_contact": "unable_to_rule"
+   },
+   "live": true
+  },
+  {
+   "id": "reverse_no_spotter_03",
+   "group": "graded",
+   "root": "graded",
+   "kind": "synthetic",
+   "hint": "breach",
+   "poster": null,
+   "record": "abababababababababababababababababababababababababababababababab",
+   "stamps": {
+    "hi_vis_in_truck_zone": "clear",
+    "spotter_when_reversing": "breach",
+    "pedestrian_separation": "clear",
+    "structure_contact": "clear"
+   },
+   "live": true
+  },
+  {
+   "id": "rack_bump_cut_outline_12",
+   "group": "graded",
+   "root": "graded",
+   "kind": "synthetic",
+   "hint": "unable",
+   "poster": null,
+   "record": "abababababababababababababababababababababababababababababababab",
+   "stamps": {
+    "hi_vis_in_truck_zone": "unable_to_rule",
+    "spotter_when_reversing": "unable_to_rule",
+    "pedestrian_separation": "unable_to_rule",
+    "structure_contact": "unable_to_rule"
+   },
+   "live": true
+  },
+  {
+   "id": "crossing_clear_22",
+   "group": "graded",
+   "root": "graded",
+   "kind": "synthetic",
+   "hint": "clear",
+   "poster": null,
+   "record": "abababababababababababababababababababababababababababababababab",
+   "stamps": {
+    "hi_vis_in_truck_zone": "clear",
+    "spotter_when_reversing": "clear",
+    "pedestrian_separation": "clear",
+    "structure_contact": "clear"
+   },
+   "live": true
+  },
+  {
+   "id": "aisle_real_a",
+   "group": "real",
+   "root": "real",
+   "kind": "real",
+   "hint": "mixed",
+   "poster": "frames/aisle_real_a/poster.jpg",
+   "record": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+   "stamps": {
+    "hi_vis_in_truck_zone": "clear",
+    "spotter_when_reversing": "unable_to_rule",
+    "pedestrian_separation": "unable_to_rule",
+    "structure_contact": "unable_to_rule"
+   },
+   "live": true
+  }
+ ],
+ "numbers": {
+  "breach_found": {
+   "text": "12 of 14",
+   "readme_line": 275
+  },
+  "false_breach": {
+   "text": "0 of 10",
+   "readme_line": 276
+  },
+  "unable": {
+   "text": "24 of 96",
+   "readme_line": 277
+  },
+  "replay": {
+   "text": "byte-identical on Windows and in a Linux container with no network",
+   "readme_line": 278
+  },
+  "shift_windows": {
+   "text": "48",
+   "readme_line": 288
+  },
+  "shift_rulings": {
+   "text": "240",
+   "readme_line": 288
+  },
+  "shift_breach": {
+   "text": "16",
+   "readme_line": 288
+  },
+  "shift_clear": {
+   "text": "84",
+   "readme_line": 288
+  },
+  "shift_unable": {
+   "text": "140",
+   "readme_line": 288
+  },
+  "shift_camera_moved": {
+   "text": "110",
+   "readme_line": 288
+  },
+  "real_camera_line": {
+   "text": "the line is 1.5 m",
+   "readme_line": 316
+  },
+  "real_floor_unable": {
+   "text": "every rule that reads the truck's floor position (separation, spotter, structure contact and speed) is unable to rule",
+   "readme_line": 317
+  },
+  "real_hi_vis": {
+   "text": "the hi-vis rule reads the torso, not the floor, and is still ruled",
+   "readme_line": 317
+  }
+ },
+ "models": [
+  {
+   "name": "SAM 3.1",
+   "where": "Meta Model API",
+   "use": "masks and tracks"
+  },
+  {
+   "name": "Muse Spark Open",
+   "where": "Baseten",
+   "use": "compiles the rules pack"
+  },
+  {
+   "name": "Muse Wonder 1.0",
+   "where": "Meta Model API",
+   "use": "writes the note beside a ruling"
+  },
+  {
+   "name": "Muse Spark Open",
+   "where": "Baseten",
+   "use": "reads the frames three times"
+  }
+ ],
+ "open_weight_line": "Muse Spark Open is a Meta open-weight model, served by Baseten (partner inference, model id `meta-models/muse-spark-open-1026`).",
+ "graded_replay": {
+  "lines": 26,
+  "sha256": "43afe3f7542eb0807723dea560ecfde31ab318ad54c059868e93394e20c39701",
+  "readme_line": 801
+ },
+ "shipped_replay": {
+  "lines": 3,
+  "sha256": "d991b59e00000000000000000000000000000000000000000000000000007010",
+  "readme_line": 800
+ }
+}

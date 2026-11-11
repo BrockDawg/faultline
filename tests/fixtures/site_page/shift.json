@@ -1,0 +1,377 @@
+{
+ "schema": 1,
+ "windows": [
+  {
+   "window": "w01",
+   "clip": "shift_clip_0",
+   "shift_start_s": 0.0,
+   "shift_end_s": 5.0,
+   "gap_before_s": 0.0,
+   "entry": "fl-x",
+   "record": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+   "poster": null,
+   "rulings": [
+    {
+     "rule": "hi_vis_in_truck_zone",
+     "title": "Hi-vis in the truck zone",
+     "verdict": "breach",
+     "decided_by": "0.21 m",
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "spotter_when_reversing",
+     "title": "Spotter when reversing",
+     "verdict": "clear",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "pedestrian_separation",
+     "title": "Pedestrian separation",
+     "verdict": "unable_to_rule",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": "camera.static",
+     "lacks": "the camera holding still",
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "structure_contact",
+     "title": "Structure contact",
+     "verdict": "breach",
+     "decided_by": "0.21 m",
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    }
+   ]
+  },
+  {
+   "window": "w02",
+   "clip": "shift_clip_1",
+   "shift_start_s": 5.0,
+   "shift_end_s": 10.0,
+   "gap_before_s": 0.0,
+   "entry": "fl-x",
+   "record": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+   "poster": null,
+   "rulings": [
+    {
+     "rule": "hi_vis_in_truck_zone",
+     "title": "Hi-vis in the truck zone",
+     "verdict": "clear",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "spotter_when_reversing",
+     "title": "Spotter when reversing",
+     "verdict": "unable_to_rule",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": "camera.static",
+     "lacks": "the camera holding still",
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "pedestrian_separation",
+     "title": "Pedestrian separation",
+     "verdict": "breach",
+     "decided_by": "0.21 m",
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "structure_contact",
+     "title": "Structure contact",
+     "verdict": "clear",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    }
+   ]
+  },
+  {
+   "window": "w03",
+   "clip": "shift_clip_2",
+   "shift_start_s": 10.0,
+   "shift_end_s": 15.0,
+   "gap_before_s": 0.0,
+   "entry": "fl-x",
+   "record": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+   "poster": null,
+   "rulings": [
+    {
+     "rule": "hi_vis_in_truck_zone",
+     "title": "Hi-vis in the truck zone",
+     "verdict": "unable_to_rule",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": "camera.static",
+     "lacks": "the camera holding still",
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "spotter_when_reversing",
+     "title": "Spotter when reversing",
+     "verdict": "breach",
+     "decided_by": "0.21 m",
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "pedestrian_separation",
+     "title": "Pedestrian separation",
+     "verdict": "clear",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "structure_contact",
+     "title": "Structure contact",
+     "verdict": "unable_to_rule",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": "camera.static",
+     "lacks": "the camera holding still",
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    }
+   ]
+  },
+  {
+   "window": "w04",
+   "clip": "shift_clip_3",
+   "shift_start_s": 15.0,
+   "shift_end_s": 20.0,
+   "gap_before_s": 0.0,
+   "entry": "fl-x",
+   "record": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+   "poster": null,
+   "rulings": [
+    {
+     "rule": "hi_vis_in_truck_zone",
+     "title": "Hi-vis in the truck zone",
+     "verdict": "breach",
+     "decided_by": "0.21 m",
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "spotter_when_reversing",
+     "title": "Spotter when reversing",
+     "verdict": "clear",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "pedestrian_separation",
+     "title": "Pedestrian separation",
+     "verdict": "unable_to_rule",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": "camera.static",
+     "lacks": "the camera holding still",
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "structure_contact",
+     "title": "Structure contact",
+     "verdict": "breach",
+     "decided_by": "0.21 m",
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    }
+   ]
+  },
+  {
+   "window": "w05",
+   "clip": "shift_clip_4",
+   "shift_start_s": 20.0,
+   "shift_end_s": 25.0,
+   "gap_before_s": 0.0,
+   "entry": "fl-x",
+   "record": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+   "poster": null,
+   "rulings": [
+    {
+     "rule": "hi_vis_in_truck_zone",
+     "title": "Hi-vis in the truck zone",
+     "verdict": "clear",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "spotter_when_reversing",
+     "title": "Spotter when reversing",
+     "verdict": "unable_to_rule",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": "camera.static",
+     "lacks": "the camera holding still",
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "pedestrian_separation",
+     "title": "Pedestrian separation",
+     "verdict": "breach",
+     "decided_by": "0.21 m",
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "structure_contact",
+     "title": "Structure contact",
+     "verdict": "clear",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    }
+   ]
+  },
+  {
+   "window": "w06",
+   "clip": "shift_clip_5",
+   "shift_start_s": 25.0,
+   "shift_end_s": 30.0,
+   "gap_before_s": 0.0,
+   "entry": "fl-x",
+   "record": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+   "poster": null,
+   "rulings": [
+    {
+     "rule": "hi_vis_in_truck_zone",
+     "title": "Hi-vis in the truck zone",
+     "verdict": "unable_to_rule",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": "camera.static",
+     "lacks": "the camera holding still",
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "spotter_when_reversing",
+     "title": "Spotter when reversing",
+     "verdict": "breach",
+     "decided_by": "0.21 m",
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "pedestrian_separation",
+     "title": "Pedestrian separation",
+     "verdict": "clear",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": null,
+     "lacks": null,
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    },
+    {
+     "rule": "structure_contact",
+     "title": "Structure contact",
+     "verdict": "unable_to_rule",
+     "decided_by": null,
+     "measurement": "fixture measurement",
+     "missing_fact": "camera.static",
+     "lacks": "the camera holding still",
+     "pack_words": null,
+     "frames": [],
+     "words": null
+    }
+   ]
+  }
+ ],
+ "counts": {
+  "breach": 8,
+  "clear": 8,
+  "unable_to_rule": 8
+ },
+ "facts": [
+  {
+   "field": "camera.static",
+   "words": "the camera holding still",
+   "rulings": 8
+  }
+ ]
+}

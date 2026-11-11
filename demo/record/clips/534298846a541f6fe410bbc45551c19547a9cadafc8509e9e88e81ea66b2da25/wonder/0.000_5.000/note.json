@@ -1,0 +1,33 @@
+{
+ "cache": null,
+ "est_usd": 0.056036,
+ "finish": "stop",
+ "frames": [
+  12,
+  60,
+  108
+ ],
+ "images_sha256": [
+  "51ecfde74723ce4a2fa53072adc671da451887e7895c16831a7976a5056298e7",
+  "d6f97843bd07049bf9c967bd88f64402958551ef8766fa90cb8d1b9d070bd34d",
+  "db4fe4b4bec65796726e4a1f069abdd77cdc269b10fc05db781491dc681797b6"
+ ],
+ "max_tokens": 6000,
+ "model": "muse-wonder-1.0",
+ "prompt": "A fixed warehouse camera, one window of 5.0 s. The images that follow are frames [12, 60, 108] (24 frames a second), in that order.\nFor each ruling below write a note of exactly two sentences, 60 to 400 characters in all.\nSentence 1: what the frames show that bears on the rule; it must contain the rule's title exactly as quoted below.\nSentence 2: the measured fact that decided the script's verdict, taken from the script's evidence (for unable_to_rule, the fact that could not be measured).\nDescribe only: give no verdict of your own and do not dispute the script's. Never use the words compliant, collision, scrape, speeding. Name no file.\n\nRulings:\n- id: hi_vis_in_truck_zone; title: \"Wear high-visibility clothing in a truck zone\"; on video: A person inside a marked truck zone has no fluorescent yellow-green or orange-red band on the torso. A person who is too small to read, cut by the frame edge, mostly hidden or in low light is not ruled.; script verdict: clear; missing fact: none; ruled frames: none; script evidence: \"Nobody was in view on any frame of the window: three person reads ('person', 'pedestrian', 'worker') over all 60 frames (5.0 s) (the person track's own run record shows 60 frames processed), with the camera still and the whole view in frame, found no one, so no one on foot went without hi-vis.\"\n- id: spotter_when_reversing; title: \"Reverse with a spotter where the site requires one\"; on video: Inside such a zone, the truck travels against its fork end for a second or more with no vested person behind it.; script verdict: unable_to_rule; missing fact: truck.moving; ruled frames: none; script evidence: \"No truck track exists in this window: the vision model found no forklift on the frames it was shown (one a second, up to 5). With no truck there is no motion, direction, distance or contact to measure, so no rule is ruled.\"\n- id: pedestrian_separation; title: \"Keep the site distance between a moving truck and a person on foot\"; on video: A person's feet come within the site distance of a moving truck's footprint, with the site's own distance.; script verdict: clear; missing fact: none; ruled frames: none; script evidence: \"Nobody was in view on any frame of the window: three person reads ('person', 'pedestrian', 'worker') over all 60 frames (5.0 s) (the person track's own run record shows 60 frames processed), with the camera still and the whole view in frame, found no one, so no person on foot came near a truck.\"\n- id: structure_contact; title: \"Do not touch racking or other structures\"; on video: The truck or its load meets racking, an upright, a guard, a column or stacked stock. A consequence within half a second (the structure shifts, something falls, the truck stops abruptly) is the evidence that the touch was real; a touch with no visible consequence is still a breach of this rule.; script verdict: unable_to_rule; missing fact: truck.moving; ruled frames: none; script evidence: \"No truck track exists in this window: the vision model found no forklift on the frames it was shown (one a second, up to 5). With no truck there is no motion, direction, distance or contact to measure, so no rule is ruled.\"\n\nAnswer with one JSON object only, keyed by rule id: {\"<rule id>\": \"<note>\", ...}.",
+ "reply": "{\"hi_vis_in_truck_zone\": \"The frames show a warehouse aisle lined with racking and stacked boxes, with no person visible, which bears on Wear high-visibility clothing in a truck zone. Three person reads over all 60 frames found no one, with the camera still and the whole view in frame.\", \"spotter_when_reversing\": \"The frames show the same empty aisle with racking and boxes and no truck or vested person visible, which bears on Reverse with a spotter where the site requires one. No truck track exists in this window because no forklift was found, so truck motion could not be measured.\", \"pedestrian_separation\": \"The frames show an empty aisle between racking and stacked boxes with no person on foot and no truck visible, which bears on Keep the site distance between a moving truck and a person on foot. Three person reads over all 60 frames found no one, with the camera still and the whole view in frame.\", \"structure_contact\": \"The frames show racking, uprights and stacked boxes lining an empty aisle with no truck or load visible against them, which bears on Do not touch racking or other structures. No truck track exists in this window because no forklift was found, so truck motion and contact could not be measured.\"}",
+ "rulings_sha256": "0feacc3406f6d3b0b444ff0453a2972174f7b5bcc8c7b4b3f193952f65288293",
+ "system": "You write short factual notes beside forklift safety rulings that a measuring script has already made. You describe; you never give, change or question a verdict.",
+ "temperature": 0.0,
+ "usage": {
+  "completion_tokens": 2457,
+  "completion_tokens_details": {
+   "reasoning_tokens": 2183
+  },
+  "prompt_tokens": 1724,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  },
+  "total_tokens": 4181
+ }
+}

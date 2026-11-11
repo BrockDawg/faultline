@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "kind": "visual_moment_candidates",
+  "meaning": "SAM mask motion suggests where a steward should review; this is not a contact finding or verdict.",
+  "video": "C:\\glitch\\workspaces\\faultline\\site\\data\\video\\racing-protest-1.mp4",
+  "video_sha256": "8974981cf0d84986cf30b092139f5fdd4b1f436251486049ba853219f4403000",
+  "sam_reply": "C:\\glitch\\workspaces\\faultline\\data\\racing\\sam-checks\\1\\sam-reply.txt",
+  "sam_reply_sha256": "d11f5ec2bf0f198752f028f6540374469128273b6c56540058c344dd0689c3b9",
+  "prompt": "race car",
+  "roi_xywh": null,
+  "clip_start_s": 1563.5,
+  "clip_duration_s": 14.5,
+  "sam_frames_processed": null,
+  "sam_estimated_usd": null,
+  "sam_cache": null,
+  "candidate_count": 1,
+  "status": "candidates_ranked",
+  "candidates": [
+    {
+      "frame": 47,
+      "clip_time_s": 3.917,
+      "score": 1441.728,
+      "mask_gap_px": 1,
+      "pre_distance_px": 102.3,
+      "distance_at_candidate_px": 96.7,
+      "post_distance_px": 517.8,
+      "relative_motion_change_px": 623.9,
+      "track_pair": [
+        "0",
+        "5"
+      ],
+      "review_frame_range": [
+        35,
+        59
+      ],
+      "source_time_s": 1567.417,
+      "review_source_time_range_s": [
+        1566.417,
+        1568.417
+      ],
+      "review_frame_times_source_s": [
+        1566.417,
+        1566.667,
+        1566.917,
+        1567.167,
+        1567.417,
+        1567.667,
+        1567.917,
+        1568.167,
+        1568.417
+      ]
+    }
+  ]
+}

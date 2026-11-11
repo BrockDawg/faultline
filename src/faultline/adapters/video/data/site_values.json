@@ -1,0 +1,8 @@
+{
+ "note": "Declared explicit site values (Brock's rulings 2 and 6 of 30 Oct 2026). Each is a threshold the site sets and no rule's words hold: the pack text is the public record and carries no number for it, so the compiled threshold is {site, explicit} with no span, the value is read from the site's site.json, and dev/compile/check_spans.py lists it as an explicit site value. A declared key whose value appears in its rule's text, or that no compiled row uses, is a site fault. The rear cone's half angle is not declared here: no ruling moved it, so the checker still counts it weak.",
+ "values": [
+  {"rule": "pedestrian_separation", "site": "moving_mps", "why": "the moving line: the speed over which a truck counts as moving (0.1 m/s on the synthetic site)"},
+  {"rule": "structure_contact", "site": "structure_strip_m", "why": "how near a structure base the truck's footprint must hold to count as at the structure (0.30 m on the synthetic site)"},
+  {"rule": "hi_vis_in_truck_zone", "site": "hivis_rule_share", "why": "the share of read frames that must lack the band (70% on the synthetic site)"}
+ ]
+}

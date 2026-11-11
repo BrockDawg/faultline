@@ -1,0 +1,139 @@
+{
+ "schema": 1,
+ "id": "spotter_ahead_01",
+ "entry": "fl-30a09bedbc28",
+ "record": "95c515a68b709ec3721590429e6feac36584c24a5f708bd0547a8f720ff8b696",
+ "root": "shipped",
+ "kind": "synthetic",
+ "live": true,
+ "rulings": [
+  {
+   "rule": "hi_vis_in_truck_zone",
+   "title": "Hi-vis in the truck zone",
+   "verdict": "clear",
+   "decided_by": null,
+   "measurement": "Every person on foot reads a hi-vis band: person 0 vested on 100% of 60 frames, person 1 vested on 100% of 60 frames.",
+   "missing_fact": null,
+   "lacks": null,
+   "pack_words": null,
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/spotter_ahead_01/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/spotter_ahead_01/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/spotter_ahead_01/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": null
+  },
+  {
+   "rule": "spotter_when_reversing",
+   "title": "Spotter when reversing",
+   "verdict": "clear",
+   "decided_by": null,
+   "measurement": "The truck never reversed for a second: forward 3.0 s, reversing 0.0 s, moving 3.0 s of 5.0 s in frame.",
+   "missing_fact": null,
+   "lacks": null,
+   "pack_words": null,
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/spotter_ahead_01/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/spotter_ahead_01/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/spotter_ahead_01/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": null
+  },
+  {
+   "rule": "pedestrian_separation",
+   "title": "Pedestrian separation",
+   "verdict": "clear",
+   "decided_by": null,
+   "measurement": "No one on foot was near the truck: 2 person track(s), 2 set aside as operator or too short.",
+   "missing_fact": null,
+   "lacks": null,
+   "pack_words": null,
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/spotter_ahead_01/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/spotter_ahead_01/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/spotter_ahead_01/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": {
+    "note": {
+     "model": "Muse Wonder 1.0",
+     "where": "Meta Model API",
+     "text": "Two people in vests stand ahead of the truck, well to one side. Neither steps into its path."
+    },
+    "reads": {
+     "model": "Muse Spark Open",
+     "where": "Baseten",
+     "runs": 3,
+     "agreed": null
+    }
+   }
+  },
+  {
+   "rule": "structure_contact",
+   "title": "Structure contact",
+   "verdict": "clear",
+   "decided_by": null,
+   "measurement": "The truck's footprint never held within 0.30 m of a marked structure base for 3 frames: closest 0.62 m to the left_rack base, longest run 0 frame(s); 0 consequence event(s) seen.",
+   "missing_fact": null,
+   "lacks": null,
+   "pack_words": null,
+   "frames": [
+    {
+     "n": 12,
+     "t_s": 0.5,
+     "src": "frames/spotter_ahead_01/12.jpg"
+    },
+    {
+     "n": 60,
+     "t_s": 2.5,
+     "src": "frames/spotter_ahead_01/60.jpg"
+    },
+    {
+     "n": 108,
+     "t_s": 4.5,
+     "src": "frames/spotter_ahead_01/108.jpg"
+    }
+   ],
+   "frames_source": "window",
+   "words": null
+  }
+ ]
+}

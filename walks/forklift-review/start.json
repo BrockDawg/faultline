@@ -1,0 +1,104 @@
+{
+  "asked": "Get another agent running through the forklift side.",
+  "shape": "C",
+  "lost": false,
+  "where": {
+    "projects": [
+      {
+        "name": "Faultline",
+        "path": "../..",
+        "says": "A rules judge for video."
+      }
+    ],
+    "guess": 1,
+    "fits": true
+  },
+  "look": {
+    "thing": "Faultline, the forklift video judge",
+    "kind": "a website",
+    "parts": [
+      {
+        "name": "The shared rules core",
+        "says": "Loads rule packs and stores ruling records."
+      },
+      {
+        "name": "The forklift video adapter",
+        "says": "Checks clips, measures facts and applies warehouse rules."
+      },
+      {
+        "name": "The PitBot racing adapter",
+        "says": "Reads racing protests and sim data."
+      },
+      {
+        "name": "Rules packs",
+        "says": "Hold the warehouse and racing rules."
+      },
+      {
+        "name": "Demo site and API",
+        "says": "Show cases and replay stored rulings."
+      },
+      {
+        "name": "Records and experiments",
+        "says": "Keep inputs, outputs and measured results."
+      },
+      {
+        "name": "Tests and scripts",
+        "says": "Check the behavior and maintain project data."
+      }
+    ],
+    "read": [
+      "AGENTS.md",
+      "STATE.md",
+      "README.md",
+      "pyproject.toml",
+      "docs/forklift-scan-route.md",
+      "src/faultline/ruling.py",
+      "src/faultline/adapters/video/cli.py",
+      "src/faultline/adapters/video/serve.py",
+      "src/faultline/adapters/video/replay_one.py",
+      "src/faultline/adapters/video/record.py",
+      "src/faultline/adapters/video/shift.py",
+      "site/index.html",
+      "site/app.js",
+      "site/app.css",
+      "site/data/index.json",
+      "site/data/clips/blind_corner_no_vest_07.json"
+    ],
+    "all": false
+  },
+  "narrow": {
+    "list": [
+      "Open a warehouse case and check its stored ruling",
+      "Replay the shipped forklift examples from the terminal",
+      "Build a shift report from forklift clips",
+      "Read the evidence and missing fact beside one forklift ruling"
+    ],
+    "first": 1,
+    "said": "1 I want a walk through of everything it goes through",
+    "picked": 1
+  },
+  "action": {
+    "question": "What happens when I open the featured forklift case and check its ruling?",
+    "start": "You open the featured blind-corner case and press the Check nobody changed it button.",
+    "end": "The page shows whether the fresh replay matches the stored ruling, or says the live check is unavailable and keeps the stored ruling.",
+    "link": "You asked to see everything the forklift case goes through.",
+    "files": [
+      "site/index.html",
+      "site/app.js",
+      "site/data/index.json",
+      "site/data/clips/blind_corner_no_vest_07.json",
+      "src/faultline/adapters/video/serve.py",
+      "src/faultline/adapters/video/replay_one.py",
+      "src/faultline/adapters/video/cli.py",
+      "src/faultline/adapters/video/rules.py",
+      "src/faultline/adapters/video/measure.py",
+      "src/faultline/adapters/video/perception.py",
+      "src/faultline/adapters/video/record.py"
+    ],
+    "seen": {
+      "kind": "page",
+      "where": "https://metahackathon.pitbot.gg/"
+    }
+  },
+  "confirmed": "ok"
+}

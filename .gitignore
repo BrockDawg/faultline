@@ -1,0 +1,52 @@
+# Secret-hygiene ignores.
+# Reduces accidental staging of secret-NAMED files. It does NOT catch an in-file paste
+# or anything already tracked — that needs the secret scan + pre-commit hook.
+.env*
+*.pem
+*.key
+*credentials*
+client_secret*.json
+*token*.json
+.mcp.json
+*.mcp.json
+.mcp.local.json
+
+# --- Kept local ---
+.planning/
+STATE.md
+CLAUDE.md
+AGENTS.md
+
+# --- Never commit run output, data, corpus or video ---
+runs/
+/record/
+data/
+# the forklift judge's own data ships with its code (site values, marks, pinned reads)
+!src/faultline/adapters/video/data/
+corpus/
+kept-from-tasks/
+*.jsonl
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.avi
+
+# the replay set a fresh clone checks: three clips' record (replies, masks, facts, blobs), never a
+# clip or a frame
+!/demo/record/
+!/demo/record/**
+/demo/record/**/*.mp4
+/demo/record/ledger.jsonl
+
+# --- Python build and test output ---
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+dist/
+
+# the demo film segments and their contact sheets hold clip frames: local only
+/demo/VIDEO/
+/site/data/

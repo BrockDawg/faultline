@@ -1,0 +1,22 @@
+{
+ "admit_recall": 0.5,
+ "admitted": {
+  "person": [
+   "person",
+   "pedestrian",
+   "worker"
+  ],
+  "truck": [
+   "forklift",
+   "vehicle"
+  ]
+ },
+ "controls": [
+  "no_vest_pedestrian_03",
+  "reversing_spotter_05",
+  "no_vest_group_near_11",
+  "near_miss_person_stops_24",
+  "reversing_spotter_cctv_30"
+ ],
+ "note": "the empty-window read's admitted prompts (dev/wild/empty_admit.py; marks in dev/wild/PASS_MARKS.md). A subject is read empty only when all three admitted prompts see no object on any frame of the window."
+}

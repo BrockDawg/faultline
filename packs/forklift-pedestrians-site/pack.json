@@ -1,0 +1,7 @@
+{
+  "name": "forklift-pedestrians-site",
+  "version": "1.0.0",
+  "domain": "warehouse-forklift",
+  "source": "OSHA 29 CFR 1910.178, Powered industrial trucks",
+  "unique_ids_across_domain": true
+}

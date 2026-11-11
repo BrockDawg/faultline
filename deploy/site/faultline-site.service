@@ -1,0 +1,38 @@
+# faultline-site.service: the replay worker behind metahackathon.pitbot.gg/api/.
+# Listens on 127.0.0.1:8711 only. Reads the record roots, the bundle, the racing folder and the
+# deploy-time replay file; writes nothing outside its private /tmp. No keys and no environment
+# file: a replay needs none, and IPAddressDeny=any keeps the unit off the internet.
+# Install: deploy/site/install.sh copies this to /etc/systemd/system/ and runs daemon-reload.
+
+[Unit]
+Description=faultline replay worker (metahackathon.pitbot.gg)
+After=network.target
+
+[Service]
+Type=simple
+User=faultline
+Group=faultline
+WorkingDirectory=/srv/faultline/current
+ExecStart=/srv/faultline/current/.venv/bin/python -m faultline.adapters.video.serve --host 127.0.0.1 --port 8711 --roots /srv/faultline/record --bundle /srv/faultline/www/data --racing /srv/faultline/racing --replays /srv/faultline/replays
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+
+# Two forklift replays at about 370 MB each, or the 497 MB racing limits job alone.
+MemoryMax=1G
+CPUQuota=150%
+Nice=10
+TasksMax=64
+
+ProtectSystem=strict
+ProtectHome=yes
+ReadOnlyPaths=/srv/faultline
+PrivateTmp=yes
+NoNewPrivileges=yes
+IPAddressDeny=any
+IPAddressAllow=localhost
+
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
